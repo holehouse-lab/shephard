@@ -4,7 +4,7 @@ Sequence-based Hierachical and Extendable Platform for High-throughput Analysis 
 """
 
 # Add imports here
-from .shephard import *
+#from .shephard import *
 
 # Handle versioneer
 from ._version import get_versions
