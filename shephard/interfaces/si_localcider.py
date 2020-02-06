@@ -11,9 +11,7 @@ Functions associated with interfacing with the localcider package
 
 
 
-def apply_track_NCPR(proteome):    
-
-    blobsize=5
+def apply_track_NCPR(proteome, blobsize=5):    
 
     interface_tools.check_proteome(proteome, 'apply_track_NCPR (si_localcider)')
 
@@ -35,14 +33,14 @@ def apply_track_NCPR(proteome):
             else:
                 ncpr.append(0)
 
-
-
         averaged = []
         for i in range(0,(len(ncpr)-blobsize)):
             averaged.append(general_utilities.numerical_average(ncpr[i:i+blobsize]))
             
 
-        final_averaged = [averaged[0]]*2 + averaged + [averaged[-1]]*3
+        ntd_mod = int(blobsize/2)
+        ctd_mod = blobsize - ntd_mod
+        final_averaged = [averaged[0]]*ntd_mod + averaged + [averaged[-1]]*ctd_mod
         
 
         """

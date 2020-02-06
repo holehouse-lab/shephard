@@ -105,30 +105,6 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
             
         
 
-"""
-def gapfiller( domain_type, gap_closure=3):
-    
-    for protein in proteome:
-
-        t = protein.track(track_name).values
-
-        B = binzerize_function(t)
-
-
-        for g in range(1,gap_closure+1):
-            # first fill in 
-
-
-            for i in range(0,len(B)):                
-                if np.sum(B[i:i+g])  == g:
-                    if np.sum(B[i+g+g:i+g+g+g])  == g:
-                        B[i+g:i+g+g] = [1]*g
-                    
-
-                if B[i] == 1 and B[i+2] == 1 and B[i+1] == 0:
-                B[i+1] = 1
-"""
-
 
 def build_domains_from_track_values(proteome, track_name, binerize_function, domain_type, gap_closure=3, minimum_region_size=1, extend_ends=None, print_progress=False):
     
@@ -153,8 +129,10 @@ def build_domains_from_track_values(proteome, track_name, binerize_function, dom
         if t is None:
             continue
 
+        # extract out the values
         t = t.values
-
+        
+        # and apply the binerize function to the values
         B = binerize_function(t)
 
         ## Part 1 - remove gapes
@@ -202,7 +180,6 @@ def build_domains_from_track_values(proteome, track_name, binerize_function, dom
                     finished = True
 
 
-
         ## Part 2 - remove domains that are too small - we adde the '-' caps so we can use
         # replace and distinguish c/n terminal values
         B_string = '-'
@@ -224,6 +201,8 @@ def build_domains_from_track_values(proteome, track_name, binerize_function, dom
         for i in range(1, len(B_string)-1):
             B[i-1] = int(B_string[i])
 
+
+
         ## Part 3 - extend ends if required
         if extend_ends:
                 
@@ -237,8 +216,6 @@ def build_domains_from_track_values(proteome, track_name, binerize_function, dom
 
             if B[:-(extend_ends+1)] == 1:
                 B[-extend_ends:] = [1]*len(B[0:extend_ends])
-
-
             
         ## Part 4 - extract domain boundaires
         local_domains=[]

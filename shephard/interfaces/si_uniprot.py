@@ -6,7 +6,7 @@ Functions associated with interfacing with uniprot data
 
 ## ------------------------------------------------------------------------
 ##
-def extract_unique_id_uniprot(keystring):
+def extract_unique_ID_uniprot(keystring):
     """
     Function that converts a header from a uniprot fasta file
     to extract the uniprot ID. This an example of the type of function

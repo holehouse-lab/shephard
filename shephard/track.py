@@ -10,7 +10,6 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . exceptions import TrackException
-import numpy as np
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Site in sequence
@@ -38,8 +37,16 @@ class Track:
            Defines the name of the track. This can be any value, but should be something that makes sense. The name can be 
            used by analysis routines.
 
-        protein : 
+        protein : Protein object
+            the protein from which the track is being added to
 
+        values : iterable of numerical values (default is None)
+            This iterable is passed over and convert into a list of floats. Must be same lentth as the number of residues
+            in the protein.
+
+        symbols : iterable of strings (default is None)
+            This iterable is directly assigned to the track.symbols variable. Must be same lentth as the number of residues       
+            in the protein.
 
         """
 
@@ -51,8 +58,8 @@ class Track:
                 raise TrackException('Track length of %i does not match protein length of %i (values track)\b Track = %s\nProtein=%s' %(len(values), len(protein.sequence), name, str(protein)))
 
             try:                
-                # values should be a numpy array of float64 type
-                values = np.array(values, dtype='float64')
+                # values = np.array(values, dtype='float64')
+                values = [float(i) for i in values]
             except ValueError:
                 raise TrackException('Unable to convert values passed into float64 numpy array [Track=%s, Protein=%s' %( name, str(protein)))
             
@@ -70,7 +77,7 @@ class Track:
 
             # if we passed a string convert to a list
             elif(symbols, str):
-                symbols = list(symbols)
+                values = TrackData(symbols)
             
             else:
                 raise TrackExceptio('Unable to convert passed symbols track to a list of symbols [Track=%s, Protein=%s' %( name, str(protein)))
@@ -81,7 +88,7 @@ class Track:
             raise TrackException('Empty track provided [Track=%s, Protein=%s' %(name, str(protein)))
 
 
-        self._values  = np.array(values)
+        self._values  = values
         self._symbols = symbols
         self._name = name
         self._protein = protein
@@ -97,14 +104,26 @@ class Track:
     ## ------------------------------------------------------------------------
     ##
     @property
+    def values_region(self, start, end):
+        return self._values[start:end]
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def symbols_region(self, start, end):
+        return self._symbols[start:end]
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
     def values(self):
-        return self._values
+        return self._values[1:len(self)]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def symbols(self):
-        return self._symbols
+        return self._symbols[1:len(self)]
 
     ## ------------------------------------------------------------------------
     ##

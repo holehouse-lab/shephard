@@ -18,6 +18,9 @@ from . import exceptions
 from .exceptions import ProteinException
 from .import general_utilities
 
+
+STANDARD_AAs = 'ACDEFGHIKLMNPQRSTVWY'
+
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Entry
 #
@@ -68,6 +71,7 @@ class Protein:
         self._sequence = seq
         self._unique_ID = unique_ID
         self._proteome = proteome
+        self._len = len(seq)
 
         # set attribute dictionary IF a dictionary was passed
         if isinstance(attribute_dictionary, dict):
@@ -102,14 +106,107 @@ class Protein:
         """
         return self._name
 
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def proteome(self):
+        """
+        Returns the proteome this protein is associated with
+        """
+        return self._proteome
+
+
+    ###################################
+    ##                               ##
+    ##      SEQUENCE FUNCTIONS       ##
+    ##                               ##
+    ###################################
+
     ## ------------------------------------------------------------------------
     ##
     @property
     def sequence(self):
         """
-        Returns the protein amino acid sequence
+        Returns the protein amino acid sequence as a string. Recall in strings
+        indexing occurs from 0 and is non-inclusive. For proteins/biology indexing
+        is from 1 and is inclusive 
+
+        i.e. for sequence 'MAPSTA...' real/biological indexing of region 1-3 would give
+        you 'MAP' while Python's indexing would give you 'AP'.
+
+        As a result BEWARE if using the raw sequence for analysis! The Protein class
+        provides a get_sequence_region(), get_sequence_context() and analagous functions
+        for tracks that allow you to use normal indexing to select ranges or regions
+        around a specific point. We suggest this is a safer way to extract vectorial
+        information.
         """
         return self._sequence
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def get_sequence_region(self, start, end):
+        """
+        Function that allows a region of the sequence to be extracted out.
+
+        Parameters
+        ---------------
+        start : int
+            Start position for region
+
+        end : int
+            End position for region (note this is inclusive)
+
+        Returns
+        ---------------
+        string
+            Returns a string that corresponds to the region of interest
+
+        """
+
+        self._check_position_is_valid(start, helper_string='Sequence region cannot start below 1 [%i]'%(start))
+        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+            
+        return self._sequence[start-1:end]
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def get_sequence_context(self, position, offset=5):
+        """
+        Function that allows a local region of the sequence centered on a specific position
+        to be extracted, includng +/- an offset border that intelligently truncates if the 
+        offset would etend outside the sequence region.
+
+        Parameters
+        ---------------
+        position : int
+            Position for which we'll interogate the local sequence
+
+        offset : int
+            Plus/Minus offset used to invesigate the region around the position
+
+
+        Returns
+        ---------------
+        string
+            Returns a string that corresponds to the region of interest
+
+        """
+        
+        # sanity check position input
+        self._check_position_is_valid(position, helper_string='Sequence position is outside below 1 [%i]')
+        
+        # compute start/end of context according to the offset
+        p1 = max(1, position - offset)
+        p2 = min(self._len, position + offset)
+
+        # note we subtract -1 here from the p1 site to shift from realworld indexing
+        # to i0 indexing. However we do not offset p2 because this means the start
+        # and end become inclusive
+        return self._sequence[p1-1:p2]
+
 
     ## ------------------------------------------------------------------------
     ##
@@ -120,33 +217,79 @@ class Protein:
         """
         return self._unique_ID
 
-    @property
-    def proteome(self):
-        """
-        Returns the proteome this protein is associated with
-        """
-        return self._proteome
+
+
 
     ## ------------------------------------------------------------------------
     ##
-    @unique_ID.setter
-    def unique_ID(self, value):
-        """        
-        Sets the protein unique_ID. This should be an alphanumeric string that
-        is unique to this specific protein. Note we cannot validate this at the
-        protein level, but within a shephard_object one can run 
-        validate_unique_ids() to check all unique IDs are truly unique.
-                
-        Parameters
-        -----------
-        value : string
-            Putative unique ID (uniprot accession is recommended)
+    def check_sequence_is_valid(self):
+        for i in self._sequence:
+            if i not in STANDARD_AAs:
+                return False
+        return True
 
+
+    ## ------------------------------------------------------------------------
+    ##
+    def convert_to_valid(self, copy=False):
         """
-        if len(value) < 6 or len(value) > 10:
-            raise ProteinException('[%s] Invalid unique_ID passed [%s] '%(str(self), len(value)))
+        Converts non-standard amino acid residues to standard ones. 
 
-        self._unique_ID = value
+        B -> N
+        U -> C
+        X -> G
+        Z -> Q
+        * -> <empty string>
+        - -> <empty string>
+
+        By default this alters the underlying sequence. If you wish to return a copy
+        of the altered sequence instead set copy=True. Otherwise the underlying sequence
+        is altered 
+        
+        """
+
+        if copy is True:
+            # create a copy, such that within the protein the underlying sequence is
+            # unaltered
+            s = self._sequence[:]            
+        else:
+            # create a view, which means the protein sequence is altered
+            s = self._sequence
+        
+        # systematically replace common  'non-canonical' one-letter codes
+        # with acceptable codes. Code explanations from
+        # https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp
+        s = s.replace('B','N') # B = N/E
+        s = s.replace('U','C') # U = selenocysteine
+        s = s.replace('X','G') # X = Any
+        s = s.replace('Z','Q') # Z = Q/D
+        s = s.replace('*','')  # * = stop
+        s = s.replace('-','')  # - = gap
+
+        if copy is True:
+            return s
+        else:
+            return None
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def _check_position_is_valid(self, position, helper_string=None):
+        """
+        Internal function that ensures a passed position falls inside the sequence.
+        The helper-string allows the exception raised to be customerized
+        """
+        if sequence_utilities.inside_region(1, self._len, position):
+            return None
+        else:
+            if helper_string:                
+                raise ProteinException(helper_string %(position))
+            else:
+                raise ProteinException('Position %i falls outside of sequence'%(position))
+
+
+
 
     
     ###################################
@@ -171,7 +314,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_attribute(self, name, safe=True):
+    def attribute(self, name, safe=True):
 
         """
         Function that returns a specific attribute as defined by the name. 
@@ -221,7 +364,7 @@ class Protein:
 
         if safe:
             if name in self._attributes:
-                raise ProteinException("Trying to add attribute [%s=%s] to protein [%s] but this attribute is already set" %(name,val, str(self)))
+                raise ProteinException("Trying to add attribute [%s=%s] to protein [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
                 
         self._attributes[name] = val
 
@@ -283,7 +426,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_track_values(self, name, safe=True):
+    def get_track_values(self, name, start=None, end=None, safe=True):
         """
         Function that returns the values associated with a specific track, as 
         defined by the name.
@@ -301,6 +444,14 @@ class Protein:
              The track name. A list of valid names can be found by calling the
              <Protein>.tracks (which returns a list of the valid track names)
 
+        start : int (default none)
+            If provided defines the start position along the track. Note
+            if start is provided end must also be provided.
+
+        end : int (default none)
+            If provided defines the start position along the track. Note
+            if end is provided start must also be provided.
+            
         Returns
         ---------
         Unknown 
@@ -309,9 +460,12 @@ class Protein:
             matched the name.
         
         """
+
+        (_start, _end) = self._build_start_end(start,end)
         
         # call internal function
-        return self.__get_track_info(name, safe, 'values')
+        return self.__get_track_info(name, safe, _start, _end, 'values')
+
 
 
     ## ------------------------------------------------------------------------
@@ -334,6 +488,14 @@ class Protein:
              The track name. A list of valid names can be found by calling the
              <Protein>.tracks (which returns a list of the valid track names)
 
+        start : int (default none)
+            If provided defines the start position along the track. Note
+            if start is provided end must also be provided.
+
+        end : int (default none)
+            If provided defines the start position along the track. Note
+            if end is provided start must also be provided.
+            
         Returns
         ---------
         Unknown 
@@ -343,10 +505,17 @@ class Protein:
         
         """
 
-        # call internal function
-        return self.__get_track_info(name, safe, 'symbols')
+        # build the start and end position
+        (_start, _end) = self._build_start_end(start,end)
 
-    def __get_track_info(self, name, safe, mode):
+        # call internal function
+        return self.__get_track_info(name, safe, _start, _end, 'symbols')
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def __get_track_info(self, name, safe, start, end, mode):
         """
 
         Internal function that follows the exact same logic as the public-facing
@@ -358,7 +527,7 @@ class Protein:
 
 
         if t is None:
-            # note - technically as the code is written now we don't need this, 
+            # note - technically as the code is written now we don't need this, (the safety is dealt in get_track())
             # but I'm including it for best practice to avoid implicit dependencies in the code
             if safe:
                 raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.tracks))
@@ -367,9 +536,9 @@ class Protein:
 
         # try and get values
         if mode == 'values':
-            v = t.values
+            v = t.values_region(start, end)
         elif mode == 'symbols':
-            v = t.symbols
+            v = t.symbols_regions(start, end)
 
         # if v is a value or safe is False just return v (will either be values
         # or None)
@@ -406,17 +575,17 @@ class Protein:
             Name for track. NOTE that this is a unique identifier, and each track within
             a given protein should must have a unique name. 
 
-        values : list or np.array
+        values : list or np.array (default None)
             A numerical iterable collection of values, where each value maps to a specific 
-            residue in the sequence. Default = None
+            residue in the sequence. 
 
-        symbols : list or string 
+        symbols : list or string (default None)
             A symbolic collection of characters, where each symbol maps to a specific 
-           residue in the sequence. Default = None
+           residue in the sequence. 
         
-        safe : boolean 
+        safe : boolean (default = True)
             If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it. Default = True.
+            a track will simply over-write it.
 
         Returns
         ----------
@@ -887,15 +1056,7 @@ class Protein:
 
         """
         
-        # check start and end position for the domain make sense..
-        if start >= end:
-            raise ProteinException("Trying to a domain to protein [%s] where start site is bigger or equal to end site (positions: %i-%i - this does not work!" %(str(self), start, end,))
 
-        # internal posititioning is indexed from 0, but all databases index from 1. This corrects for the offset
-        # IF requested (by default yes)
-        (start_0i, end_0i) = sequence_utilities.update_from_realworld([start,end])
-        if not sequence_utilities.inside_region(0, len(self.sequence)-1, start_0i) or not sequence_utilities.inside_region(0, len(self.sequence)-1, end_0i):
-            raise ProteinException("Trying to add domain to protein [%s] at positions [%i-%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), start, end, 1, len(self.sequence)+1))
 
         # append start and end position to name. 
         full_name = "%s_%i_%i"%(domain_type, start, end)    
@@ -903,17 +1064,20 @@ class Protein:
         # if this domain name was already found...
         if full_name in self.domains:
 
-            # if we're in autoname mode create a new unique name
+            # if we're in autoname mode create a new unique name. This acts to add an incrementer to the
+            # end and cycles through until a unique domaintype_star_end_incrementer name is found, where 
+            # incremementer keeps being incremented
             if autoname:
-                increment = 1
+                increment = 0
                 found = False
 
                 while found is False:
-                    newname = "%s_%i_%i_%i"%(domain_type, start, end, increment)    
-                    if newname not in self.domains:
-                        found = True
-                    increment=increment+1
 
+                    increment = increment + 1
+                    newname = "%s_%i_%i_%i"%(domain_type, start, end, increment)    
+
+                    if newname not in self.domains:
+                        found = True                    
                 full_name = newname
 
             elif safe:
@@ -1040,6 +1204,17 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
+    def site_residue(self, position):
+        """
+        Function that returns the list of sites that are found at a given position.        
+
+        """
+
+        return self._sequence[int(position)]
+
+
+    ## ------------------------------------------------------------------------
+    ##
     def add_site(self, position, site_type, symbol=None, value=None, attributes={}):
         """
         Function that adds a site to a specific position in the sequence. Sites are
@@ -1071,18 +1246,15 @@ class Protein:
             Numerical value associated with a site. Note that the value is cast
             to a float64. Default = None
 
-
         attributes : dictionary [optional]
             Optional dictionary which allows an arbitrary set of attributes to be
             associated with a domain, in much the same way that they can be assocated
             with a protein. Default = empty dictionary.
         
         """
-
-        position_0i = sequence_utilities.update_from_realworld([position])[0]
         
-        if not sequence_utilities.inside_region(0, len(self.sequence), position_0i) or not sequence_utilities.inside_region(0, len(self.sequence), position_0i):
-            raise ProteinException("Trying to add site to protein [%s] at positions [%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), position_0i, 0, len(self.sequence)))
+        if not sequence_utilities.inside_region(1, self._len, position):
+            raise ProteinException("Trying to add site to protein [%s] at positions [%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), position, 1, len(self.sequence)))
 
         # cast the position to an int and if there are no sites at that position create an empty list there
         position = int(position)        
@@ -1158,9 +1330,10 @@ class Protein:
 
         # recal p1 and p2 should be in real-world indices 
         p1 = max(1, start - wiggle)
-        p2 = min(end + wiggle, len(self))
+        p2 = min(end + wiggle, self._len)
 
-        # recall we need +1 offset so we go to the end!
+        # recall we need +1 offset so we go to the end - positions/ranges are inclusive
+        # when talking about proteins
         for j in range(p1, p2+1):
             if j in self._sites:
                 return_dict[j] = self._sites[j]
@@ -1214,6 +1387,8 @@ class Protein:
         # and then subselect sites of the right type
         return self.__site_by_type_internal(initial_dict, site_types)
 
+
+
     ## ------------------------------------------------------------------------
     ##
     def __site_by_type_internal(self, indict, site_types):
@@ -1266,12 +1441,12 @@ class Protein:
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "|Protein: %s - L=%i, #t=%i, #d=%i, #s=%i|" %(self.unique_ID, len(self), len(self.tracks), len(self.domains), len(self.sites))
+        return "|Protein: %s - L=%i, #t=%i, #d=%i, #s=%i|" %(self.unique_ID, self._len, len(self.tracks), len(self.domains), len(self.sites))
         
 
 
     ## ------------------------------------------------------------------------
     ##
     def __len__(self):             
-        return len(self._sequence)
+        return self._len
         

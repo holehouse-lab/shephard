@@ -2,7 +2,8 @@
 
 def inside_region(boundary_start, boundary_end, position):
     """
-    Given a position, does the position fall inside the defined region 
+    Given a position, does the position fall inside the defined region, inclusive
+    for both start and end positions
     """
     if position >= boundary_start and position <= boundary_end:
         return True

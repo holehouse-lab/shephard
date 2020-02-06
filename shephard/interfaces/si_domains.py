@@ -43,20 +43,9 @@ class DomainsInterface:
 
             # if some key/value pairs were included then parse these out one at a time
             if len(sline) > 4:
-                
-                for idx in range(4,len(sline)):
-                    try:
-                        sentry = sline[idx].split(':')
-                    except Exception:
-
-                        # should update this to also display the actual error...
-                        raise InterfaceException('Failed parsing key-value pairs in file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line))
-                                        
-                    k = sentry[0].strip()
-                    v = sentry[1].strip()
-                        
-                    attribute_dictionary[k] = v
-                                
+                attribute_dictionary = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
+                              
+  
             if unique_ID in ID2domain:
                 ID2domain[unique_ID].append([start, end, domain_type, attribute_dictionary])
             else:
@@ -92,10 +81,20 @@ def read_in_domains(proteome, filename, delimiter='\t', safe=True, autoname=Fals
                 domain_type = domain[2]
                 ad = domain[3]
                 
-                protein.add_domain(start, end, domain_type, ad, safe, autoname)
+
+                try:
+                    protein.add_domain(start, end, domain_type, ad, safe, autoname)
+                except InterfaceException as e:
+                    if skip_bad:
+                        print('Warning - skippiing domain at %i-$i on %s' %(start, end, protein))
+                        continue
+                    else:
+                        raise e
+
+                
 
 
-def write_domains(proteome, filename, delimiter='\t'):
+def write_domains(proteome, filename, delimiter='\t', skip_bad=False):
 
     with open(filename, 'w') as fh:
         for protein in proteome:

@@ -11,6 +11,10 @@ Holehouse Lab - Washington University in St. Louis
 
 """
 
+class ProtseqException(Exception):
+    pass
+
+
 class ShephardException(Exception):
     """
     """
