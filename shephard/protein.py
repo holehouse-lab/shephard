@@ -323,12 +323,16 @@ class Protein:
         anything and is user defined. This function will return the value associated 
         with a given name.
 
-        Paramaters
+        Parameters
         ----------------
         name : string
              The attribute name. A list of valid names can be found by calling the
              <Protein>.attributes (which returns a list of the valid names)
 
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+            
         Returns
         ---------
         Unknown 
@@ -359,6 +363,23 @@ class Protein:
         Function that adds an attribute. Note that if safe is true, this function will
         raise an exception if the attribute is already present. If safe=False, then
         an exisiting value will be overwritten.
+
+        Parameters
+        ----------------
+
+        name : string
+            The parameter name that will be used to identfy it
+
+        val : <anything>
+            An object or primitive we wish to associate with this attribute
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+
+        Returns
+        ---------
+            Nothing, but adds an attribute to the calling object
 
         """
 
@@ -402,7 +423,7 @@ class Protein:
         For direct access to values and symbols, use the get_track_values() and 
         get_track_symbols()
 
-        Paramaters
+        Parameters
         ----------------
         name : string
              The track name. A list of valid names can be found by calling the
@@ -419,6 +440,7 @@ class Protein:
 
         if name in self._tracks:
             return self._tracks[name]
+
         elif safe:
             raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.tracks))
 
@@ -433,12 +455,10 @@ class Protein:
 
         Recall that tracks are defined by a name. If a track by this name exists
         this function returns the values IF these are associated with the track.
-        If no values are associated then None is returned.
+        If no values are associated then the function will throw an exception 
+        unless safe is set to False, in which case it will return None.
         
-        For direct access to values and symbols, use the get_track_values() and 
-        get_track_symbols()
-
-        Paramaters
+        Parameters
         ----------------
         name : string
              The track name. A list of valid names can be found by calling the
@@ -451,6 +471,10 @@ class Protein:
         end : int (default none)
             If provided defines the start position along the track. Note
             if end is provided start must also be provided.
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if a track that matches
+            the passed name does not already exist.
             
         Returns
         ---------
@@ -470,19 +494,17 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_track_symbols(self, name, safe=True):
+    def get_track_symbols(self, name, start=None, end=None, safe=True):
         """
         Function that returns the symbols associated with a specific track, as 
         defined by the name.
 
         Recall that tracks are defined by a name. If a track by this name exists
         this function returns the symbols IF these are associated with the track.
-        If no symbols are associated the None is returned.
-        
-        For direct access to values and symbols, use the get_track_values() and 
-        get_track_symbols()
+        If no symbols are associated then the function will throw an exception 
+        unless safe is set to False, in which case it will return None.
 
-        Paramaters
+        Parameters
         ----------------
         name : string
              The track name. A list of valid names can be found by calling the
@@ -495,6 +517,10 @@ class Protein:
         end : int (default none)
             If provided defines the start position along the track. Note
             if end is provided start must also be provided.
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if a track that matches
+            the passed name does not already exist.
             
         Returns
         ---------
@@ -522,7 +548,7 @@ class Protein:
         get_track_symbols or get_track_values
 
         """
-
+        
         t = self.get_track(name, safe)
 
 
@@ -590,7 +616,7 @@ class Protein:
         Returns
         ----------
 
-            Nothing, but adds a track to the calling object
+            Nothing, but adds a track to the calling object.
 
         """
 
@@ -604,20 +630,28 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def build_track_values_from_sequence(self, name, trackfunction, **kwargs):
+    def build_track_values_from_sequence(self, name, trackfunction, input_dictionary={}, safe=True):
         """
         Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
         analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
-        arguments) that will take in the protein sequence, generate a new track, and add that track to the protein.
+        arguments in the keywords dictionary) that will take in the protein sequence, generate a new track, and 
+        add that track to the protein.
 
         build_track_values allows you to define a function that converts amino acid sequence into a numerical list
         or np.array, which gets written as a values track. If you want a symbols track, use build_track_symbols().
 
-        Specifically, trackfunction must be a user-defined function where the first (or only) argument is the sequence,
-        and the remaining arguments (kwargs) are also then passed to trackfuntion.
+        Specifically, the argument trackfunction must be a user-defined function. This function can be defined anywhere, 
+        but should take either one or two arguments:
 
-        Consequently, bulid_track_values can be thought of allowing the use to pass a conversion function that converts
-        the amino acid sequence into some other numerical track, which then gets assigned to the Protein.
+        (1) The first/only argument should be an amino acid sequence.
+        (2) The second argument a dictionary of key-value pairs.
+
+        When build_track_values_from_sequence is called, the sequence of the protein is passed as the first
+        argument into the trackfunction, and  - if present - the input_dictionary is passed as the second argument.
+
+        In this way a new track is defined internally, with the trackfunction using the proteins sequence and 
+        any/all pass input_dictionary to convert the sequence into some numerical representation.
+        
 
         Parameters
         ------------
@@ -630,15 +664,17 @@ class Protein:
             A user define function that has the folowing properties:
         
             (1) First argument is expected to be amino acid sequence
-            (2) Can also support between 0 and n additional arguments, without constraint on what they are,
-                but they are passed to build_track_values when it is called 
-            (3) The return value must be a list of numerical type or np.ndarray 
+            (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
+                from sequence to the trackfunction at runtime
 
-        **kwargs : collection of keywords
-            See Python documentation for meaning of **kwargs. Basically, this is a placeholder for between
-            0 and n keyword arguments with values, which will be passed to the trackfunction. These can
-            be anything but should match the keyword arguments defined in the trackfunction definition.
-                
+        function_keywords : dictionary
+            This is a dictionary that will be passed to the trackfunction as the second argument IF it is provided.
+            In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
+            the build_track_values_from_sequence is called.
+
+        safe : boolean (default = True)
+            If set to True over-writing tracks will raise an exception, otherwise overwriting
+            a track will simply over-write it.
 
         Example
         --------
@@ -646,14 +682,22 @@ class Protein:
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         # define a function that takes in a sequence and converts it into some other numerical
-        # list. Note this is INLINE with the code, or could be elsewhere 
+        # list. Note this is INLINE with the code, or could be elsewhere. This function MUST
+        # take either ONE argument (sequence) or TWO arguments (sequence and input_dictionary).
+        # Also the names of these arguments does not matter, but the order does (i.e. first argument
+        # will always get the sequence).
 
-        def trackbuilder(seq, v1,v2):
+        def trackbuilder(seq, input_dictionary):
             ''' 
                 This function takes in a sequence (seq) as first argument, and the v1 and v2
                 as additional arguments. See below for what it's doing (pretty simple).
             '''
-            newseq=[]
+            newseq=[]  
+            
+            # we are extracting out the 'values' from the input dictionary
+            # for the sake of code clarity
+            v1 = input_dictionary['v1']
+            v2 = input_dictionary['v2']
 
             # for each residue in the sequence
             for i in seq:
@@ -667,10 +711,12 @@ class Protein:
                     newseq.append(0)
         
             return newseq
+        
+        # define the input_dictionary (note again that the variable names here do not matter)
+        input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
 
-        # now assuming ProtOb is a Protein object
-
-        ProtOb.build_track_values('charge_vector', trackbuilder, v1=['K','R'], v2=['E',D'])
+        # now assuming ProtOb is a Protein object, this will add a new track
+        ProtOb.build_track_values('charge_vector', trackbuilder, function_dictionary=input_dictionary)
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -679,8 +725,8 @@ class Protein:
         positively charged residues = +1 and negatively charged residues = -1. We applied this function to generate
         a 'charge_vector' track.
 
-        Note this is analagous to defining our function and then running:
 
+        Note this is analagous to defining our function and then running:
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -693,7 +739,7 @@ class Protein:
 
         Some FAQs:
 
-        Do I need to pass arguments to custom function?
+        Do I need to pass an input_dictionary to the custom function?
             No!
 
         Does the name of the custom function matter?
@@ -707,36 +753,43 @@ class Protein:
         # if this will overwrite an exsiting track and safe is on...
         if name in self.tracks:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' (name, self.name))
+                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
-        if len(kwargs) == 0:
+        if len(input_dictionary) == 0:
             built_track = trackfunction(self.sequence)
         else:
-            built_track = trackfunction(self.sequence, kwargs)
+            built_track = trackfunction(self.sequence, input_dictionary)
             
         # finally add the track
-        self._tracks[name] = Track(name, self, built_track, None)
+        self._tracks[name] = Track(name, self, values=built_track, symbols=None)
 
 
 
     ## ------------------------------------------------------------------------
     ##
-    def build_track_symbols_from_sequence(self, name, trackfunction, **kwargs):
+    def build_track_symbols_from_sequence(self, name, trackfunction, input_dictionary={}, safe=True):
         """
         Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
         analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
         arguments) that will take in the protein sequence, generate a new track, and add that track to the Protein.
 
         build_track_symbols allows you to define a function that converts amino acid sequence into a symbolic list
-        or string, which gets written as a symbols track. If you want a values track, use build_track_symbols().
+        or string, which gets written as a symbols track. If you want a values track, use build_track_values().
 
-        Specifically, trackfunction must be a user-defined function where the first (or only) argument is the sequence,
-        and the remaining arguments (kwargs) are also then passed to trackfuntion.
+        Specifically, the argument trackfunction must be a user-defined function. This function can be defined anywhere, 
+        but should take either one or two arguments:
 
-        Consequently, bulid_track_values can be thought of allowing the use to pass a conversion function that converts
-        the amino acid sequence into some other symbolic track, which then gets assigned to the Protein.
+        (1) The first/only argument should be an amino acid sequence.
+        (2) The second argument a dictionary of key-value pairs.
+
+        When build_track_symbols_from_sequence is called, the sequence of the protein is passed as the first
+        argument into the trackfunction, and  - if present - the input_dictionary is passed as the second argument.
+
+        In this way a new track is defined internally, with the trackfunction using the proteins sequence and 
+        any/all pass input_dictionary to convert the sequence into some other symbolic representation.
+        
 
         Parameters
         ------------
@@ -745,61 +798,73 @@ class Protein:
             Name of the track to be used. Should be unique and will always overwrite an existing track with the same
             name (no safe keyword provided here).
 
+
         trackfunction : function
             A user define function that has the folowing properties:
         
             (1) First argument is expected to be amino acid sequence
-            (2) Can also support between 0 and n additional arguments, without constraint on what they are,
-                but they are passed to build_track_values when it is called 
-            (3) The return value must be a list of numerical type or np.ndarray 
+            (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
+                from sequence to the trackfunction at runtime
 
-        **kwargs : collection of keywords
-            See Python documentation for meaning of **kwargs. Basically, this is a placeholder for between
-            0 and n keyword arguments with values, which will be passed to the trackfunction. These can
-            be anything but should match the keyword arguments defined in the trackfunction definition.
-                
+        function_keywords : dictionary
+            This is a dictionary that will be passed to the trackfunction as the second argument IF it is provided.
+            In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
+            the build_track_symbols_from_sequence is called.
+
+        safe : boolean (default = True)
+            If set to True over-writing tracks will raise an exception, otherwise overwriting
+            a track will simply over-write it.
+
 
         Example
-        --------
-        
+        --------        
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-        # define a function that takes in a sequence and converts it into some other numerical
-        # list. Note this is INLINE with the code, or could be elsewhere 
+        # define a function that takes in a sequence and converts it into some other symbolic representation
+        # as a string. Note this is INLINE with the code, or could be elsewhere. This function MUST
+        # take either ONE argument (sequence) or TWO arguments (sequence and input_dictionary).
+        # Also the names of these arguments does not matter, but the order does (i.e. first argument
+        # will always get the sequence).
 
-        def trackbuilder(seq, v1,v2):
+        def trackbuilder(seq, input_dictionary):
             ''' 
                 This function takes in a sequence (seq) as first argument, and the v1 and v2
                 as additional arguments. See below for what it's doing (pretty simple).
             '''
-            newseq=[]
+            new_string_list=[]  
+            
+            # we are extracting out the 'values' from the input dictionary
+            # for the sake of code clarity
+            v1 = input_dictionary['v1']
+            v2 = input_dictionary['v2']
 
             # for each residue in the sequence
             for i in seq:
 
                 # is that residue in v1 (append 1) or v2 (append -1)? If neither append 0
                 if i in v1:
-                    newseq.append(1)
+                    new_string_list.append('+')
                 elif i in v2:
-                    newseq.append(-1)
+                    new_string_list.append('-')
                 else:
-                    newseq.append(0)
+                    new_string_list.append('0')
         
-            return newseq
+            # convert the list into a string
+            newstring = "".join(new_string_list)
+            return newstring
+        
+        # define the input_dictionary (note again that the variable names here do not matter)
+        input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
 
-        # now assuming ProtOb is a Protein object
-
-        ProtOb.build_track_values('charge_vector', trackbuilder, v1=['K','R'], v2=['E',D'])
+        # now assuming ProtOb is a Protein object, this will add a new track
+        ProtOb.build_track_values('charge_string', trackbuilder, function_dictionary=input_dictionary)
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
-        In this example we defined a function that converts an amino acid string into a numerical list where
-        positively charged residues = +1 and negatively charged residues = -1. We applied this function to generate
-        a 'charge_vector' track.
+        In this example we defined a function that converts an amino acid string into a coarse-grained string 
+        representation where positive residues are "+", negative are "-" and neutral are "0".
 
         Note this is analagous to defining our function and then running:
-
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -809,10 +874,9 @@ class Protein:
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
         Some FAQs:
 
-        Do I need to pass arguments to custom function?
+        Do I need to pass an input_dictionary to the custom function?
             No!
 
         Does the name of the custom function matter?
@@ -826,17 +890,17 @@ class Protein:
         # if this will overwrite an exsiting track and safe is on...
         if name in self.tracks:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' (name, self.name))
+                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
-        if len(kwargs) == 0:
+        if len(input_dictionary) == 0:
             built_track = trackfunction(self.sequence)
         else:
-            built_track = trackfunction(self.sequence, kwargs)
+            built_track = trackfunction(self.sequence, input_dictionary)
             
         # finally add the track
-        self._tracks[name] = Track(name, self, built_track, None)
+        self._tracks[name] = Track(name, self, values=None, symbols=built_track)
 
 
     ## ------------------------------------------------------------------------
@@ -905,7 +969,7 @@ class Protein:
         
         Note domains can also be requested based on position (get_domain_by_position).
 
-        Paramaters
+        Parameters
         ----------------
         name : string
              The Domain name. A list of valid names can be found by calling the
@@ -1055,8 +1119,6 @@ class Protein:
 
 
         """
-        
-
 
         # append start and end position to name. 
         full_name = "%s_%i_%i"%(domain_type, start, end)    
@@ -1081,7 +1143,7 @@ class Protein:
                 full_name = newname
 
             elif safe:
-                raise exceptions.ProteinException('Domain [%s] already found in proteins %s' (full_name, self.name))
+                raise exceptions.ProteinException('Domain [%s] already found in proteins %s' % (full_name, self.name))
             
         self._domains[full_name] = Domain(start, end, self, domain_type, attribute_dictionary=attribute_dictionary)
 

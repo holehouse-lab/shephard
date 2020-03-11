@@ -44,7 +44,7 @@ class Site:
     def residue(self):
         # note we have to add a +1 offset because sequence is still 
         # 
-        return self._protein.sequence[self._position + 1]
+        return self._protein.sequence[self._position - 1]
 
     @property
     def position(self):
@@ -69,6 +69,46 @@ class Site:
     @property
     def attributes(self):
         return self._attributes
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def attribute(self, name, safe=True):
+
+        """
+        Function that returns a specific attribute as defined by the name. 
+
+        Recall that attributes are name : value pairs, where the 'value' can be 
+        anything and is user defined. This function will return the value associated 
+        with a given name.
+
+        Paramaters
+        ----------------
+        name : string
+             The attribute name. A list of valid names can be found by calling the
+             <Site>.attributes (which returns a list of the valid names)
+
+        Returns
+        ---------
+        Unknown 
+            Will either return whatever was associated with that attribute (which could be anything),
+            or if the attribute is missing will raise an exception if safe=True (default) or return
+            None if safe=False.
+        
+        """
+
+        # if name is in the _atributes dictionary the  return
+        if name in self._attributes:
+            return self._attributes[name]
+        else:
+
+            # else if safe was passed raise an exception if that attribute was missing
+            if safe:
+                raise ProteinException('Requesting attribute [%s] from site [%s] but this attribute has not been assigned' % (name, str(self))) 
+
+            # if safe not passed just return None
+            else:
+                return None
 
     def get_local_sequence_context(self, offset = 5):
         self._protein.get_local_sequence_context(self.position, offset)

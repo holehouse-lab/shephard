@@ -6,7 +6,6 @@ import pytest
 import sys
 
 TS1_FILE=['testset_1.fasta', 'TS1_domains_idr.tsv', 'TS1_domains_pscore.tsv', 'TS1_sites.tsv', 'TS1_tracks_pscore.tsv']
-#NTL9_FILES=['ntl9.pdb','ntl9.xtc']
 test_data_dir = shephard.get_data('test_data')
 
 

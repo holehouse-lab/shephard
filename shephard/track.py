@@ -77,7 +77,7 @@ class Track:
 
             # if we passed a string convert to a list
             elif(symbols, str):
-                values = TrackData(symbols)
+                symbols = list(symbols)
             
             else:
                 raise TrackExceptio('Unable to convert passed symbols track to a list of symbols [Track=%s, Protein=%s' %( name, str(protein)))
