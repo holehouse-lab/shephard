@@ -1,6 +1,14 @@
 from . import exceptions
 from shephard.exceptions import ShephardException
 
+
+## ------------------------------------------------------------------------
+##
+def valid_keyword(keywordname, kw, kwlist):
+    if kw not in kwlist:
+        raise ShephardException("Provided keyword '%s' for argument %s but expected one of %s" % (kw, keywordname, str(kwlist)))
+
+
 ## ------------------------------------------------------------------------
 ##
 def cast_or_none(value, cast_type):

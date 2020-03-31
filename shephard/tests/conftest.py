@@ -1,7 +1,7 @@
 import shephard
-from shephard.interfaces import si_uniprot, si_sites, si_domains, si_tracks
+from shephard.interfaces import si_sites, si_domains, si_tracks
+from shephard.apis import uniprot  
 
-from shephard import quickstart
 import pytest
 import sys
 
@@ -10,7 +10,7 @@ test_data_dir = shephard.get_data('test_data')
 
 
 def build_proteome(fn):
-    return quickstart.quickstart('%s/%s' % (test_data_dir,fn),  extract_unique_ID=si_uniprot.extract_unique_ID_uniprot)
+    return uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,fn))
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -22,7 +22,7 @@ def TS1(request):
 @pytest.fixture(scope='session', autouse=True)
 def TS1_domains(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
     
     return TS1_proteome
 
@@ -30,17 +30,17 @@ def TS1_domains(request):
 @pytest.fixture(scope='session', autouse=True)
 def TS1_domains2(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
     
     return TS1_proteome
 
 @pytest.fixture(scope='session', autouse=True)
 def TS1_domains2_sites(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
-    si_sites.read_in_sites(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
+    si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
     
     return TS1_proteome
 
@@ -48,10 +48,10 @@ def TS1_domains2_sites(request):
 @pytest.fixture(scope='session', autouse=True)
 def TS1_domains2_sites_tracks(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
-    si_domains.read_in_domains(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
-    si_sites.read_in_sites(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
-    si_tracks.read_in_tracks(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
+    si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
+    si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
+    si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'value')
     
     return TS1_proteome
 

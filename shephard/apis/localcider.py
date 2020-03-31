@@ -1,6 +1,6 @@
 from localcider.sequenceParameters import SequenceParameters
 from shephard.exceptions import InterfaceException
-from . import interface_tools 
+from shephard.interfaces import interface_tools 
 from localcider import SequenceException
 from shephard import general_utilities
 

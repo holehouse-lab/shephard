@@ -25,45 +25,46 @@ STANDARD_AAs = 'ACDEFGHIKLMNPQRSTVWY'
 # Class that defines a Entry
 #
 class Protein:
+    """
+    Protein objects are the parent object to all sequence-based information. Protein objects 
+    are explicitly associated with several different types of objects:
+
+    * **tracks** - Vectorial information that maps to each residue and contains some set of information. A protein can have multiple tracks, but there must be a one-to-one mapping for sequence to track.
+
+    * **domains** - Information on a single contigous region in the protein. A protein can have multiple domains.
+    
+    * **sites** - Information associated with a single amino acid site. A protein can have multiple sites
+   
+    * **attributes** - Protein-specific information associated 
+                     
+    Parameters
+    ------------
+
+    seq : str
+        Amino acid sequence for the protein. No validation is performed. 
+
+    name : str
+        Some sort of name-based identifier for the protein. Can be anything - is not used 
+        internally so no restraints, but could be used by other bits of analysis. 
+
+    unique_ID : str 
+        The unique_ID should be a short unique identifier. When added to a proteome the 
+        proteome object ensures the unique_ID is unique with respect to that proteome. 
+
+        We HIGHLY recommend using the uniprot accession number, as this meets the 
+        requirement of a unique ID as well as allowing effective cross-refering from 
+        other databases.
+
+    attribute_dictionary : dict (optional)
+        The attribute_dictionary provides a key-value pairing for arbitrary information.
+        This could include gene names, different types of identifies, protein copy number,
+        a set of protein partners, or anything else one might wish to assocaited with the
+        protein as a whole.
+
+    """
     
     def __init__(self, seq, name, proteome, unique_ID = None, attribute_dictionary = None):
         """
-
-        Protein objects are the parent object to all sequence-based information. Protein objects 
-        are explicitly associated with several different objects:
-
-        * tracks  -> Vectorial information that maps to each residue and contains some set of
-                     information. A protein can have multiple tracks, but there must be a  
-                     one-to-one mapping for sequence to track.
-
-        * domains -> Information on a single contigous region in the protein. A protein can
-                     have multiple domains.
-
-        * site    -> Information associated with a single amino acid site. A protein can have 
-                     multiple sites
-
-        Parameters
-        ------------
-
-        seq : string
-            Amino acid sequence for the protein. No validation is performed. 
-
-        name : string
-            Some sort of name-based identifier for the protein. Can be anything - is not used 
-            internally so no restraints, but could be used by other programs. 
-
-        unique_ID : string [optional]
-            The unique_ID is the only explicitly defined protein attribute encoded into Protein
-            objects because. This should be a protein-specific unique identifier. We HIGHLY
-            recommend using the uniprot accession number, as this meets the requirement of a
-            unique ID as well as allowing effective cross-refering from other databases.
-
-        attribute_dictionary : dict [optional]
-            The attribute_dictionary provides a key-value pairing for arbitrary information.
-            This could include gene names, different types of identifies, protein copy number,
-            a set of protein partners, or anything else one might wish to assocaited with the
-            protein as a whole.
-
         """
         
         # define internal attributes that are then accessed via @properties 
@@ -102,8 +103,14 @@ class Protein:
     @property
     def name(self):
         """
-        Returns the protein name
+        Returns the protein name.
+
+        Returns
+        ---------------
+        str
+            Returns a string that corresponds to the region of interest
         """
+
         return self._name
 
 
@@ -112,7 +119,13 @@ class Protein:
     @property
     def proteome(self):
         """
-        Returns the proteome this protein is associated with
+        Returns the ``Proteome`` object this protein is associated with.
+
+        Returns
+        --------
+        Proteome 
+            Returns a Proteome object that contains this Protein.
+
         """
         return self._proteome
 
@@ -128,7 +141,7 @@ class Protein:
     @property
     def sequence(self):
         """
-        Returns the protein amino acid sequence as a string. Recall in strings
+        Returns the protein amino acid sequence as a string. Recall that in strings
         indexing occurs from 0 and is non-inclusive. For proteins/biology indexing
         is from 1 and is inclusive 
 
@@ -140,6 +153,12 @@ class Protein:
         for tracks that allow you to use normal indexing to select ranges or regions
         around a specific point. We suggest this is a safer way to extract vectorial
         information.
+
+        Returns
+        --------
+        str 
+            Amino acid sequence associated with the protein.
+
         """
         return self._sequence
 
@@ -160,7 +179,7 @@ class Protein:
 
         Returns
         ---------------
-        string
+        str
             Returns a string that corresponds to the region of interest
 
         """
@@ -177,7 +196,7 @@ class Protein:
         """
         Function that allows a local region of the sequence centered on a specific position
         to be extracted, includng +/- an offset border that intelligently truncates if the 
-        offset would etend outside the sequence region.
+        offset would extend outside the sequence region.
 
         Parameters
         ---------------
@@ -185,12 +204,12 @@ class Protein:
             Position for which we'll interogate the local sequence
 
         offset : int
-            Plus/Minus offset used to invesigate the region around the position
-
+            [**Default = 5**] Plus/Minus offset used to invesigate the region around the position. Note that
+            an offset is symmetrical around the position. 
 
         Returns
         ---------------
-        string
+        str
             Returns a string that corresponds to the region of interest
 
         """
@@ -213,16 +232,32 @@ class Protein:
     @property
     def unique_ID(self):
         """
-        Returns the protein unique_ID if provided/set
+        Returns the protein's unique_ID
+
+        Returns
+        ---------------
+        str
+            Returns the protein's unique_ID
+
         """
         return self._unique_ID
-
-
 
 
     ## ------------------------------------------------------------------------
     ##
     def check_sequence_is_valid(self):
+        """
+        Function that checks if a sequence is valid (i.e. consists of only the
+        standard 20 amino acids).
+
+        Returns
+        ---------------
+        bool
+            Returns True if all residues are in the standard 20 amino acids, and
+            False if not
+        
+        """
+
         for i in self._sequence:
             if i not in STANDARD_AAs:
                 return False
@@ -231,20 +266,47 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def convert_to_valid(self, copy=False):
+    def convert_to_valid(self, copy=False, safe=True):
         """
-        Converts non-standard amino acid residues to standard ones. 
+        Function that converts non-standard amino acid residues to standard ones.
 
-        B -> N
-        U -> C
-        X -> G
-        Z -> Q
-        * -> <empty string>
-        - -> <empty string>
+        Specifically:
+
+        ``B -> N``
+
+        ``U -> C``
+
+        ``X -> G``
+
+        ``Z -> Q``
+
+        ``* -> <empty string>``
+
+        ``- -> <empty string>``
 
         By default this alters the underlying sequence. If you wish to return a copy
         of the altered sequence instead set copy=True. Otherwise the underlying sequence
-        is altered 
+        is changed. Note that removing the ``*`` and ``-`` characters will change the 
+        sequence length which could cause major issues as none of the internal position-
+        specific references will automatically update. Note that if safe=True such changes
+        will trigger an exception.
+
+        Parameters
+        ---------------
+        copy : bool (default = False)
+            Boolean flag - if set to true a copy of the updated sequence is returned, 
+            if False then the function returns None. In both cases the associated 
+            protein's sequence is  altered.
+        
+        safe : bool (default = True)
+            Boolean flag that defines how to respond if an update changes the sequence
+            length. If set to true, a change that alters the sequence length will
+            trigger an exception, if False it will continue unannounced.
+
+        Returns
+        ---------------
+        Unknown
+            Depends on if copy is set to True or not. If copy=True 
         
         """
 
@@ -255,6 +317,8 @@ class Protein:
         else:
             # create a view, which means the protein sequence is altered
             s = self._sequence
+
+        old_len=len(s)
         
         # systematically replace common  'non-canonical' one-letter codes
         # with acceptable codes. Code explanations from
@@ -265,6 +329,10 @@ class Protein:
         s = s.replace('Z','Q') # Z = Q/D
         s = s.replace('*','')  # * = stop
         s = s.replace('-','')  # - = gap
+
+        if safe is True:
+            if len(s) != old_len:
+                raise ProteinException('When altering the sequence to remove invalid characters the sequence length changed. This will invalidate positional attributes, such as sites and domains, as these are not automatically updated!')
 
         if copy is True:
             return s
@@ -289,8 +357,6 @@ class Protein:
                 raise ProteinException('Position %i falls outside of sequence'%(position))
 
 
-
-
     
     ###################################
     ##                               ##
@@ -306,6 +372,12 @@ class Protein:
         """
         Provides a list of the keys associated with every attribute associated
         with this protein.
+
+        Returns
+        -------
+        list
+            returns a list of the attribute keys associated with the protein. 
+
 
         """
         return list(self._attributes.keys())
@@ -325,9 +397,9 @@ class Protein:
 
         Parameters
         ----------------
-        name : string
+        name : str
              The attribute name. A list of valid names can be found by calling the
-             <Protein>.attributes (which returns a list of the valid names)
+             ``<Protein>.attributes()`` (which returns a list of the valid names)
 
         safe : bool (default = True)
             Flag which if true with throw an exception if an attribute with the same
@@ -367,19 +439,20 @@ class Protein:
         Parameters
         ----------------
 
-        name : string
+        name : str
             The parameter name that will be used to identfy it
 
         val : <anything>
             An object or primitive we wish to associate with this attribute
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if an attribute with the same
-            name  already exists
+            Flag which if True with throw an exception if an attribute with the same
+            name already exists, otherwise the newly introduced attribute will overwrite
+            the previous one.
 
         Returns
         ---------
-            Nothing, but adds an attribute to the calling object
+            None - but adds an attribute to the calling object
 
         """
 
@@ -403,7 +476,14 @@ class Protein:
     @property
     def tracks(self):
         """
-        Returns a list of the track names associated with this protein.
+        Provides a list of the keys associated with each track associated
+        with this protein.
+
+        Returns
+        -------
+        list
+            returns a list of the track keys associated with the protein. 
+
 
         """
         return list(self._tracks.keys())
@@ -417,17 +497,18 @@ class Protein:
         Function that returns a specific track as defined by the name. 
 
         Recall that tracks are defined by a name. If a track by this name exists
-        this function returns the actual track object, NOT the values or symbols
-        associated with the track.
+        this function returns the actual ``Track`` object, NOT the **values** or **symbols**
+        associated with the track. If a track by this name does *not* exist then if safe=`True`
+        an exception will be raised, otherwise the function returns None.
         
-        For direct access to values and symbols, use the get_track_values() and 
-        get_track_symbols()
+        For direct access to values and symbols, use the ``<Protein>.get_track_values(<track_name>)`` and 
+        ``<Protein>.get_track_symbols(<track_name>)``.
 
         Parameters
         ----------------
-        name : string
+        name : str
              The track name. A list of valid names can be found by calling the
-             <Protein>.tracks (which returns a list of the valid track names)
+             ``<Protein>.tracks()`` (which returns a list of the valid track names)
 
         Returns
         ---------
@@ -903,6 +984,7 @@ class Protein:
         self._tracks[name] = Track(name, self, values=None, symbols=built_track)
 
 
+
     ## ------------------------------------------------------------------------
     ##
     def build_track(self, name, input_data, track_definition_function, safe=True):
@@ -1231,11 +1313,6 @@ class Protein:
             
         
 
-        
-
-
-
-        
     ###############################
     ##                           ##
     ##     SITE FUNCTIONS        ##
@@ -1262,17 +1339,6 @@ class Protein:
         """
 
         return self._sites[int(position)]
-
-
-    ## ------------------------------------------------------------------------
-    ##
-    def site_residue(self, position):
-        """
-        Function that returns the list of sites that are found at a given position.        
-
-        """
-
-        return self._sequence[int(position)]
 
 
     ## ------------------------------------------------------------------------
@@ -1325,6 +1391,17 @@ class Protein:
 
         # add the site!
         self._sites[position].append(Site(position, site_type, self, symbol, value, attributes))
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def site_residue(self, position):
+        """
+        Function that returns the list of sites that are found at a given position.        
+
+        """
+
+        return self._sequence[int(position)]
 
 
     ## ------------------------------------------------------------------------

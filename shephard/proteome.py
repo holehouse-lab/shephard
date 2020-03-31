@@ -13,34 +13,46 @@ from .protein import Protein
     
 
 class Proteome:
+    """
+    The Proteome object is the main unit for information storage in **SHEPHARD**.
+
+    The Proteome constructor takes a single argument, which is a list of protein dictionaries. This means
+    Proteome objects can be generated directly (see below for a definition of protein dictionaries). However,
+    it is often more convenient to build proteomes from FASTA files. For more information on this see the ``api``
+    documentation.
+    
+    Protein dictionaries are dictionaries that must contain four elements (others are ignored).
+    
+    ``sequence`` : *str* - Amino acid sequence of the protein
+        
+    ``name`` : *str* - Name of the protein (this can be anything, it is not used internally so no constraints on what this is 
+                                      
+    ``unique_ID`` :  *str* - This must be unique with respect to all other unique_IDs in the set of proteins in the input list. 
+                                      
+    ``attribute_dict`` : *dict* - Dictionary of one or more attributes to apply to this protein. Key/value pairs in this dictionary can be arbitrary and are user defined.
+
+    As an example
+
+    >>> protein_dictionary_example = {'sequence':'ALAPSLLPAMPALSPALSP', 'name': 'my protein fragment', 'unique_ID':'UXX01', 'attribute_dict':{}}
+    >>> dictionary_list = []
+    >>> dictionary_list.append(protein_dictionary_example)
+    >>> P = Proteome(dictionary_list)
+                                          
+    Note that ``sequence``, ``name`` and ``unique_ID`` are cast to *str* by the function, so if numerical values are passed for any these will be converted to strings.
+    
+    **Notes**
+
+    * NOTE that ALL FOUR of these are required for EACH protein, even if the attribute_dict is empty.
+    * The unique_ID is checked for uniqueness against all others in the proteome and will throw and exception if it is, in fact, not unique.
+    * Additional proteins can be added using the `.add_protein()` or `.add_proteins() function.
+
+    """
 
     ## ------------------------------------------------------------------------
     ##
     def __init__(self, input_list):
+        # See the Proteome class documentation for constructor info
         """
-        Constructor for generating a proteome object. The constructor takes a single argument, which is a list
-        of protein dictionaries.
-
-        Protein dictionaries are dictionaries that must contain four elements (others are ignored).
-
-        sequence  :  string           Amino acid sequence of the protein
-
-        name      :  string           Name of the protein (this can be anything, it is not used internally so 
-                                      no constraints on what this is 
-
-        unique_ID :  string           This must be unique with respect to all other unique_IDs in the set of 
-                                      proteins in the input list. 
-
-        attribute_dict : dictionary   dictionary of one or more attributes to apply to this protein. Key/value 
-                                      pairs in this dictionary can be arbitrary and are user defined.
-
-        Note that sequence, name and unique_ID are cast to string by the function, so if numerical values are 
-        passed for any these will be converted.
-
-        Hint: 
-            The shephard.quickstart function provides a way to pass a Fasta file and build a proteome
-            directly, without having to parse your own FASTA file.
-
         """
 
         # initiallize book-keeping instruments
@@ -77,18 +89,18 @@ class Proteome:
     @property
     def proteins(self):
         """
-        Returns a list of protein unique IDs that correspond to the proteins in this proteome.
-        NOTE this returns a list of the IDs, not the actual protein objects. To get the
-        corresponding protein object one must use the .protein(<unique_ID>) function
+        Returns a list of unique_IDs that correspond to the proteins in this Proteome.
+        NOTE this returns a list of the IDs, not the actual Protein objects. To get the
+        corresponding protein object one must use the ``.protein(<unique_ID>)`` notation.
 
         Returns
         --------
 
-        list of strings
+        ``list`` of ``str``
             Returns a list of unique_IDs
 
-
         """
+
         return list(self._records.keys())
 
 
@@ -97,24 +109,24 @@ class Proteome:
     ##
     def protein(self, unique_ID, safe=True):
         """
-        Returns the Protein object associated with the passed unique_ID. If there is no
-        Protein associated with the provided unique_ID then if safe=True (default) an 
-        exception is raised, else None is returned.
+        Returns the ``Protein`` object associated with the passed unique_ID. If there is no
+        Protein associated with the provided unique_ID then if ``safe=True`` (default) an 
+        exception is raised, while if ``safe=False`` then ``None`` is returned.
 
         Parameters
         -----------
         unique_id : string
             String corresponding to a unique_ID associated with some protein
 
-        safe : boolean (default = True)
-            If set to True then a missing unique_ID will raise an exception. If false
+        safe : bool 
+            [**Default = ``True``]** If set to True then a missing unique_ID will raise an exception. If ``False``
             then a missing unique_ID will simply return None
 
         Returns
         --------
         
-        Protein object or None
-            Depending on if the passed unique_ID is found in the proteome, a Protein 
+        Protein Object or None
+            Depending on if the passed unique_ID is found in the ``Proteome``, a ``Protein`` 
             object or None will be returned
 
         """
@@ -127,6 +139,56 @@ class Proteome:
             else:
                 return None
 
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def add_protein(self, sequence, name, unique_ID, attribute_dictionary, safe=True):
+        """
+        Function that allows the user to add a new protein to a proteome in an 
+        ad-hoc fashion. In general most of the time it will make sense to add
+        proteins all at once from some input source, but the ability to add
+        proteins one at a time is also useful
+        
+        Parameters
+        -----------
+        sequence : string
+            Amino acid sequence of the protein. Note  - no sanity check of the
+            sequence is performed.
+
+        name : string
+            String reflecting the protein name. Again this can be anything
+        
+        unique_id : string
+            String corresponding to a unique_ID associated with some protein
+
+        attribute_dictionary : dict
+            The attribute_dictionary provides a key-value pairing for arbitrary information.
+            This could include gene names, different types of identifies, protein copy number,
+            a set of protein partners, or anything else one might wish to assocaited with the
+            protein as a whole.
+
+        safe : boolean (default = True)
+            If set to True then a duplicate unique_ID will raise an exception. If false
+            then a duplicate unique_ID will simply return None
+
+        Returns
+        --------
+        
+        Protein object or None
+            Depending on if the passed unique_ID is found in the proteome, a Protein 
+            object or None will be returned
+
+        """
+
+        if unique_ID in self._records:
+            if safe:
+                raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+            else:
+                return
+
+        self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attribute_dictionary)
+        
 
 
     ## ------------------------------------------------------------------------
@@ -243,6 +305,38 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##                
+    def check_unique_ID(self, unique_id):
+        """
+        Function that checks if a given unique ID is found. Note that this function is not needed
+        for testing if a unique_ID is present if the goal is to request Protein Objects (or not).
+        Instead, one can use the .protein(<unique_ID>, safe=False). By setting safe=False if the
+        unique_ID is not found then this function will simply return None.
+
+        Parameters
+        -----------
+        unique_id : string
+            String corresponding to a unique_ID associated with some protein
+
+        Returns
+        ----------
+        bool
+            Returns True if the passed ID is present, or False if not.
+
+        """
+        if unique_id in self._records.keys():
+            return True
+        else:
+            return False
+
+
+    ####################################
+    ##                                ##
+    ##       INTERNAL FUNCTIONS       ##
+    ##                                ##
+    ####################################
+
+    ## ------------------------------------------------------------------------
+    ##                
     def __len__(self):
         """
         The length of the proteome is defined as the number of proteins in it
@@ -290,12 +384,23 @@ class Proteome:
         for protein in ProteomeObject:
             print(protein.sequence)
 
-        Would be valid and would iterate through the proteins in the proteome
+        Would be valid and would iterate through the proteins in the proteome. 
+        This is quite handy.
+
         """
 
 
         for i in self._records:
             yield self._records[i]
+
+    ## ------------------------------------------------------------------------
+    ##                
+    def __contains__(self, m):
+        if m in self._records.keys():
+            return True
+        else:
+            return False
+        
 
 
 
@@ -410,30 +515,6 @@ class Proteome:
 
         return ds
                                         
-
-    def check_unique_ID(self, unique_id):
-        """
-        Function that checks if a given unique ID is found. Note that this function is not needed
-        for testing if a unique_ID is present if the goal is to request Protein Objects (or not).
-        Instead, one can use the .protein(<unique_ID>, safe=False). By setting safe=False if the
-        unique_ID is not found then this function will simply return None.
-
-        Parameters
-        -----------
-        unique_id : string
-            String corresponding to a unique_ID associated with some protein
-
-        Returns
-        ----------
-        bool
-
-            Returns True if the passed ID is present, or False if not.
-
-        """
-        if unique_id in self._records.keys():
-            return True
-        else:
-            return False
 
 
     

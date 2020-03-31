@@ -10,8 +10,12 @@ Welcome to shephard's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   getting_started
-   api
+   overview
+   proteome
+   protein
+   domain
+   site
+   track
 
 
 
