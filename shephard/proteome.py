@@ -50,7 +50,7 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def __init__(self, input_list):
+    def __init__(self, input_list, attribute_dictionary = None):
         # See the Proteome class documentation for constructor info
         """
         """
@@ -59,6 +59,17 @@ class Proteome:
         self._records = {}
         self._unique_domain_types = []
         self._unique_site_types = []
+        
+        # set attribute dictionary IF a dictionary was passed
+        if isinstance(attribute_dictionary, dict):
+            self._attributes = attribute_dictionary
+
+        # set dictionary to an empty dictionary if none was passed
+        elif attribute_dictionary is None:
+            self._attributes = {}
+
+        else:
+            raise exceptions.ProteinException('[FATAL]: If provided, protein attribute must a dictionary')
 
         # for each entry in the input list
         for entry in input_list:
@@ -190,6 +201,110 @@ class Proteome:
         self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attribute_dictionary)
         
 
+     
+    ###################################
+    ##                               ##
+    ##     ATTRIBUTE FUNCTIONS       ##
+    ##                               ##
+    ###################################
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def attributes(self):
+        """
+        Provides a list of the keys associated with every attribute associated
+        with this protein.
+
+        Returns
+        -------
+        list
+            returns a list of the attribute keys associated with the protein. 
+
+
+        """
+        return list(self._attributes.keys())
+    
+    
+    ## ------------------------------------------------------------------------
+    ##
+    def attribute(self, name, safe=True):
+
+        """
+        Function that returns a specific attribute as defined by the name. 
+
+        Recall that attributes are name : value pairs, where the 'value' can be 
+        anything and is user defined. This function will return the value associated 
+        with a given name.
+
+        Parameters
+        ----------------
+        name : str
+             The attribute name. A list of valid names can be found by calling the
+             ``<Proteome>.attributes()`` (which returns a list of the valid names)
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+            
+        Returns
+        ---------
+        Unknown 
+            Will either return whatever was associated with that attribute (which could be anything)
+            or None if that attribute is missing.
+        
+        """
+
+        # if name is in the _atributes dictionary the  return
+        if name in self._attributes:
+            return self._attributes[name]
+        else:
+
+            # else if safe was passed raise an exception if that attribute was missing
+            if safe:
+                raise ProteomeException('Requesting attribute [%s] from proteome [%s] but this attribute has not been assigned' % (name, str(self))) 
+
+            # if safe not passed just return None
+            else:
+                return None
+                
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def add_attribute(self, name, val, safe=True):
+        """
+        Function that adds an attribute. Note that if safe is true, this function will
+        raise an exception if the attribute is already present. If safe=False, then
+        an exisiting value will be overwritten.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identfy it
+
+        val : <anything>
+            An object or primitive we wish to associate with this attribute
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an attribute with the same
+            name already exists, otherwise the newly introduced attribute will overwrite
+            the previous one.
+
+        Returns
+        ---------
+            None - but adds an attribute to the calling object
+
+        """
+
+        if safe:
+            if name in self._attributes:
+                raise ProteomeException("Trying to add attribute [%s=%s] to Proteome [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                
+        self._attributes[name] = val        
+        
 
     ## ------------------------------------------------------------------------
     ##
