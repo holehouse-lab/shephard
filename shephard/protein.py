@@ -14,7 +14,6 @@ from . import sequence_utilities
 from .domain import Domain 
 from .site import Site
 from .track import Track
-from . import exceptions
 from .exceptions import ProteinException
 from .import general_utilities
 
@@ -1223,7 +1222,6 @@ class Protein:
                     if newname not in self.domains:
                         found = True                    
                 full_name = newname
-
             elif safe:
                 raise exceptions.ProteinException('Domain [%s] already found in proteins %s' % (full_name, self.name))
             
@@ -1545,7 +1543,6 @@ class Protein:
 
         """
 
-
         # function that allows site_types to be either a string or a list
         # of strings so one or more sity_types can be passe
         site_types = general_utilities.string_to_list_of_strings(site_types)
@@ -1575,12 +1572,10 @@ class Protein:
 
         
 
-
-
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "|Protein: %s - L=%i, #t=%i, #d=%i, #s=%i|" %(self.unique_ID, self._len, len(self.tracks), len(self.domains), len(self.sites))
+        return "| Protein: %s - L=%i, #t=%i, #d=%i, #s=%i, #a=%i |" %(self.unique_ID, self._len, len(self.tracks), len(self.domains), len(self.sites), len(self.attributes))
         
 
 

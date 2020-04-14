@@ -11,6 +11,7 @@ Welcome to shephard's documentation!
    :caption: Contents:
 
    overview
+   examples
    proteome
    protein
    domain
