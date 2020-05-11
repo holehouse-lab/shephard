@@ -3,6 +3,24 @@ import random
 from . import site_tools
 from shephard import general_utilities
 
+
+
+
+# ------------------------------------------------------------------
+def domain_overlap(boundary_start1, boundary_end1, boundary_start2, boundary_end2):
+    """
+    Given a position, does the position fall inside the defined region, inclusive
+    for both start and end positions
+    """
+    if boundary_start2 >= boundary_start1 and boundary_start2 <= boundary_end1:
+        return True
+    elif boundary_end2 >= boundary_start1 and boundary_end2 <= boundary_end1:
+        return True 
+    else:
+        return False
+    
+
+
 def build_missing_domains(protein, new_domain_type = 'missing'):
     """
     Function which takes a protein an builds a set of domains that represent 
