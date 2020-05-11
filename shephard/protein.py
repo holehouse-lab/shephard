@@ -1358,13 +1358,13 @@ class Protein:
 
         position : int
             Position of site (recal we index from 1 - i.e. the first residue in 
-            a protein = 1, not 0.
+            a protein = 1, not 0. Note that this value is cast to int.
 
-        domain_type : string 
+        site_type : string 
             Non-unique string that allows a type identifier to be associated 
             with a site.
 
-        symbol :  string
+        symbol : string
             Symbol associated with a site. Symbols are string-based - will often
             be a single character but could be multiple characters. Default = None.
 

@@ -10,8 +10,10 @@ Functions associated with interfacing with the localcider package
 """
 
 
-
 def apply_track_NCPR(proteome, blobsize=5):    
+    """
+    
+    """
 
     interface_tools.check_proteome(proteome, 'apply_track_NCPR (si_localcider)')
 
@@ -20,7 +22,7 @@ def apply_track_NCPR(proteome, blobsize=5):
         seq = protein.sequence
 
         # skip short sequences
-        if len(seq) < 3*blobsize:
+        if len(seq) < blobsize:
             continue
 
         ncpr=[]

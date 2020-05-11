@@ -87,34 +87,76 @@ def add_sites_from_dictionary(proteome, sites_dictionary):
 
     In this way, each site that maps to a give unique_ID will be added. 
 
-    <to complete>
+    Parameters
+    -------------
+    proteome : Proteome
+        Proteome object to which we're adding sites. Note that ONLY sites for which a protein
+        is found will be used. Protein-Site cross-referencing is done using the protein's unique_ID
+        which should be the key used in the sites_dictionary
+
+    sites_dictionary : dict
+        A sites dictionary is a defined dictionary that maps a unique_ID back to a list with five
+        elements. Each of those elements is position-specific information for the site, specifically:
+
+            [0] = site position
+            [1] = site type
+            [2] = site symbol 
+            [3] = site value 
+            [4] = site attribute dictionary
+
+        Recall the only type-sepecific values (position and value) are cast automatically when a 
+        site is added by the Protein object, so no need to do that in this function too.
+
+        Exta elements in the each sites_dictionary value are ignored.
+
+    Returns
+    ---------
+    None
+        No return value, but adds all of the passed sites to the protein
     
     """
-
+    
     for protein in proteome:
         if protein.unique_ID in sites_dictionary:
             for site in sites_dictionary[protein.unique_ID]:
 
-                position = site[0]
-                site_type = site[1]
-                symbol = site[2]
-                value = site[3]
-                ad    = site[4]
+                try:
+                    position = site[0]
+                    site_type = site[1]
+                    symbol = site[2]
+                    value = site[3]
+                    ad    = site[4]
+                except:
+                    raise InterfaceException('When sites dictionary for key [%s] was unable to extract five distinct parametes. Entry is:\n%s\n'% (protein.unique_ID, site))
 
-                # note - the only way this can fail is if something really bad goes wrong
-                # so we don't do any error handling here (unlike when adding domains and tracks)
                 protein.add_site(position, site_type, symbol, value, attributes = ad)                
 
 
 
 def add_sites_from_file(proteome, filename, delimiter='\t', skip_bad=True):
     """
-    Function that provides the user-facing interface for reading correctly configured shephard sites 
-    files and adding those sites to the proteins of interest.
+    Function that provides the user-facing interface for reading correctly configured SHEPHARD 
+    sites files and adding those sites to the proteins of interest.
+    
+    A SHEPHARD sites file is a tab (or other) deliniated file where each line has the following
+    convention:
 
-    A shephard sites file is a tab (or other) deliniated file where the 
+    Unique_ID, position, site type, symbol, value, [ key_1:value_1, key_2:value_2, ..., key_n:value_n ]
+    
+    Each line has six required values and then can have as many key:value pairs as may be
+    desired.
 
-    Unique_ID, position, site type, symbol, value, key1:value1, key2:value2, ..., keyn:valuen
+    Those required values are
+
+    unique_ID : the
+    [0] = site position
+    [1] = site type
+    [2] = site symbol 
+    [3] = site value 
+    [4] = site attribute dictionary
+
+
+    TBC
     
 
     """
