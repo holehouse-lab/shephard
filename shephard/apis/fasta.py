@@ -15,7 +15,7 @@ from shephard.proteome import Proteome
 
 ## ------------------------------------------------------------------------
 ##
-def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='fail'):
+def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='fail', header_parser=None):
     """
     Stand alone function that allows the user to build a proteome from a standard
     FASTA file. 
@@ -69,6 +69,15 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
 
             * ``convert-ignore`` - invalid sequences are converted to valid sequences and any remaining invalid residues are ignored
     
+    header_parser : function
+        [**Default = None**] ``header_parser`` allows a user-defined function that will be fed the FASTA header and 
+        whatever it returns will be used as the actual header as the files are parsed. This can be useful if you 
+        know your FASTA header has a consistent format that you want to take advantage of. A function provided here MUST        
+        **(1)** Take a single input argument (the header string) and **(2)** Return a single string.
+        When parsing this function the following test is applied
+            >>> return_string = header_parser('this test string should work')
+        Where ``return_string`` is tested to be a string. The function will show an exception if this test fails.
+    
     Returns 
     --------
     Proteome
@@ -77,7 +86,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
     """
 
     # read in the fasta file
-    fasta_dictionary = protfasta.read_fasta(filename, invalid_sequence_action=invalid_sequence_action)
+    fasta_dictionary = protfasta.read_fasta(filename, invalid_sequence_action=invalid_sequence_action, header_parser=header_parser)
 
     # extract the keys (FASTA headers) and initialize the record_index (internal
     # numbering used for construction. Also initialize the proteom_dict, which is
