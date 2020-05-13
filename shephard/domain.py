@@ -59,6 +59,102 @@ class Domain:
         # update unique domain types
         protein.proteome.__update_domain_types(self._domain_type)
 
+        
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def attributes(self):
+        """
+        Provides a list of the keys associated with every attribute associated
+        with this domain.
+
+        Returns
+        -------
+        list
+            returns a list of the attribute keys associated with the domain. 
+
+
+        """
+        return list(self._attributes.keys())
+    
+    
+    ## ------------------------------------------------------------------------
+    ##
+    def attribute(self, name, safe=True):
+
+        """
+        Function that returns a specific attribute as defined by the name. 
+
+        Recall that attributes are name : value pairs, where the 'value' can be 
+        anything and is user defined. This function will return the value associated 
+        with a given name.
+
+        Parameters
+        ----------------
+        name : str
+             The attribute name. A list of valid names can be found by calling the
+             ``<domain>.attributes()`` (which returns a list of the valid names)
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+            
+        Returns
+        ---------
+        Unknown 
+            Will either return whatever was associated with that attribute (which could be anything)
+            or None if that attribute is missing.
+        
+        """
+
+        # if name is in the _atributes dictionary the  return
+        if name in self._attributes:
+            return self._attributes[name]
+        else:
+
+            # else if safe was passed raise an exception if that attribute was missing
+            if safe:
+                raise exceptions.DomainException('Requesting attribute [%s] from domain [%s] but this attribute has not been assigned' % (name, str(self))) 
+
+            # if safe not passed just return None
+            else:
+                return None
+                
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def add_attribute(self, name, val, safe=True):
+        """
+        Function that adds an attribute. Note that if safe is true, this function will
+        raise an exception if the attribute is already present. If safe=False, then
+        an exisiting value will be overwritten.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identfy it
+
+        val : <anything>
+            An object or primitive we wish to associate with this attribute
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an attribute with the same
+            name already exists, otherwise the newly introduced attribute will overwrite
+            the previous one.
+
+        Returns
+        ---------
+            None - but adds an attribute to the calling object
+
+        """
+
+        if safe:
+            if name in self._attributes:
+                raise exceptions.DomainException("Trying to add attribute [%s=%s] to domain [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                
+        self._attributes[name] = val 
 
     ## ------------------------------------------------------------------------
     ##      
