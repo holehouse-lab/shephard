@@ -57,11 +57,14 @@ class Track:
             if len(protein.sequence) != len(values):
                 raise TrackException('Track length of %i does not match protein length of %i (values track)\b Track = %s\nProtein=%s' %(len(values), len(protein.sequence), name, str(protein)))
 
+            # convert values to list of floats
             try:                
-                # values = np.array(values, dtype='float64')
                 values = [float(i) for i in values]
+                
+                # add leading zero for index purposes
+                values = [0.0] + values
             except ValueError:
-                raise TrackException('Unable to convert values passed into float64 numpy array [Track=%s, Protein=%s' %( name, str(protein)))
+                raise TrackException('Unable to convert values passed into float64 numpy array [Track=%s, Protein=%s' % (name, str(protein)))
             
 
         # if the symbols were provided
@@ -80,7 +83,10 @@ class Track:
                 symbols = list(symbols)
             
             else:
-                raise TrackExceptio('Unable to convert passed symbols track to a list of symbols [Track=%s, Protein=%s' %( name, str(protein)))
+                raise TrackExceptio('Unable to convert passed symbols track to a list of symbols. Symbols track should be either a list of symbols or a string. [Track=%s, Protein=%s' %( name, str(protein)))
+
+            # add leading ('-') for index purposes
+            symbols = ['-'] + symbols 
 
 
         # if NEITHER symbols nor track were provided through an exception
@@ -105,25 +111,34 @@ class Track:
     ##
     @property
     def values_region(self, start, end):
-        return self._values[start:end]
+
+        # this list comprehension checks start and end are valid options
+        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
+
+        return self._values[start:end+1]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def symbols_region(self, start, end):
-        return self._symbols[start:end]
+
+        # this list comprehension checks start and end are valid options
+        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
+
+        # note we need +1 
+        return self._symbols[start:end+1]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def values(self):
-        return self._values[1:len(self)]
+        return self._values[1:]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def symbols(self):
-        return self._symbols[1:len(self)]
+        return self._symbols[1:]
 
     ## ------------------------------------------------------------------------
     ##

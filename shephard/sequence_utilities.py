@@ -53,4 +53,12 @@ def update_to_realworld(vals, use_realworld_numbering=True):
     else:
         return tuple(vals)
 
+
+
+def get_bounding_sites(position, offset, maxlen):
+    # compute start/end of context according to the offset
+    p1 = max(1, position - offset)
+    p2 = min(maxlen, position + offset)
+    return (p1,p2)
+
             

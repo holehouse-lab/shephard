@@ -10,7 +10,7 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import general_utilities
-
+from .exceptions import ProteinException
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Site in sequence
@@ -40,34 +40,78 @@ class Site:
         protein.proteome.__update_site_types(self._site_type)
 
 
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def residue(self):
-        # note we have to add a +1 offset because sequence is still 
-        # 
-        return self._protein.sequence[self._position - 1]
+        """
+        Returns the amino acid residue associated with the site position as
+        a string.
+        """
+        return self._protein.get_residue(self._position)
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def position(self):
+        """
+        Returns the actual sequence indexed position as an int (recall protein
+        indexing starts at 1).
+        """
         return self._position
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def protein(self):
+        """
+        Return the Protein object this site is found within
+        """
         return self._protein
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def site_type(self):
+        """
+        Returns the site type (string)
+        """
         return self._site_type
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def symbol(self):
+        """
+        Returns the symbol associated with this site. Note a symbol is either
+        None or a str type.
+        """
         return self._symbol
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def value(self):
+        """
+        Returns the value associated with this site. Note a value is either
+        None or a float type.
+        """
         return self._value
 
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def attributes(self):
+        """
+        Returns the attribute dictionary associated with this site. Note such a
+        dictionary is either a dictionary (surprise!) or None.
+        """
         return self._attributes
 
 
@@ -76,7 +120,8 @@ class Site:
     def attribute(self, name, safe=True):
 
         """
-        Function that returns a specific attribute as defined by the name. 
+        Function that returns a specific attribute as defined by the name. This attribute
+        is extracted from the attribute dictionary.
 
         Recall that attributes are name : value pairs, where the 'value' can be 
         anything and is user defined. This function will return the value associated 
@@ -110,19 +155,132 @@ class Site:
             else:
                 return None
 
+
+    ## ------------------------------------------------------------------------
+    ##
     def get_local_sequence_context(self, offset = 5):
-        self._protein.get_local_sequence_context(self.position, offset)
+        """
+        Returns the local amino acid context around a residue +/- the offset provided.
         
-        # compute start/end of context according to the offset
-        p1 = max(1, self.position - offset)
-        p2 = min(self._protein._len, self.position + offset)
+        Note that the offset extends to the start/end of sequence and then silently
+        truncates.
 
-        # note we subtract -1 here from the p1 site to shift from realworld indexing
-        # to i0 indexing. However we do not offset p2 because this means the start
-        # and end become inclusive
-        return self._protein._sequence[p1-1:p2]
-    
+        Parameters
+        -----------
+        offset : int
+            Defines the +/- region around the position which is used to define
+            the local sequence context.
 
+        Returns
+        --------
+        str
+            Returns an amino acid sequence that corresponds to the local sequence
+            context around the site of interest
+
+        """
+
+        return self._protein.get_local_sequence_context(self.position, offset)    
+
+
+
+
+    #######################################
+    ##                                   ##
+    ##        SITE TRACK FUNCTIONS       ##
+    ##                                   ##
+    #######################################
+
+    ## ------------------------------------------------------------------------
+    ##      
+    def get_track_values(self, name, offset=5, safe=True):
+        """
+        Function that returns the region of a protein's values- track associated with
+        this site, +/- some offset.
+        
+        If the track name is missing and safe is True, this will throw an exception,
+        otherwise (if safe=False) then if the track is missing the function
+        returns None
+
+        Parameters
+        --------------
+        
+        name : str
+            Track name
+
+        offset : int
+            +/- values around the site from which regions are taken
+
+        safe : boolean
+            If set to True, missing tracks trigger an exception, else they 
+            just return None
+
+
+
+        Returns
+        ----------
+        list
+            Returns a list of floats that corresponds to the set of residues associated
+            with the domain of interest
+
+        """
+        
+        (p1, p2) = sequence_utilities.get_bounding_sites(self._position, offset, self._protein._len)
+        
+
+        # because calling values_region only makes sense IF the track exists, we have to split
+        # this into two operations
+        t = self._protein.track(name, safe)
+
+        if t is not None:
+            return t.values_region(p1, p2)
+        else:
+            return None
+
+
+    ## ------------------------------------------------------------------------
+    ##      
+    def get_track_symbols(self, name, offset=5, safe=True):
+        """
+        Function that returns the region of a protein's symbols track associated with
+        this domain.
+        
+        If the track name is missing and safe is True, this will throw an exception,
+        otherwise (if safe=False) then if the track is missing the function
+        returns None
+
+        Parameters
+        --------------
+        
+        name : str
+            Track name
+
+        safe : boolean
+            If set to True, missing tracks trigger an exception, else they 
+            just return None
+
+        Returns
+        ----------
+        list
+            Returns a list of strs that corresponds to the set of residues associated
+            with the domain of interest.
+
+        """
+
+        (p1, p2) = sequence_utilities.get_bounding_sites(self._position, offset, self._protein._len)
+
+        # because calling symbols_region only makes sense IF the track exists, we have to split
+        # this into two operations
+        t = self._protein.track(name, safe)
+
+        if t is not None:
+            return t.symbols_region(p1,p2)
+        else:
+            return None
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
     def __repr__(self):             
         return "|Site: %i-%s| in %s" % (self.position, self._site_type, self.protein)
     

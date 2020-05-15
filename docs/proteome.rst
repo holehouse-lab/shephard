@@ -10,6 +10,7 @@ Proteome
 .. autofunction:: shephard.proteome.Proteome.unique_domain_types
 .. autofunction:: shephard.proteome.Proteome.unique_site_types
 .. autofunction:: shephard.proteome.Proteome.check_unique_ID_list
+.. autofunction:: shephard.proteome.Proteome.__iter__
 
 
 

@@ -1,8 +1,4 @@
 """
-Entry Class File - ShanEnt Suite 
-
-version: 3
-
 Authors: Garrett M. Ginell & Alex S. Holehouse
 Contact: (g.ginell@wustl.edu)
 
@@ -68,10 +64,12 @@ class Protein:
         
         # define internal attributes that are then accessed via @properties 
         self._name     = name
-        self._sequence = seq
+        self._sequence = "-" + seq # the '-' at the start fixes our indexing woes
         self._unique_ID = unique_ID
         self._proteome = proteome
-        self._len = len(seq)
+
+        self._len = len(seq) # protein length 
+        self._true_len = len(self._sequence) # length of string the protein is in
 
         # set attribute dictionary IF a dictionary was passed
         if isinstance(attribute_dictionary, dict):
@@ -137,6 +135,29 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
+    def get_residue(self, position):
+        """
+        Function that returns the natural residue found at a given position
+
+        Parameters
+        ----------
+        position : int
+            Position of interest
+
+        Returns
+        ----------
+        str
+            Returns a single character that corresponds to the string of interest
+
+        """
+
+        # cast to integer incase...
+        return self._sequence[int(position)]
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def sequence(self):
         """
@@ -159,7 +180,7 @@ class Protein:
             Amino acid sequence associated with the protein.
 
         """
-        return self._sequence
+        return self._sequence[1:]
 
 
     ## ------------------------------------------------------------------------
@@ -186,7 +207,8 @@ class Protein:
         self._check_position_is_valid(start, helper_string='Sequence region cannot start below 1 [%i]'%(start))
         self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
             
-        return self._sequence[start-1:end]
+        # note +1 because we're inclusive with positions
+        return self._sequence[start:end + 1]
 
 
     ## ------------------------------------------------------------------------
@@ -217,13 +239,10 @@ class Protein:
         self._check_position_is_valid(position, helper_string='Sequence position is outside below 1 [%i]')
         
         # compute start/end of context according to the offset
-        p1 = max(1, position - offset)
-        p2 = min(self._len, position + offset)
+        (p1, p2) = sequence_utilities.get_bounding_sites(position, offset, self._len)
 
-        # note we subtract -1 here from the p1 site to shift from realworld indexing
-        # to i0 indexing. However we do not offset p2 because this means the start
-        # and end become inclusive
-        return self._sequence[p1-1:p2]
+        # note +1 because we're inclusive with positioning here (and index from 1)
+        return self._sequence[p1:p2 + 1]
 
 
     ## ------------------------------------------------------------------------
@@ -339,7 +358,6 @@ class Protein:
             return None
 
 
-
     ## ------------------------------------------------------------------------
     ##
     def _check_position_is_valid(self, position, helper_string=None):
@@ -347,11 +365,13 @@ class Protein:
         Internal function that ensures a passed position falls inside the sequence.
         The helper-string allows the exception raised to be customerized
         """
+
+        # recal we're operating in a 1-indexed space
         if sequence_utilities.inside_region(1, self._len, position):
             return None
         else:
             if helper_string:                
-                raise ProteinException(helper_string %(position))
+                raise ProteinException(helper_string)
             else:
                 raise ProteinException('Position %i falls outside of sequence'%(position))
 
@@ -1110,8 +1130,8 @@ class Protein:
             
 
         safe : boolean 
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it. Default = True.
+            If set to True over-writing domains will raise an exception. If False, overwriting
+            a domain will silently over-write. Default = True.
 
         autoname : boolean
             If autoname is set to true, this function ensures each domain ALWAYS has a unique
@@ -1294,17 +1314,33 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_domains_by_type(self, domain_type):
+    def get_domains_by_type(self, domain_type, perfect_match=True):
         """
         Function that returns a dictionary of domains that match a specific type
-        of domain
+        of domain. 
 
         """
+        if perfect_match:
+            def selection(t):
+                if t  == domain_type: 
+                    return True
+                else:
+                    return False
+        else:
+            def selection(t):
+                if t.find(domain_type) > -1:
+                    return True
+                else:
+                    return False
+
+            
+
+
 
         return_dict = {}
         for domain_id in self.domains:
             d = self.domain(domain_id)
-            if d.domain_type == domain_type:
+            if selection(d.domain_type):
                 return_dict[domain_id] = d
 
         return return_dict
@@ -1379,8 +1415,9 @@ class Protein:
         
         """
         
+        # recal inside_regions is inclusive
         if not sequence_utilities.inside_region(1, self._len, position):
-            raise ProteinException("Trying to add site to protein [%s] at positions [%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), position, 1, len(self.sequence)))
+            raise ProteinException("Trying to add site to protein [%s] at positions [%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), position, 1, self._len))
 
         # cast the position to an int and if there are no sites at that position create an empty list there
         position = int(position)        
@@ -1389,17 +1426,6 @@ class Protein:
 
         # add the site!
         self._sites[position].append(Site(position, site_type, self, symbol, value, attributes))
-
-
-    ## ------------------------------------------------------------------------
-    ##
-    def site_residue(self, position):
-        """
-        Function that returns the list of sites that are found at a given position.        
-
-        """
-
-        return self._sequence[int(position)]
 
 
     ## ------------------------------------------------------------------------
@@ -1482,7 +1508,7 @@ class Protein:
     ##
     def get_sites_by_type(self, site_types):
         """
-        Get sites that match a specified type
+        Get a set of sites that match a specified site-type
 
         Parameters
         ------------------
@@ -1504,7 +1530,7 @@ class Protein:
     def get_sites_by_type_and_range(self, site_types, start, end, wiggle=0):
         """
 
-        to do but
+        Returns a set of
     
 
         Parameters
@@ -1530,16 +1556,24 @@ class Protein:
     ##
     def __site_by_type_internal(self, indict, site_types):
         """
-        Internal function .. complete
-
+        Internal function that allows a subset of sites to be selected based 
+        on the passed site_type(s).
 
         Parameters
         ------------------
-    
         site_types : string or list of strings
             One or more possible site_types that may be found in the protein. Either
             a single string or a list of strings can be passed, allowing for one or
             more sites to be grouped together
+
+        Returns
+        -----------
+        dict 
+
+            Returns a dictionary where the key is a position (site) and the value
+            is a list of one or more sites at that position that match the site
+            type of interest. This is exactly the same structure as the 
+            self._sites dictionary, just filtered for a specific site_type.
 
         """
 
@@ -1549,14 +1583,13 @@ class Protein:
 
         return_dict = {}
 
-        # for each key (which reflects a site position) in the self._sites dictionary...
+        # for each key (which reflects a site position in the passed dictionary)
         for i in indict:
 
             # for each site found in the list associated with that position
             for site_object in indict[i]:
 
-                # for the one or more site types in the site_types list/string
-                # provided
+                # for the one or more site types in the site_types list
                 for ST in site_types:
 
                     # if that site type matches the target type

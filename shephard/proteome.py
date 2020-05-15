@@ -10,6 +10,8 @@ Proteomes are the main parent object upon which proteins are stored.
 
 from .exceptions import ProteomeException
 from .protein import Protein
+from itertools import islice
+
     
 
 class Proteome:
@@ -494,16 +496,17 @@ class Proteome:
     ##                
     def __iter__(self):
         """
-        Allows a proteome to act as a generator, so the syntax
+        Allows a Proteome object to act as a generator that yeilds actual proteins,
+        so the syntax
 
-        for protein in ProteomeObject:
-            print(protein.sequence)
+        >>> for protein in ProteomeObject:
+        >>>    print(protein.sequence)
 
-        Would be valid and would iterate through the proteins in the proteome. 
-        This is quite handy.
+        is be valid and would iterate through the proteins in the proteome. 
+        
+        This makes performing some analysis over all proteins quite easy        
 
         """
-
 
         for i in self._records:
             yield self._records[i]
@@ -515,8 +518,21 @@ class Proteome:
             return True
         else:
             return False
-        
 
+    ## ------------------------------------------------------------------------
+    ##                        
+    def __getitem__(self, key):
+        """
+        Allows slicing index into proteome to retrive subsets of protein
+        """
+        if isinstance(key, int) and key >= 0:
+            return list(islice([self._records[i] for i in self._records], key, key+1))[0]
+
+        elif isinstance(key, slice):
+            return list(islice([self._records[i] for i in self._records], key.start, key.stop, key.step))
+        else:
+            raise KeyError("Key must be non-negative integer or slice, not {}"
+                           .format(key))
 
 
     ## ------------------------------------------------------------------------

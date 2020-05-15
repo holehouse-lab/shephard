@@ -5,7 +5,13 @@ from shephard.apis import uniprot
 import pytest
 import sys
 
-TS1_FILE = ['testset_1.fasta', 'TS1_domains_idr.tsv', 'TS1_domains_pscore.tsv', 'TS1_sites.tsv', 'TS1_tracks_pscore.tsv', 'TS1_protein_attributes.tsv']
+TS1_FILE = ['testset_1.fasta', 
+            'TS1_domains_idr.tsv', 
+            'TS1_domains_pscore.tsv', 
+            'TS1_sites.tsv', 
+            'TS1_tracks_pscore.tsv', 
+            'TS1_protein_attributes.tsv',
+            'testset_1_ptms.tsv']
 
 test_data_dir = shephard.get_data('test_data')
 
@@ -65,6 +71,7 @@ def TS1_domains2_sites_tracks_protein_attributes(request):
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
     si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
+    si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[6]))
     si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'value')
     si_protein_attributes.add_protein_attributes_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[5]))
     

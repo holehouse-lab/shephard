@@ -21,20 +21,34 @@ class Domain:
     
     Proteins contain a list of 0 or more domains, and each domain is associated 
     with the protein it originates from via the linking protein object.
-    
 
+    Domains (like protein sequences) are indexed from 1 onwards.
+
+    Parameters
+    -------------
+
+    start : int
+        Start position in sequence (recall we index from 1)
+
+    end : int
+        End position in sequence (recall we index from 1)
+
+    protein : Protein
+        Protein object for which this Domain is part of
+
+    domain_type :  str
+        Name of the domain type - can be any freeform string
+
+    attribute_dictionary : dict
+        Dictionary where key/value pairs allow a Domain to have
+        arbitrary metadata associated with it.
+        
 
     """
 
     ## ------------------------------------------------------------------------
     ##          
     def __init__(self, start, end, protein, domain_type, attribute_dictionary=None):
-
-        self._start = int(start)
-        self._end   = int(end)
-
-        self._protein = protein         
-        self._domain_type = domain_type
         
         if start > end:
             raise DomainException("Trying to a domain to protein [%s] where start site is bigger than the end site (positions: %i-%i - this does not work!" %(str(protein), start, end))
@@ -43,6 +57,13 @@ class Domain:
         helper_string="Trying to add domain to protein [%s] at positions [%i-%i] - this falls outside the protein's dimensions [%i-%i]" %(protein, start, end, 1, protein._len)
         protein._check_position_is_valid(start, helper_string)
         protein._check_position_is_valid(end, helper_string) 
+
+        # assign if all OK
+        self._start = int(start)
+        self._end   = int(end)
+
+        self._protein = protein         
+        self._domain_type = domain_type
 
         # set attribute dictionary IF a dictionary was passed. Otherwise we just ignore
         # anything bassed to attribute_dictionary
@@ -178,18 +199,16 @@ class Domain:
     ##      
     @property
     def sequence(self):
-
-        # note that  domain boundaries are inclusive, and the protein.sequence
-        # variable is a Protseq object which corrects the indexing such that
-        # slicing natively works inclusively and with the approriate indexing
-        # for real-world position
-        return self._protein.sequence[self._start:self._end]
+        return self._protein.get_sequence_region(self._start, self._end)
 
 
     ## ------------------------------------------------------------------------
     ##      
     @property
     def domain_type(self):
+        """
+        Returns the domain type as a string
+        """
         return self._domain_type
 
     
@@ -199,6 +218,17 @@ class Domain:
         """
         Function that returns True/False depending on if the provided position
         lies inside the domain.
+
+        Parameters
+        ------------
+        position : int
+            Position in the sequence
+
+        Returns
+        -----------
+        bool
+            Returns True if position is inside the domain region, else False
+        
 
         """
         return sequence_utilities.inside_region(self.start, self.end, position)
@@ -210,6 +240,8 @@ class Domain:
     ##                                  ##
     ######################################
 
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def sites(self):
         """
@@ -218,13 +250,17 @@ class Domain:
         
         return list(self._protein.get_sites_by_range(self.start, self.end).keys())
 
-
+    ## ------------------------------------------------------------------------
+    ##
     def site(self, position):
         """
 
         """
         return self._protein._sites[int(position)]
 
+
+    ## ------------------------------------------------------------------------
+    ##
     def get_sites_by_type(self, site_type):
         """
         Get list of sites inside the domain
@@ -250,46 +286,85 @@ class Domain:
         
 
 
-    #####################################
-    ##                                 ##
-    ##     DOMAI TRACK FUNCTIONS       ##
-    ##                                 ##
-    #####################################
+    #######################################
+    ##                                   ##
+    ##      DOMAIN TRACK FUNCTIONS       ##
+    ##                                   ##
+    #######################################
 
     ## ------------------------------------------------------------------------
     ##      
     def get_track_values(self, name, safe=True):
         """
-        Function that returns the region of a protein's track associated with
+        Function that returns the region of a protein's values- track associated with
         this domain.
+        
+        If the track name is missing and safe is True, this will throw an exception,
+        otherwise (if safe=False) then if the track is missing the function
+        returns None
 
         Parameters
         --------------
+        
+        name : str
+            Track name
+
+        safe : boolean
+            If set to True, missing tracks trigger an exception, else they 
+            just return None
+
+        Returns
+        ----------
+        list
+            Returns a list of floats that corresponds to the set of residues associated
+            with the domain of interest
 
         """
         
+        t = self._protein.track(name, safe)
 
-        return self._protein.track(name)._values[self._start:self._end]
+        if t is not None:        
+            return t.values_region(self._start, self._end)
+        else:
+            return None
 
 
     ## ------------------------------------------------------------------------
     ##      
-    def get_track_symbols(self, name):
+    def get_track_symbols(self, name, safe=True):
         """
-        Function that returns the region of a protein's track symbols associated 
-        with this domain.
+        Function that returns the region of a protein's symbols track associated with
+        this domain.
         
+        If the track name is missing and safe is True, this will throw an exception,
+        otherwise (if safe=False) then if the track is missing the function
+        returns None
 
         Parameters
         --------------
+        
+        name : str
+            Track name
+
+        safe : boolean
+            If set to True, missing tracks trigger an exception, else they 
+            just return None
+
+        Returns
+        ----------
+        list
+            Returns a list of strs that corresponds to the set of residues associated
+            with the domain of interest.
 
         """
 
-        return self._protein.track(name).symbols_slice[self._start:self._end]
+        t = self._protein.track(name, safe)
         
-
-
-
+        if t is not None:            
+            return t.symbols_region(self._start, self._end)
+        else:
+            return None
+        
 
     ## ------------------------------------------------------------------------
     ##      

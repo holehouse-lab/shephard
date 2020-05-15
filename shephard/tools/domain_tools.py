@@ -3,15 +3,72 @@ import random
 from . import site_tools
 from shephard import general_utilities
 
+from shephard import exceptions
 
 
-
-# ------------------------------------------------------------------
-def domain_overlap(boundary_start1, boundary_end1, boundary_start2, boundary_end2):
+## ------------------------------------------------------------------------
+##
+def domain_overlap(domain_1, domain_2, check_origin=True):
     """
-    Given a position, does the position fall inside the defined region, inclusive
-    for both start and end positions
+    Given two domains asks if their boundaries overlap. By default
+    this expects the two domains in question to be from the same protein
+    and checks this. If we dont want to enforce this assumption set
+    check_origin to False.
+
+    Parameters
+    -----------
+    domain_1 : Domain
+        The first domain object of interest
+
+    domain_2 : Domain
+        The first domain object of interest
+
+    check_origin : boolean
+        Flag that if set to True will cause an exception if domain_1 and
+        domain_2 are from different proteins. If set to false, no such
+        sanity checks are performed.
+
+    Returns
+    ----------
+    boolean
+        Returns true if the two domains overlap, else returns false
+      
     """
+
+    if check_origin:
+        if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
+            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+            
+    return domain_overlap_by_position(domain_1.start, domain_1.end, domain_2.start, domain_2.end)
+    
+
+
+## ------------------------------------------------------------------------
+##
+def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, boundary_end2):
+    """
+    Given four sets of starting/ending positions, this function asks if their boundaries overlap. 
+
+    Parameters
+    -----------
+    boundary_start1 : int
+        Position of domain 1 start
+
+    boundary_end : int
+        Position of domain 1 end
+
+    boundary_start2 : int
+        Position of domain 2 start
+
+    boundary_end : int
+        Position of domain 2 end
+
+    Returns
+    ----------
+    boolean
+        Returns true if the two domains overlap, else returns false
+    """
+
     if boundary_start2 >= boundary_start1 and boundary_start2 <= boundary_end1:
         return True
     elif boundary_end2 >= boundary_start1 and boundary_end2 <= boundary_end1:
@@ -21,11 +78,17 @@ def domain_overlap(boundary_start1, boundary_end1, boundary_start2, boundary_end
     
 
 
+## ------------------------------------------------------------------------
+##
 def build_missing_domains(protein, new_domain_type = 'missing'):
     """
     Function which takes a protein an builds a set of domains that represent 
     the "empty spaces". Domains are returned as a list of domain dictionaries
     which can be added to a protein via the add_domains() function.
+
+    This tool is stateless - i.e. it does not alter the passed protein
+    but instead only generates a numerical list which could be added as 
+    a track.
 
     One could always combine this directly with the add_domains() function
     into a single line - e.g.
@@ -59,7 +122,7 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
     for d_idx in protein.domains:
         d = protein.domain(d_idx)
 
-        # for each position in each domain (not this will overwrite
+        # for each position in each domain (note this will overwrite
         # which is fine). NOTE that we cyle from d.start-1 to d.end because
         # start and end index from real-world positions, but range is a non
         # inclusive function (while the domain boundaries are inclusive). 
@@ -68,7 +131,6 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
                 
     # we are now left with an all_res list where the 0s represent regions
     # not assigned to any domain
-
 
     # if we start inside an empty domain set inside to true
     if all_res[0] == 0:
@@ -123,22 +185,87 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
             
         
 
+## ------------------------------------------------------------------------
+##
+def build_domains_from_track_values(proteome, 
+                                    track_name, 
+                                    binerize_function, 
+                                    domain_type, 
+                                    gap_closure = 3, 
+                                    minimum_region_size = 1, 
+                                    extend_ends = None, 
+                                    print_progress = False,
+                                    verbose = True):
 
-def build_domains_from_track_values(proteome, track_name, binerize_function, domain_type, gap_closure=3, minimum_region_size=1, extend_ends=None, print_progress=False):
+    
+    """
+    Function that constructs domains from a values track. This effectively allows you to 
+    descritizie some continous variable into distinct local domains, which can often 
+    facilitate specific types of analysis.
+    
+    Under the hood, this works by cycling through each protein, extracting the track, 
+    and converting into domains.
+    
+    If a protein is too short or it lacks a given track, the protein is skipped.
+
+    This tool is stateless - i.e. it does not alter the passed protein
+    but instead only generates a numerical list which could be added as 
+    a track.
+
+    This then returns a dictionary where keys are unique_IDs of proteins
+    and values is a list of one or more domains.
+
+    The domains dictionary can be added to a proteome using the 
+    si_domains.add_domains_from_dictionary(). As an example, as possible workflow
+    is
+
+    >>> d = build_domains_from_track_values(proteome, 'cool_track', trackfx)
+    >>> si_domains.add_domains_from_dictionary(proteome, d)
+    
+
+    
+    Parameters
+    -----------
+    proteome : Proteome
+        The proteome which is going to be scanned for each track
+
+    track_name : string
+        Name of the track to convert. If the track name does not exist the function 
+
+    binerize_function : function
+        A function which takes a track and converts it to 0 or 1 (biner-ize, as in, make binary).
+        This 
+
+    new_domain_type : string (default 'missing')
+        Name to assign to the 'empty' domains.
+
+    Returns
+    -------------
+    list of domain dictionaries
+
+        Returns a list of domain dictionaries which can be then parsed or
+        added to a protein via the add_domains() function.
+
+
+    
+
+    """
     
     new_domains={}
 
     c=0
     for protein in proteome:
 
+        # if our protein is too short do not try and generate a domain
         if len(protein) < 3*gap_closure+1:
             continue
         
-        c=c+1
-        if print_progress and c % 500 == 0:
+        # this is the counter of proteins we've actually scanned - if
+        # we hid a 500-protein milestone print status if verbose is true
+        c = c + 1
+        if print_progress and c % 500 == 0 and verbose:
             print('On %i of %i' %(c, len(proteome)))
         
-
         # safe = false so will return None if no track of that name
         # found
         t = protein.track(track_name, safe=False)

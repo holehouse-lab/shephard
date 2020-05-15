@@ -2,7 +2,9 @@ Protein
 =================
 
 
-.. autoclass:: shephard.proteome.Protein
+.. autoclass:: shephard.protein.Protein
+
+.. autofunction:: shephard.proteome.Protein.__init__
 
 Protein properties
 ...........
@@ -17,6 +19,7 @@ Protein properties
 .. autofunction:: shephard.proteome.Protein.get_sequence_context
 .. autofunction:: shephard.proteome.Protein.check_sequence_is_valid
 .. autofunction:: shephard.proteome.Protein.convert_to_valid
+
 
 
 Attribute functions

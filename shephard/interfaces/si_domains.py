@@ -78,35 +78,64 @@ class _DomainsInterface:
 
 ## ------------------------------------------------------------------------
 ##
-def add_domains_from_file(proteome, filename, autoname=False, delimiter='\t', safe=True, skip_bad=True, verbose=True):
+def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, safe=True, skip_bad=True, verbose=True):
     """
     Function that takes a correctly formatted shephard 'domains' file and reads 
     all domains into the passed proteome.
 
-    Expect Domain files to have the followin format:
+    Expect Domain files to have the following format:
 
     One domain per line where:
     
-    Unique_ID    start    stop    domain_type    key_1:value_1    key_2:value_2, ...,     key_n:value_n
+    >>> Unique_ID    start    stop    domain_type    key_1:value_1    key_2:value_2, ...,     key_n:value_n
 
     A couple of key points here:
     - The default delimiter is tabs ('\t') but this can be changed with the delimiter argument
     - The first four arguments are required, while all of the key:value pairs are optional
-    - Key value must be separated by a ':', as a result any delimiter (other than ':') can be 
+    - Key value must be separated by a ':'. As a result any column delimiter (other than ':') can be 
       used, but ':' is reserved for this role
-    
     
     Parameters
     ----------
     proteome : Proteome Object
-        Proteome object 
+        Proteome object to which domains will be added
 
-    filename : string
+    filename : str
+        Name of the shephard domains file to read
 
-    <TO DO>
+    delimiter : str 
+        String used as a delimiter on the input file. Default = '\t'
 
-        
+    autoname : boolean
+        If autoname is set to true, this function ensures each domain ALWAYS has a unique
+        name - i.e. the allows for multiple domains to be perfecly overlapping in position
+        and type. This is generally not going to be required and/or make sense, but having
+        this feature in place is useful. In general we want to avoid this as it makes it 
+        easy to include duplicates which by default are prevented when autoname = False. 
+        Default = False.
+    
+    safe : boolean 
+        If set to True over-writing domains will raise an exception. If False, overwriting
+        a domain will silently over-write. Default = True.
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True
+    
+
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+
+    Returns
+    -----------
+    None
+        No return value, but domains are added to the Proteome object passed as the first argument
+            
     """        
+
+
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_domains_from_file (si_domains)')
 
@@ -129,13 +158,49 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     with a given protein, and the value is a list of lists. Each sublist has four positions
 
     [0] = start position
-    [1] = end position
+    [1] = end position 
     [2] = domain type
-    [3] = attribute dictinoary
+    [3] = attribute dictionary
 
-    In this way, each domain that maps to a give unique_ID will be added. 
+    The start and end positions should be locations within the sequence defined by the unique_ID, 
+    and if they are out of the sequence bounds this will throw an exception. Domain type is a string
+    that nams the type of domain. The attribute dictionary is an arbitrary key-value pair dictionary 
+    where key-values map an arbitrary key to an aribitrary value. 
 
-    <to complete>
+    In this way, each domain that maps to a give unique_ID will be added. Note the attribute is
+    optional.
+
+    Parameters
+    ----------
+    proteome : Proteome Object
+        Proteome object to which domains will be added
+
+    domain_dictionary : dict
+        Dictionary that maps unique_IDs to domain lists [start, end, type, attribute_dictionary].
+
+
+    autoname : boolean
+        If autoname is set to true, this function ensures each domain ALWAYS has a unique
+        name - i.e. the allows for multiple domains to be perfecly overlapping in position
+        and type. This is generally not going to be required and/or make sense, but having
+        this feature in place is useful. In general we want to avoid this as it makes it 
+        easy to include duplicates which by default are prevented when autoname = False. 
+        Default = False.
+    
+    safe : boolean 
+        If set to True over-writing domains will raise an exception. If False, overwriting
+        a domain will silently over-write. Default = True.
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True.
+
+    Returns
+    -----------
+    None
+        No return value, but domains are added to the Proteome object passed as the first argument
     
     """
     # Note - the safe keyword is actually dealt with in this function in conjunction with the Verbose
