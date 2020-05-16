@@ -166,9 +166,30 @@ def add_sites_from_file(proteome, filename, delimiter='\t', skip_bad=True):
     [4] = site attribute dictionary
 
 
-    TBC
-    
+    Parameters
+    -------------
+    proteome : Proteome
+        Proteome object to which we're adding sites. Note that ONLY sites for which a protein
+        is found will be used. Protein-Site cross-referencing is done using the protein's unique_ID
+        which should be the key used in the sites_dictionary
 
+    filename : str
+        Name of the shephard domains file to read
+
+    delimiter : str 
+        String used as a delimiter on the input file. Default = '\t'
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True
+    
+    Returns
+    ---------
+    None
+        No return value, but adds all of the passed sites to the protein
+    
     """
 
     # check first argument is a proteome

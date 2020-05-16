@@ -134,7 +134,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
         parsing, but could also hide errors. Note that if lines are skipped a warning will be 
         printed (regardless of verbose flag). Default = True
     
-
     verbose : boolean
         Flag that defines how 'loud' output is. Will warn about errors on adding domains.
 
@@ -187,7 +186,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 
     domain_dictionary : dict
         Dictionary that maps unique_IDs to domain lists [start, end, type, attribute_dictionary].
-
 
     autoname : boolean
         If autoname is set to true, this function ensures each domain ALWAYS has a unique

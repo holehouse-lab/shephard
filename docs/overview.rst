@@ -9,6 +9,7 @@ SHEPHARD stores information in a bidirectional hierachical format. A collection 
 
 SHEPHARD makes it easy to define your own domains, tracks, and sites, and read this into and out of files. In this way, customizable and reproducible analysis becomes extremley easy, and the same code can be used to perform analagous analyses for very different questions. This means you can spend more time analyzing the results and thinking about the questions, and less time on the software development side.
 
+
 --------------
 Installation
 --------------
@@ -18,3 +19,23 @@ Installation for now should be performed using the release candidate you were se
     pip install shephard...tar.gz
 
 This should install without issue, and once installed, shephard is available for import in any Python code you write when executed from within that conda environment.
+
+
+--------------
+General workflow
+--------------
+
+The general workflow we envisage for people using SHEPHARD is as follows:
+
+1. Read in a proteome file using one of the api functions
+
+2. Load in some annotations (domains, sites, tracks or protein_attributes)
+
+3. Generate additional annotations
+
+4. Perform analysis in a way that queries the relationship between sequence and those differen annotations
+
+
+
+
+

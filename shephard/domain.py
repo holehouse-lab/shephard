@@ -144,8 +144,8 @@ class Domain:
 
             # if safe not passed just return None
             else:
-                return None
-                
+                return None                
+
 
 
     ## ------------------------------------------------------------------------
@@ -182,28 +182,49 @@ class Domain:
                 
         self._attributes[name] = val 
 
+
+
     ## ------------------------------------------------------------------------
     ##      
     @property
     def start(self):
+        """
+        **[Property]**: Returns the start position that defines this domain
+        """
+
         return self._start
+
+
 
     ## ------------------------------------------------------------------------
     ##      
     @property
     def end(self):
+        """
+        **[Property]**: Returns the end position that defines this domain
+        """
         return self._end
+
+
 
     ## ------------------------------------------------------------------------
     ##      
     @property
     def protein(self):
+        """
+        **[Property]**: Returns the Protein that this Domain is associated with
+        """
         return self._protein
+
+
 
     ## ------------------------------------------------------------------------
     ##      
     @property
     def sequence(self):
+        """
+        **[Property]**: Returns the amino acid sequence associated with this domain
+        """
         return self._protein.get_sequence_region(self._start, self._end)
 
 
@@ -215,6 +236,9 @@ class Domain:
         Returns the domain type as a string
         """
         return self._domain_type
+
+
+
 
     ######################################
     ##                                  ##

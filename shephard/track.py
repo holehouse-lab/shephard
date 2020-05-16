@@ -24,7 +24,6 @@ class Track:
     Tracks can can either define a set of symbols that convert residues to symbols (i.e. discrete classifications)
     or values (i.e. floating number values associated with each position).
 
-
     Parameters
     ------------
 
@@ -113,18 +112,35 @@ class Track:
     ##
     @property
     def values(self):
-        return self._values[1:]
+        """
+        **[Property]**: Returns a list that matches the complete set of values
+        for this track. If no values are assigned returns None
+        """
+        if self._values is None:
+            return None
+        else:
+            return self._values[1:]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def symbols(self):
-        return self._symbols[1:]
+        """
+        **[Property]**: Returns a list that matches the complete set of symbols
+        for this track. If no symbols are assigned returns None
+        """
+        if self._symbols is None:
+            return None
+        else:
+            return self._symbols[1:]
 
     ## ------------------------------------------------------------------------
     ##
     @property
     def protein(self):
+        """
+        **[Property]**: Returns the Protein that this Track is associated with
+        """
         return self._protein
 
 

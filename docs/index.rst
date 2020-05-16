@@ -17,6 +17,8 @@ Welcome to shephard's documentation!
    domain
    site
    track
+   interfaces
+   apis
 
 
 
