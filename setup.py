@@ -45,7 +45,7 @@ setup(
     setup_requires=[] + pytest_runner,
 
     install_requires=[
-        "protfasta>=0.1.0"],
+        "numpy>=1.12.0", "protfasta>=0.1.0"],
 
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     # url='http://www.my_package.com',  # Website
