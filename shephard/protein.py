@@ -30,7 +30,7 @@ class Protein:
 
     * **tracks** - Vectorial information that maps to each residue and contains some set of information. A protein can have multiple tracks, but there must be a one-to-one mapping for sequence to track.
 
-    * **domains** - Information on a single contigous region in the protein. A protein can have multiple domains.
+    * **domains** - Information on a single contiguous region in the protein. A protein can have multiple domains.
     
     * **sites** - Information associated with a single amino acid site. A protein can have multiple sites
    
@@ -47,8 +47,8 @@ class Protein:
         internally so no restraints, but could be used by other bits of analysis. 
 
     unique_ID : str 
-        The unique_ID should be a short unique identifier. When added to a proteome the 
-        proteome object ensures the unique_ID is unique with respect to that proteome. 
+        The unique_ID should be a short unique identifier. When added to a Proteome the 
+        Proteome object ensures the unique_ID is unique with respect to that Proteome. 
 
         We HIGHLY recommend using the uniprot accession number, as this meets the 
         requirement of a unique ID as well as allowing effective cross-refering from 
@@ -57,7 +57,7 @@ class Protein:
     attribute_dictionary : dict (optional)
         The attribute_dictionary provides a key-value pairing for arbitrary information.
         This could include gene names, different types of identifies, protein copy number,
-        a set of protein partners, or anything else one might wish to assocaited with the
+        a set of protein partners, or anything else one might wish to associated with the
         protein as a whole.
 
     """
@@ -94,7 +94,7 @@ class Protein:
         # the domains by type and sites by type dictionaries are only built IF we request
         # domains or sites by type. This provides a mode of conditional memoization, so at 
         # least within a single session we do not have to search through domains and sites
-        # mutiple times to find a specific type
+        # multiple times to find a specific type
         self._domains_by_type ={}
         self._sites_by_type ={}
 
@@ -173,7 +173,7 @@ class Protein:
         you 'MAP' while Python's indexing would give you 'AP'.
 
         As a result BEWARE if using the raw sequence for analysis! The Protein class
-        provides a get_sequence_region(), get_sequence_context() and analagous functions
+        provides a get_sequence_region(), get_sequence_context() and analogous functions
         for tracks that allow you to use normal indexing to select ranges or regions
         around a specific point. We suggest this is a safer way to extract vectorial
         information.
@@ -220,16 +220,16 @@ class Protein:
     def get_sequence_context(self, position, offset=5):
         """
         Function that allows a local region of the sequence centered on a specific position
-        to be extracted, includng +/- an offset border that intelligently truncates if the 
+        to be extracted, including +/- an offset border that intelligently truncates if the 
         offset would extend outside the sequence region.
 
         Parameters
         ---------------
         position : int
-            Position for which we'll interogate the local sequence
+            Position for which we'll interrogate the local sequence
 
         offset : int
-            [**Default = 5**] Plus/Minus offset used to invesigate the region around the position. Note that
+            [**Default = 5**] Plus/Minus offset used to investigate the region around the position. Note that
             an offset is symmetrical around the position. 
 
         Returns
@@ -368,7 +368,7 @@ class Protein:
     def _check_position_is_valid(self, position, helper_string=None):
         """
         Internal function that ensures a passed position falls inside the sequence.
-        The helper-string allows the exception raised to be customerized
+        The helper-string allows the exception raised to be customized
         """
 
         # recal we're operating in a 1-indexed space
@@ -458,13 +458,13 @@ class Protein:
         """
         Function that adds an attribute. Note that if safe is true, this function will
         raise an exception if the attribute is already present. If safe=False, then
-        an exisiting value will be overwritten.
+        an existing value will be overwritten.
 
         Parameters
         ----------------
 
         name : str
-            The parameter name that will be used to identfy it
+            The parameter name that will be used to identify it
 
         val : <anything>
             An object or primitive we wish to associate with this attribute
@@ -764,7 +764,7 @@ class Protein:
             name (no safe keyword provided here).
 
         trackfunction : function
-            A user define function that has the folowing properties:
+            A user define function that has the following properties:
         
             (1) First argument is expected to be amino acid sequence
             (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
@@ -853,7 +853,7 @@ class Protein:
 
         """
 
-        # if this will overwrite an exsiting track and safe is on...
+        # if this will overwrite an existing track and safe is on...
         if name in self.tracks:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
@@ -903,7 +903,7 @@ class Protein:
 
 
         trackfunction : function
-            A user define function that has the folowing properties:
+            A user define function that has the following properties:
         
             (1) First argument is expected to be amino acid sequence
             (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
@@ -990,7 +990,7 @@ class Protein:
 
         """
 
-        # if this will overwrite an exsiting track and safe is on...
+        # if this will overwrite an existing track and safe is on...
         if name in self.tracks:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
@@ -1142,7 +1142,7 @@ class Protein:
         domain_type : type of the domain (string)
         attribute_dictionary : a dictionary of attributes to associated with the domain (optional)
         
-        Note that in start, end, and domain_type are the only required key-value pairs requied in
+        Note that in start, end, and domain_type are the only required key-value pairs required in
         the dictionary.
 
         Parameters
@@ -1150,7 +1150,7 @@ class Protein:
 
         list of domains : list of domain dictionaries
             A "domain dictionary" is defined above, but in short is a dictionary with the following
-            key-value paris:
+            key-value pairs:
 
             REQUIRED:
             start                : int (domain start position)
@@ -1158,7 +1158,7 @@ class Protein:
             domain_type          : string (domain type)
 
             OPTIONAL:
-            attribute_dictionary : dictionary of abitrary key-value pairs 
+            attribute_dictionary : dictionary of arbitrary key-value pairs 
                                    that will be associated with the domain
             
 
@@ -1168,7 +1168,7 @@ class Protein:
 
         autoname : boolean
             If autoname is set to true, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfecly overlapping in position
+            name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
             this feature in place is useful. In general we want to avoid this as it makes it 
             easy to include duplicates which by default are prevented when autoname=False.
@@ -1214,7 +1214,7 @@ class Protein:
         """
         Function that adds a domain, automatically generating a unique name if 
         none is provided. Domain type can be used to assign a specific type if
-        we want to retrive domains of a specific type at some point. Position
+        we want to retrieve domains of a specific type at some point. Position
         indexing is done for 1 - i.e. the first residue in a protein is 1, not
         0.
 
@@ -1237,7 +1237,7 @@ class Protein:
 
         attribute_dictionary : dictionary [optional]
             Optional dictionary which allows an arbitrary set of attributes to be
-            associated with a domain, in much the same way that they can be assocated
+            associated with a domain, in much the same way that they can be associated
             with a protein. Default = None.
 
         safe : boolean 
@@ -1246,7 +1246,7 @@ class Protein:
 
         autoname : boolean
             If autoname is set to true, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfecly overlapping in position
+            name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
             this feature in place is useful. In general we want to avoid this as it makes it 
             easy to include duplicates which by default are prevented when autoname=False.
@@ -1285,7 +1285,7 @@ class Protein:
     ##
     def build_domain(self, input_data, domain_definition_function,  safe=True, autoname=False):
         """
-        Function that is somewhat analagous to build_tracks, but allows the user to define a custom function 
+        Function that is somewhat analogous to build_tracks, but allows the user to define a custom function 
         (domain_definition_function) that takes input_data and returns domain information, and then assigns
         that domain information to a new domain
 
@@ -1316,7 +1316,7 @@ class Protein:
 
         autoname : boolean
             If autoname is set to True, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfecly overlapping in position
+            name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
             this feature in place is useful. In general we want to avoid this as it makes it 
             easy to include duplicates which by default are prevented when autoname=False.
@@ -1416,7 +1416,7 @@ class Protein:
     def site(self, position, safe=True):
         """
         Returns the list of sites that are found at a given position. Note that - in general
-        site() should be used to retrive sites you know exist while get_sites_by_position()
+        site() should be used to retrieve sites you know exist while get_sites_by_position()
         offers a way to more safely get sites at a position. Site will throw an exception 
         if the position passed does not exist (while get_sites_by_position() will not).
 
@@ -1454,7 +1454,7 @@ class Protein:
         -----------
 
         position : int
-            Position of site (recal we index from 1 - i.e. the first residue in 
+            Position of site (recall we index from 1 - i.e. the first residue in 
             a protein = 1, not 0. Note that this value is cast to int.
 
         site_type : string 
@@ -1471,7 +1471,7 @@ class Protein:
 
         attributes : dictionary [optional]
             Optional dictionary which allows an arbitrary set of attributes to be
-            associated with a domain, in much the same way that they can be assocated
+            associated with a domain, in much the same way that they can be associated
             with a protein. Default = empty dictionary.
         
         """
@@ -1508,11 +1508,11 @@ class Protein:
         -----------
         dictionary
 
-            Returns a dictionary where key-value paris are
+            Returns a dictionary where key-value pairs are
 
             keys: positions along the sequence
 
-            values: list of one or more sites found at that poistion
+            values: list of one or more sites found at that position
 
         """
 
@@ -1541,11 +1541,11 @@ class Protein:
         -----------
         dictionary
 
-            Returns a dictionary where key-value paris are
+            Returns a dictionary where key-value pairs are
 
             keys: positions along the sequence
 
-            values: list of one or more sites found at that poistion
+            values: list of one or more sites found at that position
 
         """
        
@@ -1659,7 +1659,7 @@ class Protein:
         """
 
         # function that allows site_types to be either a string or a list
-        # of strings so one or more sity_types can be passe
+        # of strings so one or more sity_types can be passed
         site_types = general_utilities.string_to_list_of_strings(site_types)
 
         return_dict = {}

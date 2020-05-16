@@ -22,9 +22,9 @@ class Domain:
     Proteins contain a list of 0 or more domains, and each domain is associated 
     with the protein it originates from via the linking protein object.
 
-    Domains are indexed using the same indexing as the overal protein sequence (i.e.
+    Domains are indexed using the same indexing as the overall protein sequence (i.e.
     a protein does not automatically start from 1), and as such the 'native' sequence
-    indexing should be used for working with protiens. This is a long-winded way of saying
+    indexing should be used for working with Proteins. This is a long-winded way of saying
     position X refers to the same residue regardless of if it's taken from the Protein or Domain
     or Track object.
 
@@ -41,7 +41,7 @@ class Domain:
         Protein object for which this Domain is part of
 
     domain_type :  str
-        Name of the domain type - can be any freeform string
+        Name of the domain type - can be any free-form string
 
     attribute_dictionary : dict
         Dictionary where key/value pairs allow a Domain to have
@@ -71,7 +71,7 @@ class Domain:
         self._domain_type = domain_type
 
         # set attribute dictionary IF a dictionary was passed. Otherwise we just ignore
-        # anything bassed to attribute_dictionary
+        # anything passed to attribute_dictionary
         if isinstance(attribute_dictionary, dict):
             self._attributes = attribute_dictionary
 
@@ -160,7 +160,7 @@ class Domain:
         ----------------
 
         name : str
-            The parameter name that will be used to identfy it
+            Name that will be used to identify the attribute
 
         val : <anything>
             An object or primitive we wish to associate with this attribute
@@ -320,7 +320,7 @@ class Domain:
     def site(self, position):
         """
         Returns the list of sites that are found at a given position. Note that - in general
-        site() should be used to retrive sites you know exist while get_sites_by_position()
+        site() should be used to retrieve sites you know exist while get_sites_by_position()
         offers a way to more safely get sites at a position. Site will throw an exception 
         if the position passed does not exist (while get_sites_by_position() will not).
 

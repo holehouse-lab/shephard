@@ -84,7 +84,7 @@ class _SitesInterface:
 def add_sites_from_dictionary(proteome, sites_dictionary):
     """
     Function that takes a correctly formatted Sites dictionary and will add those 
-    sites to the proteins in the proteome.
+    sites to the proteins in the Proteome.
 
     Sites dictionaries are key-value pairs, where the key is a unique_ID associated 
     with a given protein, and the value is a list of lists. Each sublist has five positions
@@ -114,10 +114,10 @@ def add_sites_from_dictionary(proteome, sites_dictionary):
             [3] = site value 
             [4] = site attribute dictionary
 
-        Recall the only type-sepecific values (position and value) are cast automatically when a 
+        Recall the only type-specific values (position and value) are cast automatically when a 
         site is added by the Protein object, so no need to do that in this function too.
 
-        Exta elements in the each sites_dictionary value are ignored.
+        Extra elements in the each sites_dictionary value are ignored.
 
     Returns
     ---------
@@ -148,7 +148,7 @@ def add_sites_from_file(proteome, filename, delimiter='\t', skip_bad=True):
     Function that provides the user-facing interface for reading correctly configured SHEPHARD 
     sites files and adding those sites to the proteins of interest.
     
-    A SHEPHARD sites file is a tab (or other) deliniated file where each line has the following
+    A SHEPHARD sites file is a tab (or other) delineated file where each line has the following
     convention:
 
     Unique_ID, position, site type, symbol, value, [ key_1:value_1, key_2:value_2, ..., key_n:value_n ]

@@ -18,7 +18,7 @@ class Track:
     """
     Tracks define information that maps along a protein sequence.
 
-    A track is, fundementally, a vector which is the length of the sequence. This could be an way to re-code
+    A track is, fundamentally, a vector which is the length of the sequence. This could be an way to re-code
     the amino acid sequence, or reflect some kind of sliding window analysis.
 
     Tracks can can either define a set of symbols that convert residues to symbols (i.e. discrete classifications)
@@ -161,7 +161,7 @@ class Track:
         Returns
         --------
         list
-            Returns a list of values that maps to the residues in the interevening region
+            Returns a list of values that maps to the residues in the intervening region
             defined by start and end)
 
         """
@@ -188,7 +188,7 @@ class Track:
         Returns
         --------
         list
-            Returns a list of values that maps to the residues in the interevening region
+            Returns a list of values that maps to the residues in the intervening region
             defined by start and end)
 
         """

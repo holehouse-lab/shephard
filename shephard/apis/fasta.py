@@ -15,7 +15,7 @@ from shephard.proteome import Proteome
 ##
 def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='fail'):
     """
-    Stand alone function that allows the user to build a proteome from a standard
+    Stand alone function that allows the user to build a Proteome from a standard
     FASTA file. 
 
     The input filename must be a FASTA file without duplicate headers. If the file
@@ -23,7 +23,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
     the protfasta (https://protfasta.readthedocs.io/) package to parse through the
     FASTA file first creating a santizied input FASTA.
     
-    Each protein in a proteome must have a unique_ID associated with it. There
+    Each protein in a Proteome must have a unique_ID associated with it. There
     are two ways a FASTA file can be used to generate a unique ID:
 
         1. By parsing the FASTA header, which could be as much as simply reading 
@@ -79,7 +79,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
 
     # extract the keys (FASTA headers) and initialize the record_index (internal
     # numbering used for construction. Also initialize the proteom_dict, which is
-    # a dictionary of protein entries we passe to Proteome.
+    # a dictionary of protein entries we passed to Proteome.
     record_index  = 0
     proteome_list = []
 
@@ -88,7 +88,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
 
         # create a key-value pair where 
         #   key = the unique record_index (this is only used for internal structure
-        #         within this function to assure we never overwright in this dictionary
+        #         within this function to assure we never overwrite in this dictionary
         #
         #  value = a four-position list where the positions reflect the following
         #        [0] = amino acid sequence
@@ -122,7 +122,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
 def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False):
     """
     Stand alone function that allows the user to write a FASTA file from a
-    proteome file. 
+    Proteome file. 
 
 
     Parameters

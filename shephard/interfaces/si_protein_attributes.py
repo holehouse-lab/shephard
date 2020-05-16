@@ -88,7 +88,7 @@ class _ProteinAttributesInterface:
 def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
     """
     Function that takes a correctly formatted protein_atttribute dictionary and will add those 
-    attributes to the proteins in the proteome.
+    attributes to the proteins in the Proteome.
 
     protein_attribute dictionaries are key-value pairs, where the key is a unique ID and the value
     is a list of dictionaries, where for each dictionary the key-value pair is a key-value pair of protein
@@ -119,7 +119,7 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     
     """
 
-    # check first argument is a proteome
+    # check first argument is a Proteome
     interface_tools.check_proteome(proteome, 'add_protein_attributes (si_protein_attributes)')
     
     for protein in proteome:
@@ -152,10 +152,10 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
 ##
 def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=True, skip_bad=True, verbose=True):
     """
-    Function that takes a correctly formatted shephard 'domains' file and reads 
-    all domains into the passed proteome.
+    Function that takes a correctly formatted Proteome 'domains' file and reads 
+    all domains into the passed Proteome.
 
-    Expect Domain files to have the followin format:
+    Expect Domain files to have the following format:
 
     One domain per line where:
     

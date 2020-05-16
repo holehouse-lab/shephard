@@ -20,7 +20,7 @@ class _TracksInterface:
         """
         
         Class for reading in correctly formatted tracks files for parsing into a
-        proteome object.
+        Proteome object.
 
         Tracks files must adhere to the following specification
 
@@ -98,7 +98,7 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
     Function that takes a correctly formatted shephard 'tracks' file and reads 
     all Tracks into the passed proteome.
 
-    Expect Track files to have the followin format:
+    Expect Track files to have the following format:
 
     One protein per line, where each protein has the following information:
     
@@ -147,7 +147,7 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
         
     """        
 
-    # check first argument is a proteome
+    # check first argument is a Proteome
     interface_tools.check_proteome(proteome, 'add_tracks_from_file (si_tracks)')
 
     # check mode is valid

@@ -20,7 +20,7 @@ class Proteome:
 
     The Proteome constructor takes a single argument, which is a list of protein dictionaries. This means
     Proteome objects can be generated directly (see below for a definition of protein dictionaries). However,
-    it is often more convenient to build proteomes from FASTA files. For more information on this see the ``api``
+    it is often more convenient to build Proteomes from FASTA files. For more information on this see the ``api``
     documentation.
     
     Protein dictionaries are dictionaries that must contain four elements (others are ignored).
@@ -45,7 +45,7 @@ class Proteome:
     **Notes**
 
     * NOTE that ALL FOUR of these are required for EACH protein, even if the attribute_dict is empty.
-    * The unique_ID is checked for uniqueness against all others in the proteome and will throw and exception if it is, in fact, not unique.
+    * The unique_ID is checked for uniqueness against all others in the Proteomes and will throw and exception if it is, in fact, not unique.
     * Additional proteins can be added using the `.add_protein()` or `.add_proteins() function.
 
     """
@@ -158,7 +158,7 @@ class Proteome:
     ##
     def add_protein(self, sequence, name, unique_ID, attribute_dictionary, safe=True):
         """
-        Function that allows the user to add a new protein to a proteome in an 
+        Function that allows the user to add a new protein to a Proteomes in an 
         ad-hoc fashion. In general most of the time it will make sense to add
         proteins all at once from some input source, but the ability to add
         proteins one at a time is also useful
@@ -178,7 +178,7 @@ class Proteome:
         attribute_dictionary : dict
             The attribute_dictionary provides a key-value pairing for arbitrary information.
             This could include gene names, different types of identifies, protein copy number,
-            a set of protein partners, or anything else one might wish to assocaited with the
+            a set of protein partners, or anything else one might wish to associated with the
             protein as a whole.
 
         safe : boolean (default = True)
@@ -189,7 +189,7 @@ class Proteome:
         --------
         
         Protein object or None
-            Depending on if the passed unique_ID is found in the proteome, a Protein 
+            Depending on if the passed unique_ID is found in the Proteomes, a Protein 
             object or None will be returned
 
         """
@@ -265,7 +265,7 @@ class Proteome:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise ProteomeException('Requesting attribute [%s] from proteome [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise ProteomeException('Requesting attribute [%s] from Proteome [%s] but this attribute has not been assigned' % (name, str(self))) 
 
             # if safe not passed just return None
             else:
@@ -285,7 +285,7 @@ class Proteome:
         ----------------
 
         name : str
-            The parameter name that will be used to identfy it
+            The parameter name that will be used to identify it
 
         val : <anything>
             An object or primitive we wish to associate with this attribute
@@ -313,18 +313,18 @@ class Proteome:
     @property
     def domains(self):
         """
-        Function that returns a list of all domain objects associated with the proteome. Unlike
+        Function that returns a list of all domain objects associated with the Proteome. Unlike
         when .domains is called on a Protein object (where a list of domain_IDs are returned)
         the complete list of Domain objects is returned in a list. 
 
-        This function is useful if you wish to indiscriminantly ask questions of domains without
+        This function is useful if you wish to indiscriminately ask questions of domains without
         considering the proteins they come from. However, each Domain has a .protein object 
         associated with it, so one can always map a Domain back to a Protein.
 
         Returns
         --------------
         list of Domains
-             A list of all the Domains from every protein in the proteome
+             A list of all the Domains from every protein in the Proteome
         
         """
 
@@ -342,18 +342,18 @@ class Proteome:
     @property
     def sites(self):
         """
-        Function that returns a list of all Site objects associated with the proteome. Unlike
+        Function that returns a list of all Site objects associated with the Proteome. Unlike
         when .sites is called on a Protein object (where a list of domain_IDs are returned)
         the complete list of Domain objects is returned in a list. 
 
-        This function is useful if you wish to indiscriminantly ask questions of sites without
+        This function is useful if you wish to indiscriminately ask questions of sites without
         considering the proteins they come from. However, each Site has a .protein object 
         associated with it, so one can always map a Site back to a Protein.        
 
         Returns
         --------------
         list of Domains
-             A list of all the Domains from every protein in the proteome
+             A list of all the Domains from every protein in the Proteome
         
         """
 
@@ -373,7 +373,7 @@ class Proteome:
     @property
     def unique_domain_types(self):
         """
-        Returns the list of unique Domain types associated with this proteome.
+        Returns the list of unique Domain types associated with this Proteome.
 
         Return
         -------
@@ -388,7 +388,7 @@ class Proteome:
         # which checks if the domain_type of the domain being added is already in the
         # __unique_domain_types list. If yes, fine, if no, it gets added. This means
         # _unique_domain_types keeps track of a count of the complete number of unique
-        # domains in the proteome. An analagous setup holds true for the sites.        
+        # domains in the Proteome. An analogous setup holds true for the sites.        
         
         return self._unique_domain_types
     
@@ -399,7 +399,7 @@ class Proteome:
     @property
     def unique_site_types(self):
         """
-        Returns the list of unique Site types associated with this proteome.
+        Returns the list of unique Site types associated with this Proteome.
 
         Return
         -------
@@ -414,7 +414,7 @@ class Proteome:
         # which checks if the domain_type of the domain being added is already in the
         # __unique_site_types list. If yes, fine, if no, it gets added. This means
         # _unique_site_types keeps track of a count of the complete number of unique
-        # sites in the proteome. An analagous setup holds true for the domains.        
+        # sites in the Proteome. An analogous setup holds true for the domains.        
 
         return self._unique_site_types
     
@@ -456,7 +456,7 @@ class Proteome:
     ##                
     def __len__(self):
         """
-        The length of the proteome is defined as the number of proteins in it
+        The length of the Proteome is defined as the number of proteins in it
         
         Returns
         -------
@@ -475,17 +475,17 @@ class Proteome:
     ##                
     def __repr__(self):
         """
-        Provides a nice representation of the proteome
+        Provides a nice representation of the Proteome
         
         Returns
         -------
         string
-            Formatted description of the proteome.
+            Formatted description of the Proteome.
 
         """
 
-        # this function means when we print a proteome object or cast it to 
-        # a string we get a nice/informative respresentation, rather than the
+        # this function means when we print a Proteome object or cast it to 
+        # a string we get a nice/informative representation, rather than the
         # id of the object
 
         return "[Proteome]: Sequence dataset with %i protein records" %(len(self))
@@ -496,13 +496,13 @@ class Proteome:
     ##                
     def __iter__(self):
         """
-        Allows a Proteome object to act as a generator that yeilds actual proteins,
+        Allows a Proteome object to act as a generator that yields actual proteins,
         so the syntax
 
         >>> for protein in ProteomeObject:
         >>>    print(protein.sequence)
 
-        is be valid and would iterate through the proteins in the proteome. 
+        is be valid and would iterate through the proteins in the Proteome. 
         
         This makes performing some analysis over all proteins quite easy        
 
@@ -523,7 +523,7 @@ class Proteome:
     ##                        
     def __getitem__(self, key):
         """
-        Allows slicing index into proteome to retrive subsets of protein
+        Allows slicing index into Proteome to retrieve subsets of protein
         """
         if isinstance(key, int) and key >= 0:
             return list(islice([self._records[i] for i in self._records], key, key+1))[0]
@@ -544,8 +544,8 @@ class Proteome:
         
         Note - we this function is named as __Domain_... so it can be specifically
         and uniquely be called from a Domain object. This function is ONLY called
-        last thing in the Domain constructor where it allows the proteome object
-        to keep track of the total number of unique domain types in the proteome.
+        last thing in the Domain constructor where it allows the Proteome object
+        to keep track of the total number of unique domain types in the Proteome.
 
         The function is (by default) called by the Domain constructor
 
@@ -557,7 +557,7 @@ class Proteome:
         Returns
         ---------------
 
-        No return value, but will approproately update the proteome object
+        No return value, but will appropriately update the Proteome object
 
         """
         if domain_type not in self.unique_domain_types:
@@ -574,8 +574,8 @@ class Proteome:
 
         Note - we this function is named as __SITE_... so it can be specifically
         and uniquely be called from a Site object. This function is ONLY called
-        last thing in the Site constructor where it allows the proteome object
-        to keep track of the total number of unique domain types in the proteome
+        last thing in the Site constructor where it allows the Proteome object
+        to keep track of the total number of unique domain types in the Proteome
 
         The function is (by default) called by the Site constructor
 
@@ -587,7 +587,7 @@ class Proteome:
         Returns
         ---------------
 
-        No return value, but will approproately update the proteome object
+        No return value, but will appropriately update the Proteome object
 
         """
         if site_type not in self.unique_site_types:
@@ -602,7 +602,7 @@ class Proteome:
         INTERNAL FUNCTION (not for public API use)
         
         Function that builds a string to help in diagnosing what might go wrong during
-        proteome construction. Called by the Proteome constructor.        
+        Proteome construction. Called by the Proteome constructor.        
         
         """
 

@@ -76,7 +76,7 @@ def apply_track_residue_density(proteome, residue_set, name='residue_density', b
     while name and block_size are optional parameters that define different things.
     
     Density is calculated by computing the number of residues within a block_size subsequence and dividing by
-    the block_size. This yeilds a value between 0 and 1.
+    the block_size. This yields a value between 0 and 1.
 
     NB: If a protein sequence is shorter than the block_size then that protein gets skipped. 
 
@@ -89,7 +89,7 @@ def apply_track_residue_density(proteome, residue_set, name='residue_density', b
 
     residue_set : list of single-character strings representing amino acids
         This is a list of amino acids for which the local density will be computed. This could be a single 
-        residue, or multiple residues. Duplicates are removed. Note that beyond removing duplictes and ensuring
+        residue, or multiple residues. Duplicates are removed. Note that beyond removing duplicates and ensuring
         residues are upper case no sanity check is done here.
 
     name : string 
@@ -132,7 +132,7 @@ def apply_track_residue_density(proteome, residue_set, name='residue_density', b
         if nres < block_size:
             continue
 
-        # this is where we convert sequence into a local density by cylcing through
+        # this is where we convert sequence into a local density by cycling through
         # each $block_size subsequence, computing the local density, and appending 
         # that density to the ever-growing density vector
         density_vector = []

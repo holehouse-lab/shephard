@@ -29,7 +29,7 @@ def check_proteome(p, function_name):
 
     Returns
     ---------
-    No returns but the function will raise an exception if the passed object is not a proteome
+    No returns but the function will raise an exception if the passed object is not a Proteome
     object
 
     """
@@ -55,7 +55,7 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
         Each string in the list should have the format <KEY> : <VALUE> 
 
     filename : string
-        Name of the file the calling function is parsing. Only used when rasing an exception.
+        Name of the file the calling function is parsing. Only used when raising an exception.
 
     linecount : int
         Current line number the file processing is on. Only used when raising an exception.
