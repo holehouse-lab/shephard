@@ -25,29 +25,28 @@ class Track:
     or values (i.e. floating number values associated with each position).
 
 
+    Parameters
+    ------------
+
+    name : string
+        Defines the name of the track. This can be any value, but should be something that makes sense. The name can be 
+        used by analysis routines.
+
+    protein : Protein object
+        the protein from which the track is being added to
+
+    values : iterable of numerical values (default is None)
+        This iterable is passed over and convert into a list of floats. Must be same length as the number of residues
+        in the protein.
+
+    symbols : iterable of strings (default is None)
+        This iterable is directly assigned to the track.symbols variable. Must be same length as the number of residues       
+        in the protein.
+
     """
     
     def __init__(self, name, protein, values=None, symbols=None):
         """
-
-        Parameters
-        ------------
-
-        name : string
-           Defines the name of the track. This can be any value, but should be something that makes sense. The name can be 
-           used by analysis routines.
-
-        protein : Protein object
-            the protein from which the track is being added to
-
-        values : iterable of numerical values (default is None)
-            This iterable is passed over and convert into a list of floats. Must be same lentth as the number of residues
-            in the protein.
-
-        symbols : iterable of strings (default is None)
-            This iterable is directly assigned to the track.symbols variable. Must be same lentth as the number of residues       
-            in the protein.
-
         """
 
         # if values was provided for the track...
@@ -105,28 +104,10 @@ class Track:
     ##
     @property
     def name(self):
+        """
+        **[Property]**: Returns the track name
+        """
         return self._name
-
-    ## ------------------------------------------------------------------------
-    ##
-    @property
-    def values_region(self, start, end):
-
-        # this list comprehension checks start and end are valid options
-        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
-
-        return self._values[start:end+1]
-
-    ## ------------------------------------------------------------------------
-    ##
-    @property
-    def symbols_region(self, start, end):
-
-        # this list comprehension checks start and end are valid options
-        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
-
-        # note we need +1 
-        return self._symbols[start:end+1]
 
     ## ------------------------------------------------------------------------
     ##
@@ -145,6 +126,65 @@ class Track:
     @property
     def protein(self):
         return self._protein
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def values_region(self, start, end):
+        """
+        Returns a subregion from the values track
+
+        Parameters
+        ----------
+        start : int
+            Starting position of interest
+
+        end : int
+            Ending position of interest
+
+        Returns
+        --------
+        list
+            Returns a list of values that maps to the residues in the interevening region
+            defined by start and end)
+
+        """
+
+        # this list comprehension checks start and end are valid options
+        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
+
+        return self._values[start:end+1]
+
+    ## ------------------------------------------------------------------------
+    ##
+    def symbols_region(self, start, end):
+        """
+        Returns a subregion from the symbols track
+
+        Parameters
+        ----------
+        start : int
+            Starting position of interest
+
+        end : int
+            Ending position of interest
+
+        Returns
+        --------
+        list
+            Returns a list of values that maps to the residues in the interevening region
+            defined by start and end)
+
+        """
+
+
+        # this list comprehension checks start and end are valid options
+        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
+
+        # note we need +1 
+        return self._symbols[start:end+1]
+
+
       
     ## ------------------------------------------------------------------------
     ##      

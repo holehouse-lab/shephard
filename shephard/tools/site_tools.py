@@ -65,8 +65,7 @@ def build_site_density_vector(protein, site_types=None, block_size=30, append_le
             for s in site:
                 if s.site_type in site_types:
                     all_res[i-1] = 1
-                    
-        
+                            
     # finally we're going to calculate the density of sites from this vector
     # note we're treating site presence as a binary phenomenon - ie a residue
     # has a site or does not

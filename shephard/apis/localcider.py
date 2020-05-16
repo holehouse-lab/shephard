@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 from localcider.sequenceParameters import SequenceParameters
 from shephard.exceptions import InterfaceException
 from shephard.interfaces import interface_tools 
@@ -15,7 +25,7 @@ def apply_track_NCPR(proteome, blobsize=5):
     
     """
 
-    interface_tools.check_proteome(proteome, 'apply_track_NCPR (si_localcider)')
+    interface_tools.check_proteome(proteome, 'apply_track_NCPR (apis.localcider)')
 
     for protein in proteome:
 
@@ -149,7 +159,7 @@ def apply_track_residue_density(proteome, residue_set, name='residue_density', b
 
 def apply_attribute_kappa(proteome):    
 
-    interface_tools.check_proteome(proteome, 'apply_attribute_kappa (si_localcider)')
+    interface_tools.check_proteome(proteome, 'apply_attribute_kappa (apis.localcider)')
 
     for protein in proteome:
 

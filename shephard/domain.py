@@ -1,16 +1,16 @@
 """
-Region Class File - ShanEnt Suite 
-
-version: 2.1b
+SHEPHARD: 
+Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 Authors: Garrett M. Ginell & Alex S. Holehouse
 Contact: (g.ginell@wustl.edu)
 
-Pappu Lab - Washington University in St. Louis
+Holehouse Lab - Washington University in St. Louis
 """
 
 from . import sequence_utilities
 from . import exceptions
+from shephard.tools import domain_tools
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a sequence region 
@@ -22,7 +22,11 @@ class Domain:
     Proteins contain a list of 0 or more domains, and each domain is associated 
     with the protein it originates from via the linking protein object.
 
-    Domains (like protein sequences) are indexed from 1 onwards.
+    Domains are indexed using the same indexing as the overal protein sequence (i.e.
+    a protein does not automatically start from 1), and as such the 'native' sequence
+    indexing should be used for working with protiens. This is a long-winded way of saying
+    position X refers to the same residue regardless of if it's taken from the Protein or Domain
+    or Track object.
 
     Parameters
     -------------
@@ -43,12 +47,13 @@ class Domain:
         Dictionary where key/value pairs allow a Domain to have
         arbitrary metadata associated with it.
         
-
     """
 
     ## ------------------------------------------------------------------------
     ##          
     def __init__(self, start, end, protein, domain_type, attribute_dictionary=None):
+        """ 
+        """
         
         if start > end:
             raise DomainException("Trying to a domain to protein [%s] where start site is bigger than the end site (positions: %i-%i - this does not work!" %(str(protein), start, end))
@@ -211,6 +216,12 @@ class Domain:
         """
         return self._domain_type
 
+    ######################################
+    ##                                  ##
+    ##     DOMAIN  FUNCTIONS             #
+    ##                                  ##
+    ######################################
+
     
     ## ------------------------------------------------------------------------
     ##      
@@ -234,6 +245,31 @@ class Domain:
         return sequence_utilities.inside_region(self.start, self.end, position)
 
 
+    ## ------------------------------------------------------------------------
+    ##      
+    def domain_overlap(self, domain2):
+        """
+        Function that takes in a second domain and calculates if those two domains
+        overlap at all. This is a binary check and does not compute the extent of 
+        overlap.
+
+
+        Parameters
+        ------------
+        domain2 : Domain
+            The Domain object of interest
+
+        Returns
+        -----------
+        bool
+            Returns True if the domains overlap, False if not. Note this will throw
+            an exception if the domains are from different proteins.
+        
+
+        """
+        return domain_tools.domain_overlap(self, domain2)
+
+
     ######################################
     ##                                  ##
     ##     DOMAIN SITE FUNCTIONS        ##
@@ -245,7 +281,12 @@ class Domain:
     @property
     def sites(self):
         """
-        Get list of sites inside the domain
+        Get list of all sites inside the domain
+        
+        Returns
+        --------
+        list
+            Returns a list of positions for which sites exist in this domain
         """
         
         return list(self._protein.get_sites_by_range(self.start, self.end).keys())
@@ -254,9 +295,29 @@ class Domain:
     ##
     def site(self, position):
         """
+        Returns the list of sites that are found at a given position. Note that - in general
+        site() should be used to retrive sites you know exist while get_sites_by_position()
+        offers a way to more safely get sites at a position. Site will throw an exception 
+        if the position passed does not exist (while get_sites_by_position() will not).
+
+        Parameters
+        -------------
+        position : int
+            Defines the position in the sequence we want to interrogate 
+
+        Returns
+        ---------
+        list
+            Returns a list with between 1 and n sites. Will raise an exception if 
+            the passed position cannot be found in the codebase.
 
         """
-        return self._protein._sites[int(position)]
+
+        ipos = int(position)
+        if sequence_utilities.inside_region(domain.start, domain.end, ipos):
+            return self._protein._sites[int(position)]
+        else:
+            raise DomainException('Passed position [%i] is outside of the domain boundaries [%i-%i]' %(ipos, domain.start, domain.end))
 
 
     ## ------------------------------------------------------------------------
@@ -299,9 +360,9 @@ class Domain:
         Function that returns the region of a protein's values- track associated with
         this domain.
         
-        If the track name is missing and safe is True, this will throw an exception,
-        otherwise (if safe=False) then if the track is missing the function
-        returns None
+        If the track name is not found in this protein and safe is True, this will throw 
+        an exception, otherwise (if safe=False) then if the track is missing the function        
+        will return None.
 
         Parameters
         --------------
@@ -317,7 +378,7 @@ class Domain:
         ----------
         list
             Returns a list of floats that corresponds to the set of residues associated
-            with the domain of interest
+            with the domain of interest, or None if the track does not exist and safe=False.
 
         """
         

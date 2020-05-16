@@ -1,13 +1,11 @@
 """
-fasta.py
-
-From the SHEPHARD package
+SHEPHARD: 
 Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
-Ginell & Holehouse, 2020
 
-Handles reading and writing of FASTA files for interfacing with Proteome objects. Provides the base-level
-code for actually doing the read/writing, allowing other functions to act on top of this.
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
 
+Holehouse Lab - Washington University in St. Louis
 """
 
 import protfasta

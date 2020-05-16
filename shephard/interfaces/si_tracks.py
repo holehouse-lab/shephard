@@ -1,3 +1,14 @@
+"""
+SHEPHARD: 
+Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
+
 from .interface_exceptions import InterfaceException
 from . import interface_tools 
 from shephard import general_utilities

@@ -1,11 +1,11 @@
 """
-proteome.py
-
-From the SHEPHARD package
+SHEPHARD: 
 Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
-Ginell & Holehouse, 2020
 
-Proteomes are the main parent object upon which proteins are stored.
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
 """
 
 from .exceptions import ProteomeException
