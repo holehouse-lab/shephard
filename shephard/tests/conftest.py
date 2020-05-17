@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 import shephard
 from shephard.interfaces import si_sites, si_domains, si_tracks, si_protein_attributes
 from shephard.apis import uniprot  

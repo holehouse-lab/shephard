@@ -1,4 +1,12 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
 
 def get_site_density_in_domain_normalized_by_protein(domain, site_types, sample_size=20, max_enrichment=100, min_enrichment=0.01):
     """
