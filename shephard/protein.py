@@ -99,6 +99,24 @@ class Protein:
         self._sites_by_type ={}
 
 
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def unique_ID(self):
+        """
+        [Property]: Returns the protein's unique_ID
+
+        Returns
+        ---------------
+        str
+            Returns the protein's unique_ID
+
+        """
+        return self._unique_ID
+
+
     ## ------------------------------------------------------------------------
     ##
     @property
@@ -249,20 +267,6 @@ class Protein:
         return self._sequence[p1:p2 + 1]
 
 
-    ## ------------------------------------------------------------------------
-    ##
-    @property
-    def unique_ID(self):
-        """
-        [Property]: Returns the protein's unique_ID
-
-        Returns
-        ---------------
-        str
-            Returns the protein's unique_ID
-
-        """
-        return self._unique_ID
 
 
     ## ------------------------------------------------------------------------
