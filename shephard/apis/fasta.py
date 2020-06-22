@@ -13,7 +13,7 @@ from shephard.proteome import Proteome
 
 ## ------------------------------------------------------------------------
 ##
-def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='fail'):
+def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, invalid_sequence_action='fail'):
     """
     Stand alone function that allows the user to build a Proteome from a standard
     FASTA file. 
@@ -50,6 +50,12 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
         used to convert the FASTA header to a (hopefully) unique string. This can be 
         useful if the FASTA header is well structured and includes a specific, useful
         unique string that can be used as the unique_ID.
+        
+    build_attributes : function
+        [**Default = None**] ``build_unique_ID`` allows a user-defined function that returns a dictionary and is 
+        used to convert FASTA header information to a (hopefully) key, value pairs, which can be
+        assinged as attrributes of the protien. This can be useful if the FASTA header is well
+        structured and includes a specific, useful information relivent to protien of intrest. 
 
     invalid_sequence_action : ``'ignore'``, ``'fail'``, ``'remove'``, ``'convert'``, ``'convert-ignore'``
         [**Default = 'fail'**] Selector that determines how to deal with invalid sequences. If ``convert``
@@ -97,17 +103,26 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
         #              to cross-reference this entry to other data. If extrat_unique_ID
         #              is passed we try to use this 
         #        [3] = attribute dictionary (we set this to None)
-
+        
+        
+        # get unique_ID 
         if build_unique_ID:
             unique_ID = build_unique_ID(k)
         else:
             unique_ID = record_index
+        
+        # get attribute dictionary 
+        if build_attributes:
+            attribute_dictionary = build_attributes(k)
+        else:
+            attribute_dictionary = None
+            
             
         newdict = {}
         newdict['sequence'] = str(fasta_dictionary[k])
         newdict['name'] = k
         newdict['unique_ID'] = unique_ID
-        newdict['attribute_dictionary'] = None
+        newdict['attribute_dictionary'] = attribute_dictionary
 
         proteome_list.append(newdict)
 
@@ -119,7 +134,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, invalid_sequence_action='f
 
 ## ------------------------------------------------------------------------
 ##
-def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False):
+def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, include_attributes_in_header=False):
     """
     Stand alone function that allows the user to write a FASTA file from a
     Proteome file. 
@@ -135,7 +150,10 @@ def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False):
         The proteome object we wish to write to disk.
 
     include_unique_ID_in_header : bool (default False)
-        Sometimes it may be desirable to 
+        Sometimes it may be desirable to annotate the unique ID
+        
+    include_attributes_in_header : bool (default False)
+        Sometimes it may be desirable to annotate all attributes in header as key=value
 
     """
 
@@ -148,6 +166,10 @@ def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False):
             fasta_header = "%s | UID=%s" %(protein.name, protein.unique_ID)
         else:
             fasta_header = protein.name
+            
+        # this is where we append the FASTA header with attrabutes    
+        if include_attributes_in_header:
+            fasta_header = fasta_header + ' '.join(["%s=%s" % (i,j) for i,j in protein._attributes.items()]) 
             
         outlist.append([fasta_header, protein.sequence])
         
