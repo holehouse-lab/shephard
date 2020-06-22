@@ -1,3 +1,14 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
+
 from .interface_exceptions import InterfaceException
 from . import interface_tools 
 from shephard import general_utilities
@@ -9,7 +20,7 @@ class _TracksInterface:
         """
         
         Class for reading in correctly formatted tracks files for parsing into a
-        proteome object.
+        Proteome object.
 
         Tracks files must adhere to the following specification
 
@@ -87,7 +98,7 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
     Function that takes a correctly formatted shephard 'tracks' file and reads 
     all Tracks into the passed proteome.
 
-    Expect Track files to have the followin format:
+    Expect Track files to have the following format:
 
     One protein per line, where each protein has the following information:
     
@@ -106,15 +117,37 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
     proteome : Proteome Object
         Proteome object 
 
-    filename : string
+    filename : str
+        Name of the shephard domains file to read
 
     mode : string {'symbol','value'}
+       A selector that defines the type of track file to be read. Must be either 'symbol' or 
+       'value'
 
-    <TO DO>
+    delimiter : str 
+        String used as a delimiter on the input file. Default = '\t'
 
+    safe : boolean 
+        If set to True over-writing tracks will raise an exception. If False, overwriting
+        a track will silently over-write. Default = True.
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True
+    
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding tracks.
+
+    Returns
+    -----------
+    None
+        No return value, but tracks are added to the Proteome object passed as the first argument
         
     """        
-    # check first argument is a proteome
+
+    # check first argument is a Proteome
     interface_tools.check_proteome(proteome, 'add_tracks_from_file (si_tracks)')
 
     # check mode is valid
@@ -135,11 +168,31 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
     Function that takes a 
     Parameters
     ----------
-    proteome : anything
 
+    proteome : Proteome Object
+        Proteome object which tracks will be added to
+
+    tracks_dictionary : dict
+        Dictionary in which keys are unique IDs for proteins and the value is a list of lists,
+        where each sublist where element 0 is the track name and element 1 is itself a list that
+        corresponds to the set of positions to be assigned to the track.
+    
+
+    mode : string {'symbol','value'}
+       A selector that defines the type of track file to be read. Must be either 'symbol' or 
+       'value'
 
     safe : bool (default = True)
         Flag which if true with throw an exception of a track with the same name already exists
+
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding tracks.
+        
+    Returns
+    -----------
+    None
+        No return value, but tracks are added to the Proteome object passed as the first argument
+
         
     """
         

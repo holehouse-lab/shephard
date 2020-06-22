@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 from .interface_exceptions import InterfaceException
 from . import interface_tools 
 from shephard.exceptions import ProteinException
@@ -78,17 +88,38 @@ class _ProteinAttributesInterface:
 def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
     """
     Function that takes a correctly formatted protein_atttribute dictionary and will add those 
-    attributes to the proteins in the proteome.
+    attributes to the proteins in the Proteome.
 
     protein_attribute dictionaries are key-value pairs, where the key is a unique ID and the value
     is a list of dictionaries, where for each dictionary the key-value pair is a key-value pair of protein
     attributes.
 
+    Parameters
+    ----------
+    proteome : Proteome Object
+        Proteome object to which domains will be added
+
+    protein_attribute_dictionary : dict
+        Dictionary that defines protein attributes. This is slightly confusing, but the keys for this
+        dictionary are unique protein IDs and the values is a list of dictionaries. Each of THOSE sub
+        dictionaries has one (or more) key:value pairs that define key:value pairs that will be associated
+        with the protein of interest.
+
+    safe : boolean 
+        If set to True over-writing attributes will raise an exception. If False, overwriting
+        an attribute will silently over-write. Default = True.
     
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+
+    Returns
+    -----------
+    None
+        No return value, but domains are added to the Proteome object passed as the first argument
     
     """
 
-    # check first argument is a proteome
+    # check first argument is a Proteome
     interface_tools.check_proteome(proteome, 'add_protein_attributes (si_protein_attributes)')
     
     for protein in proteome:
@@ -121,10 +152,10 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
 ##
 def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=True, skip_bad=True, verbose=True):
     """
-    Function that takes a correctly formatted shephard 'domains' file and reads 
-    all domains into the passed proteome.
+    Function that takes a correctly formatted Proteome 'domains' file and reads 
+    all domains into the passed Proteome.
 
-    Expect Domain files to have the followin format:
+    Expect Domain files to have the following format:
 
     One domain per line where:
     
@@ -136,15 +167,36 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=Tr
     - Key value must be separated by a ':', as a result any delimiter (other than ':') can be 
       used, but ':' is reserved for this role
     
-    
+
     Parameters
     ----------
     proteome : Proteome Object
-        Proteome object 
+        Proteome object to which domains will be added
 
-    filename : string
+    filename : str
+        Name of the shephard domains file to read
 
-    <TO DO>
+    delimiter : str 
+        String used as a delimiter on the input file. Default = '\t'
+
+    safe : boolean 
+        If set to True over-writing attributes will raise an exception. If False, overwriting
+        an attribute will silently over-write. Default = True.
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True
+    
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+
+    Returns
+    -----------
+    None
+        No return value, but domains are added to the Proteome object passed as the first argument
+            
 
         
     """        

@@ -1,7 +1,6 @@
 """
-Site Class File - ShanEnt Suite 
-
-version: 3
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 Authors: Garrett M. Ginell & Alex S. Holehouse
 Contact: (g.ginell@wustl.edu)
@@ -16,6 +15,40 @@ from .exceptions import ProteinException
 # Class that defines a Site in sequence
 #
 class Site:
+    """
+    Sites are defined sub-positions within a protein that map to a specific residue.
+    
+    Proteins contain a list of 0 or more sites, and each site is associated 
+    with the protein it originates from via the linking protein object.
+
+
+    Parameters
+    -------------
+
+    position : int
+        Position in sequence associated with this site
+
+    site_type :  str
+        Identifier for the site type
+
+    protein : Protein
+        Protein object for which this site is part of
+
+    symbol : str
+        Symbol associated with the site - a string-based representation of something specific
+        to the site. For a mutation that could be the residue the native residue mutates to, 
+        for example. Is not required. Default = None.
+
+    value : float
+        Value associated with the site - a numerical value (cast to a float). Is not required.
+        Default = None.
+
+    attribute_dictionary : dict
+        Dictionary where key/value pairs allow a Site to have arbitrary metadata 
+        associated with it.
+    
+        
+    """
     
     def __init__(self, position, site_type, protein, symbol=None, value=None, attributes={}):
 

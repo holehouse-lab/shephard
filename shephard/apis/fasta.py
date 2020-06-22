@@ -1,13 +1,11 @@
 """
-fasta.py
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
-From the SHEPHARD package
-Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
-Ginell & Holehouse, 2020
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
 
-Handles reading and writing of FASTA files for interfacing with Proteome objects. Provides the base-level
-code for actually doing the read/writing, allowing other functions to act on top of this.
-
+Holehouse Lab - Washington University in St. Louis
 """
 
 import protfasta
@@ -17,7 +15,7 @@ from shephard.proteome import Proteome
 ##
 def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, invalid_sequence_action='fail'):
     """
-    Stand alone function that allows the user to build a proteome from a standard
+    Stand alone function that allows the user to build a Proteome from a standard
     FASTA file. 
 
     The input filename must be a FASTA file without duplicate headers. If the file
@@ -25,7 +23,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
     the protfasta (https://protfasta.readthedocs.io/) package to parse through the
     FASTA file first creating a santizied input FASTA.
     
-    Each protein in a proteome must have a unique_ID associated with it. There
+    Each protein in a Proteome must have a unique_ID associated with it. There
     are two ways a FASTA file can be used to generate a unique ID:
 
         1. By parsing the FASTA header, which could be as much as simply reading 
@@ -87,7 +85,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
 
     # extract the keys (FASTA headers) and initialize the record_index (internal
     # numbering used for construction. Also initialize the proteom_dict, which is
-    # a dictionary of protein entries we passe to Proteome.
+    # a dictionary of protein entries we passed to Proteome.
     record_index  = 0
     proteome_list = []
 
@@ -96,7 +94,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
 
         # create a key-value pair where 
         #   key = the unique record_index (this is only used for internal structure
-        #         within this function to assure we never overwright in this dictionary
+        #         within this function to assure we never overwrite in this dictionary
         #
         #  value = a four-position list where the positions reflect the following
         #        [0] = amino acid sequence
@@ -139,7 +137,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
 def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, include_attributes_in_header=False):
     """
     Stand alone function that allows the user to write a FASTA file from a
-    proteome file. 
+    Proteome file. 
 
 
     Parameters

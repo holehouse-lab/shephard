@@ -1,12 +1,11 @@
 """
-uniprot.py
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
-From the SHEPHARD package
-Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
-Ginell & Holehouse, 2020
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
 
-Handles all I/O associated with uniprot-derived files.
-
+Holehouse Lab - Washington University in St. Louis
 """
 
 

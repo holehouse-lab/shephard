@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 from .interface_exceptions import InterfaceException
 from . import interface_tools 
 from shephard.exceptions import ProteinException
@@ -74,7 +84,7 @@ class _SitesInterface:
 def add_sites_from_dictionary(proteome, sites_dictionary):
     """
     Function that takes a correctly formatted Sites dictionary and will add those 
-    sites to the proteins in the proteome.
+    sites to the proteins in the Proteome.
 
     Sites dictionaries are key-value pairs, where the key is a unique_ID associated 
     with a given protein, and the value is a list of lists. Each sublist has five positions
@@ -104,10 +114,10 @@ def add_sites_from_dictionary(proteome, sites_dictionary):
             [3] = site value 
             [4] = site attribute dictionary
 
-        Recall the only type-sepecific values (position and value) are cast automatically when a 
+        Recall the only type-specific values (position and value) are cast automatically when a 
         site is added by the Protein object, so no need to do that in this function too.
 
-        Exta elements in the each sites_dictionary value are ignored.
+        Extra elements in the each sites_dictionary value are ignored.
 
     Returns
     ---------
@@ -138,7 +148,7 @@ def add_sites_from_file(proteome, filename, delimiter='\t', skip_bad=True):
     Function that provides the user-facing interface for reading correctly configured SHEPHARD 
     sites files and adding those sites to the proteins of interest.
     
-    A SHEPHARD sites file is a tab (or other) deliniated file where each line has the following
+    A SHEPHARD sites file is a tab (or other) delineated file where each line has the following
     convention:
 
     Unique_ID, position, site type, symbol, value, [ key_1:value_1, key_2:value_2, ..., key_n:value_n ]
@@ -156,9 +166,30 @@ def add_sites_from_file(proteome, filename, delimiter='\t', skip_bad=True):
     [4] = site attribute dictionary
 
 
-    TBC
-    
+    Parameters
+    -------------
+    proteome : Proteome
+        Proteome object to which we're adding sites. Note that ONLY sites for which a protein
+        is found will be used. Protein-Site cross-referencing is done using the protein's unique_ID
+        which should be the key used in the sites_dictionary
 
+    filename : str
+        Name of the shephard domains file to read
+
+    delimiter : str 
+        String used as a delimiter on the input file. Default = '\t'
+
+    skip_bad : boolean
+        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
+        will just skip them. By default this is true, which adds a certain robustness to file 
+        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+        printed (regardless of verbose flag). Default = True
+    
+    Returns
+    ---------
+    None
+        No return value, but adds all of the passed sites to the protein
+    
     """
 
     # check first argument is a proteome

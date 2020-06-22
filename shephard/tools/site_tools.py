@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 from shephard import general_utilities
 import numpy as np
 
@@ -65,8 +75,7 @@ def build_site_density_vector(protein, site_types=None, block_size=30, append_le
             for s in site:
                 if s.site_type in site_types:
                     all_res[i-1] = 1
-                    
-        
+                            
     # finally we're going to calculate the density of sites from this vector
     # note we're treating site presence as a binary phenomenon - ie a residue
     # has a site or does not

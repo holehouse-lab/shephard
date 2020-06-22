@@ -1,3 +1,13 @@
+"""
+SHEPHARD: 
+Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+
+Authors: Garrett M. Ginell & Alex S. Holehouse
+Contact: (g.ginell@wustl.edu)
+
+Holehouse Lab - Washington University in St. Louis
+"""
+
 from .interface_exceptions import InterfaceException
 from . import interface_tools 
 from shephard.exceptions import ProteinException
@@ -13,7 +23,7 @@ class _DomainsInterface:
 
     def __init__(self, filename, delimiter='\t', skip_bad=True):
         """
-        Expect files of the followin format:
+        Expect files of the following format:
 
         Unique_ID, start, stop, domain_type, key1:value1, key2:value2, ..., keyn:valuen
 
@@ -24,7 +34,7 @@ class _DomainsInterface:
         """
 
         if delimiter == ':':
-            raise InterfaceException('When parsing domain file cannot use ":" as a delimeter because this is used to delimit key/value pairs (if provided)')
+            raise InterfaceException('When parsing domain file cannot use ":" as a delimiter because this is used to delimit key/value pairs (if provided)')
 
         with open(filename,'r') as fh:
             content = fh.readlines()
@@ -81,7 +91,7 @@ class _DomainsInterface:
 def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, safe=True, skip_bad=True, verbose=True):
     """
     Function that takes a correctly formatted shephard 'domains' file and reads 
-    all domains into the passed proteome.
+    all domains into the passed Proteome.
 
     Expect Domain files to have the following format:
 
@@ -108,7 +118,7 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
 
     autoname : boolean
         If autoname is set to true, this function ensures each domain ALWAYS has a unique
-        name - i.e. the allows for multiple domains to be perfecly overlapping in position
+        name - i.e. the allows for multiple domains to be perfectly overlapping in position
         and type. This is generally not going to be required and/or make sense, but having
         this feature in place is useful. In general we want to avoid this as it makes it 
         easy to include duplicates which by default are prevented when autoname = False. 
@@ -124,7 +134,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
         parsing, but could also hide errors. Note that if lines are skipped a warning will be 
         printed (regardless of verbose flag). Default = True
     
-
     verbose : boolean
         Flag that defines how 'loud' output is. Will warn about errors on adding domains.
 
@@ -152,7 +161,7 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
 def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, safe=True, verbose=True):
     """
     Function that takes a correctly formatted Domains dictionary and will add those 
-    domains to the proteins in the proteome.
+    domains to the proteins in the Proteome.
 
     Domains dictionaries are key-value pairs, where the key is a unique_ID associated 
     with a given protein, and the value is a list of lists. Each sublist has four positions
@@ -164,8 +173,8 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 
     The start and end positions should be locations within the sequence defined by the unique_ID, 
     and if they are out of the sequence bounds this will throw an exception. Domain type is a string
-    that nams the type of domain. The attribute dictionary is an arbitrary key-value pair dictionary 
-    where key-values map an arbitrary key to an aribitrary value. 
+    that names the type of domain. The attribute dictionary is an arbitrary key-value pair dictionary 
+    where key-values map an arbitrary key to an arbitrary value. 
 
     In this way, each domain that maps to a give unique_ID will be added. Note the attribute is
     optional.
@@ -177,7 +186,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 
     domain_dictionary : dict
         Dictionary that maps unique_IDs to domain lists [start, end, type, attribute_dictionary].
-
 
     autoname : boolean
         If autoname is set to true, this function ensures each domain ALWAYS has a unique
