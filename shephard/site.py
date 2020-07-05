@@ -315,6 +315,6 @@ class Site:
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "|Site: %i-%s| in %s" % (self.position, self._site_type, self.protein)
+        return "|Site: %s @ %i in protein %s" % (self._site_type, self.position, self.protein.unique_ID)
     
     

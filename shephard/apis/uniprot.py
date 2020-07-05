@@ -60,7 +60,7 @@ def uniprot_fasta_to_proteome(filename, invalid_sequence_action='fail'):
 
     >xx|ACCESSION|xxxx
 
-    where ACCESSION is the uniprot accession and will be used as the unique_ID
+    Where ACCESSION is the uniprot accession and will be used as the unique_ID
     
     Parameters
     ------------
@@ -69,6 +69,17 @@ def uniprot_fasta_to_proteome(filename, invalid_sequence_action='fail'):
         Name of the FASTA file we're going to parse in. Note the protein name will be
         defined as the full FASTA header for each entry.
 
+
+    invalid_sequence_action : ``'ignore'``, ``'fail'``, ``'remove'``, ``'convert'``, ``'convert-ignore'``
+        [**Default = 'fail'**] Selector that determines how to deal with invalid sequences that contain invalid/non-standard amino acids. If ``convert`` or ``convert-ignore`` are chosen, then conversion is completed with either the standard conversion table (shown under the ``correction_dictionary`` documentation) or with a custom conversion dictionary passed to ``correction_dictionary``. 
+
+        Options are as follows: 
+            * ``ignore``  - invalid sequences are completely ignored
+            * ``fail``    - invalid sequence cause parsing to fail and throw an exception
+            * ``remove`` - invalid sequences are removed
+            * ``convert`` - invalid sequences are convert
+            * ``convert-ignore`` - invalid sequences are converted to valid sequences and any remaining invalid residues are ignored
+    
     Returns 
     --------
     Proteome Object

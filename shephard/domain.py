@@ -45,6 +45,11 @@ class Domain:
     domain_type :  str
         Name of the domain type - can be any free-form string
 
+    domain_name : str
+        The name used as an index by the associated protein to identify this domain.
+        This is ONLY used such that you can re-reference a domain back to the protein
+        if needed.
+
     attribute_dictionary : dict
         Dictionary where key/value pairs allow a Domain to have
         arbitrary metadata associated with it.
@@ -53,7 +58,7 @@ class Domain:
 
     ## ------------------------------------------------------------------------
     ##          
-    def __init__(self, start, end, protein, domain_type, attribute_dictionary=None):
+    def __init__(self, start, end, protein, domain_type, domain_name, attribute_dictionary=None):
         """ 
         """
         
@@ -71,6 +76,7 @@ class Domain:
 
         self._protein = protein         
         self._domain_type = domain_type
+        self._domain_name = domain_name
 
         # set attribute dictionary IF a dictionary was passed. Otherwise we just ignore
         # anything passed to attribute_dictionary
@@ -109,7 +115,6 @@ class Domain:
     ## ------------------------------------------------------------------------
     ##
     def attribute(self, name, safe=True):
-
         """
         Function that returns a specific attribute as defined by the name. 
 
@@ -240,6 +245,16 @@ class Domain:
         return self._domain_type
 
 
+    ## ------------------------------------------------------------------------
+    ##      
+    @property
+    def domain_name(self):
+        """
+        Returns the domain name as generated when added to the protein
+        """
+        return self._domain_name
+
+
 
 
     ######################################
@@ -307,15 +322,37 @@ class Domain:
     @property
     def sites(self):
         """
-        Get list of all sites inside the domain
+        Get list of all sites inside the domain.
         
         Returns
         --------
         list
-            Returns a list of positions for which sites exist in this domain
+            Returns a list of all the sites 
         """
         
+        all_sites = []
+        sites_dict = self._protein.get_sites_by_range(self.start, self.end)
+        for k in sites_dict:
+            for local_site in sites_dict[k]:
+                all_sites.append(local_sites)
+
+        return all_sites
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def site_positions(self):
+        """
+        Get list of all sites inside the domain.
+        
+        Returns
+        --------
+        list
+            Returns a list of all the site positions
+        """
         return list(self._protein.get_sites_by_range(self.start, self.end).keys())
+
 
     ## ------------------------------------------------------------------------
     ##
@@ -372,7 +409,6 @@ class Domain:
         return self._protein.get_sites_by_type_and_range(site_type, self.start, self.end)
         
 
-
     #######################################
     ##                                   ##
     ##      DOMAIN TRACK FUNCTIONS       ##
@@ -426,7 +462,7 @@ class Domain:
         If the track name is missing and safe is True, this will throw an exception,
         otherwise (if safe=False) then if the track is missing the function
         returns None
-
+        
         Parameters
         --------------
         
@@ -456,7 +492,7 @@ class Domain:
     ## ------------------------------------------------------------------------
     ##      
     def __repr__(self):
-        return "|Domain: %s, %i-%i (len=%i)| in %s" % (self._domain_type, self.start, self.end, len(self), self.protein)
+        return "|Domain: %s (%i-%i, len=%i) in protein %s" % (self._domain_type, self.start, self.end, len(self), self.protein.unique_ID)
 
     ## ------------------------------------------------------------------------
     ##      

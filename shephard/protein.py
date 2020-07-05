@@ -504,8 +504,30 @@ class Protein:
     @property
     def tracks(self):
         """
+        **[Property]**: Provides a list of Track objects associated with this
+        protein
+        
+        Returns
+        -------
+        list
+            returns a list of the Tracks (order will be consistent but is not 
+            sorted).
+
+
+        """
+        return [self._tracks[k] for k in self._tracks]
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def track_names(self):
+        """
         **[Property]**: Provides a list of the keys associated with each track 
         associated with this protein.
+
+        These keys can then be used to extract a specific track, or can be used
+        to check if a Track is present.
         
         Returns
         -------
@@ -551,7 +573,7 @@ class Protein:
             return self._tracks[name]
 
         elif safe:
-            raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.tracks))
+            raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, self.unique_ID, str(self.track_names)))
 
 
 
@@ -663,7 +685,7 @@ class Protein:
             # note - technically as the code is written now we don't need this, (the safety is dealt in get_track())
             # but I'm including it for best practice to avoid implicit dependencies in the code
             if safe:
-                raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.tracks))
+                raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.track_names))
             else:
                 return None
 
@@ -727,8 +749,7 @@ class Protein:
 
         """
 
-        if name in self.tracks:
-
+        if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
                 
@@ -858,7 +879,7 @@ class Protein:
         """
 
         # if this will overwrite an existing track and safe is on...
-        if name in self.tracks:
+        if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
 
@@ -995,7 +1016,7 @@ class Protein:
         """
 
         # if this will overwrite an existing track and safe is on...
-        if name in self.tracks:
+        if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
 
@@ -1042,7 +1063,7 @@ class Protein:
 
         """
 
-        if name in self.tracks:
+        if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
 
@@ -1069,10 +1090,31 @@ class Protein:
     @property
     def domains(self):
         """
-        **[Property]**: Returns a list of the domain names associated with this protein
+        **[Property]**: Returns a list of the Domain objects associated with
+        this protein, sorted by first reside of the domain.
 
         """
-        return list(self._domains.keys())
+    
+        domain_list = [self._domains[k] for k in self._domains]
+        domain_list.sort(key=lambda x: x.start, reverse=False)
+
+        return domain_list
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def domain_names(self):
+        """
+        **[Property]**: Returns a list of the domain names associated with 
+        this protein
+
+        """
+        
+        domain_list = self.domains
+        
+        
+        return [d.domain_name for d in domain_list]
 
 
     ## ------------------------------------------------------------------------
@@ -1080,9 +1122,9 @@ class Protein:
     @property
     def domain_types(self):
         """
-        **[Property]**: Returns a list of the unique domain types associated with 
-        this protein. There will be no duplicates here.
-
+        **[Property]**: Returns a list of the unique domain types associated 
+        with this protein. There will be no duplicates here.
+        
         """
 
         # define an empty set
@@ -1129,7 +1171,7 @@ class Protein:
         if name in self._domains:
             return self._domains[name]
         elif safe:
-            raise exceptions.ProteinException('No domains named [%s] in protein %s\n\nAvailable options are: %s' %(name, self, str(self.domains)))
+            raise exceptions.ProteinException('No domains named [%s] in protein %s\n\nAvailable domains are: %s' % (name, self.unique_ID, str(self.domain_names)))
       
       
     ## ------------------------------------------------------------------------
@@ -1261,7 +1303,7 @@ class Protein:
         full_name = "%s_%i_%i"%(domain_type, start, end)    
         
         # if this domain name was already found...
-        if full_name in self.domains:
+        if full_name in self.domain_names:
 
             # if we're in autoname mode create a new unique name. This acts to add an incrementer to the
             # end and cycles through until a unique domaintype_star_end_incrementer name is found, where 
@@ -1275,13 +1317,13 @@ class Protein:
                     increment = increment + 1
                     newname = "%s_%i_%i_%i"%(domain_type, start, end, increment)    
 
-                    if newname not in self.domains:
+                    if newname not in self.domain_names:
                         found = True                    
                 full_name = newname
             elif safe:
                 raise exceptions.ProteinException('Domain [%s] already found in proteins %s' % (full_name, self.name))
             
-        self._domains[full_name] = Domain(start, end, self, domain_type, attribute_dictionary=attribute_dictionary)
+        self._domains[full_name] = Domain(start, end, self, domain_type, full_name, attribute_dictionary=attribute_dictionary)
 
 
 
@@ -1387,8 +1429,7 @@ class Protein:
                     return False
 
         return_dict = {}
-        for domain_id in self.domains:
-            d = self.domain(domain_id)
+        for d in self.domains:
             if selection(d.domain_type):
                 return_dict[domain_id] = d
 
@@ -1402,17 +1443,38 @@ class Protein:
     ##                           ##
     ###############################
 
+
     ## ------------------------------------------------------------------------
     ##
     @property
     def sites(self):
         """
-        **[Property]**: Provides a list of the keys associated with every site on 
-        the protein. Recall sites are indexed simply by their position, so this returns
-        a list of positions associated with the protein where sites are found.
+        **[Property]**: Provides a list of the sites associated with every site on 
+        the protein. Sorted N to C terminal.
 
         """
-        return list(self._sites.keys())
+
+        # this means we will always
+        all_sites = []
+        for k in self._sites:
+            for s in self._sites[k]:
+                all_sites.append(s)
+
+        return all_sites
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def site_positions(self):
+        """
+        **[Property]**: Provides a list of the sorted positions where a site is found
+        the protein. Sorted N to C terminal.
+
+        """
+        site_keys = list(self._sites.keys())
+        site_keys.sort()
+        return site_keys
 
 
     ## ------------------------------------------------------------------------
@@ -1437,7 +1499,13 @@ class Protein:
 
         """
 
-        return self._sites[int(position)]
+        if int(position) in self._sites:
+            return self._sites[int(position)]
+        elif safe:
+            raise exceptions.ProteinException('No sites at position [%i] in protein %s\n\nAvailable sites are: %s' % (name, self.unique_ID, str(self.site_positions)))
+            
+
+            
         
 
     ## ------------------------------------------------------------------------

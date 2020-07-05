@@ -313,13 +313,12 @@ class Proteome:
     @property
     def domains(self):
         """
-        Function that returns a list of all domain objects associated with the Proteome. Unlike
-        when .domains is called on a Protein object (where a list of domain_IDs are returned)
-        the complete list of Domain objects is returned in a list. 
+        Function that returns a list of all domain objects associated with the Proteome. 
 
         This function is useful if you wish to indiscriminately ask questions of domains without
-        considering the proteins they come from. However, each Domain has a .protein object 
-        associated with it, so one can always map a Domain back to a Protein.
+        considering the proteins they come from. However, each Domain has a Protein object 
+        associated with it (via the .protein operator), so one can always map a Domain back to 
+        a Protein.
 
         Returns
         --------------
@@ -329,10 +328,9 @@ class Proteome:
         """
 
         all_domains = []
-
         for prot in self:
-            for domain_name in prot.domains:
-                all_domains.append(prot.domain(domain_name))
+            all_domains.extend(prot.domains)
+
         return all_domains
 
 
@@ -342,28 +340,24 @@ class Proteome:
     @property
     def sites(self):
         """
-        Function that returns a list of all Site objects associated with the Proteome. Unlike
-        when .sites is called on a Protein object (where a list of domain_IDs are returned)
-        the complete list of Domain objects is returned in a list. 
+        Function that returns a list of all Site objects associated with the Proteome. 
 
         This function is useful if you wish to indiscriminately ask questions of sites without
-        considering the proteins they come from. However, each Site has a .protein object 
-        associated with it, so one can always map a Site back to a Protein.        
+        considering the proteins they come from. However, each Site has a Protein object 
+        associated with it (via .protein operator), so one can always map a Site back to a 
+        Protein.        
 
         Returns
         --------------
-        list of Domains
-             A list of all the Domains from every protein in the Proteome
+        list of Sites
+             A list of all the Sites from every protein in the Proteome
         
         """
 
         all_sites = []
 
         for prot in self:
-            for site_name in prot.sites:
-                sitelist = prot.site(site_name)
-                for s in sitelist:
-                    all_sites.append(s)
+            all_sites.extend(prot.sites)
         return all_sites
                 
 

@@ -11,7 +11,7 @@ Holehouse Lab - Washington University in St. Louis
 from shephard import general_utilities
 import numpy as np
 
-def build_site_density_vector(protein, site_types=None, block_size=30, append_leading_lagging=True):
+def build_site_density_vector(protein, site_types=None, window_size=30, append_leading_lagging=True):
     """
     Function that constructs a sliding-window density vector of sites along
     a protein.
@@ -33,7 +33,7 @@ def build_site_density_vector(protein, site_types=None, block_size=30, append_le
         a single string or a list of strings can be passed, allowing for one or
         more sites to be grouped together
 
-    blocksize : int
+    window_size : int
         Size of sliding window over which site density is calculated
 
     append_leading_lagging : Bool
@@ -47,7 +47,7 @@ def build_site_density_vector(protein, site_types=None, block_size=30, append_le
 
         Returns a list of values equal to the length of the protein, where
         the value at each position reports on the local denisty of sites 
-        averaged over the blocksize.
+        averaged over the window_size.
 
     """
 
@@ -62,37 +62,39 @@ def build_site_density_vector(protein, site_types=None, block_size=30, append_le
     all_res = [0]*len(protein)
 
     # then for each site assign a '1' to positions where a site exists
-    for i in protein.sites:
-        site = protein.site(i)
+    for position in protein.site_positions:
+        sites = protein.site(position)
 
         # if we didn't specifit a site type assume all sites are fair game
         if site_types is None:
-            all_res[i-1] = 1
+            all_res[position - 1] = 1
 
         # else validate against the set of available sites and IF the site
         # matches the requested
         else:
-            for s in site:
+
+            # for every site object found at $position
+            for s in sites:
                 if s.site_type in site_types:
-                    all_res[i-1] = 1
+                    all_res[position - 1] = 1
                             
     # finally we're going to calculate the density of sites from this vector
     # note we're treating site presence as a binary phenomenon - ie a residue
     # has a site or does not
     density_vector = []
-    for pos in range(0, (nres - block_size)+1):
+    for pos in range(0, (nres - window_size)+1):
 
-        local_density = np.sum(all_res[pos:pos+block_size])/block_size        
+        local_density = np.sum(all_res[pos:pos+window_size])/window_size        
 
         density_vector.append(local_density)
 
-    # having built a density vector that is nres-blocksize+1 in length, we now need to extend the N and C
+    # having built a density vector that is nres-window_size+1 in length, we now need to extend the N and C
     # termini such that the len(denisty_vector) = len(protein)
 
     # this code creates leading/lagging values to fill in the missing ones such that the actual value
-    # of the density vector reports on the density half-way across the blocksize and the 
+    # of the density vector reports on the density half-way across the window_size and the 
     # track length = nres
-    leading_values = [density_vector[0]]*int(block_size/2)
+    leading_values = [density_vector[0]]*int(window_size/2)
     lagging_values = [density_vector[-1]]*(nres - (len(density_vector) + len(leading_values)))
           
     # this line then combines the leading, desnity and lagging lists into a single list, and we
