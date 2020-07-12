@@ -1431,7 +1431,7 @@ class Protein:
         return_dict = {}
         for d in self.domains:
             if selection(d.domain_type):
-                return_dict[domain_id] = d
+                return_dict[d.domain_name] = d
 
         return return_dict
             
