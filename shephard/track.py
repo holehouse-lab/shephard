@@ -40,10 +40,16 @@ class Track:
     symbols : iterable of strings (default is None)
         This iterable is directly assigned to the track.symbols variable. Must be same length as the number of residues       
         in the protein.
+        
+    attribute_dictionary : dict (optional)
+        The attribute_dictionary provides a key-value pairing for arbitrary information.
+        This could include different types of identifies, track generator functions,
+        a set of Track partners, or anything else one might wish to associated with the
+        track as a whole.
 
     """
     
-    def __init__(self, name, protein, values=None, symbols=None):
+    def __init__(self, name, protein, values=None, symbols=None, attribute_dictionary = None):
         """
         """
 
@@ -90,6 +96,17 @@ class Track:
         if symbols is None and values is None:
             raise TrackException('Empty track provided [Track=%s, Protein=%s' %(name, str(protein)))
 
+            
+        # set attribute dictionary IF a dictionary was passed
+        if isinstance(attribute_dictionary, dict):
+            self._attributes = attribute_dictionary
+
+        # set dictionary to an empty dictionary if none was passed
+        elif attribute_dictionary is None:
+            self._attributes = {}
+
+        else:
+            raise exceptions.TrackException('[FATAL]: If provided, Track attribute must a dictionary')
 
         self._values  = values
         self._symbols = symbols
@@ -213,3 +230,104 @@ class Track:
 
     
     
+    ###################################
+    ##                               ##
+    ##     ATTRIBUTE FUNCTIONS       ##
+    ##                               ##
+    ###################################
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def attributes(self):
+        """
+        **[Property]**: Provides a list of the keys associated with every attribute associated
+        with this Track.
+
+        Returns
+        -------
+        list
+            returns a list of the attribute keys associated with the protein. 
+        """
+        return list(self._attributes.keys())
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def attribute(self, name, safe=True):
+
+        """
+        Function that returns a specific attribute as defined by the name. 
+
+        Recall that attributes are name : value pairs, where the 'value' can be 
+        anything and is user defined. This function will return the value associated 
+        with a given name.
+
+        Parameters
+        ----------------
+        name : str
+             The attribute name. A list of valid names can be found by calling the
+             ``<Track>.attributes()`` (which returns a list of the valid names)
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+            
+        Returns
+        ---------
+        Unknown 
+            Will either return whatever was associated with that attribute (which could be anything)
+            or None if that attribute is missing.
+        
+        """
+
+        # if name is in the _atributes dictionary the  return
+        if name in self._attributes:
+            return self._attributes[name]
+        else:
+
+            # else if safe was passed raise an exception if that attribute was missing
+            if safe:
+                raise TrackException('Requesting attribute [%s] from protein [%s] but this attribute has not been assigned' % (name, str(self))) 
+
+            # if safe not passed just return None
+            else:
+                return None
+                
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def add_attribute(self, name, val, safe=True):
+        """
+        Function that adds an attribute. Note that if safe is true, this function will
+        raise an exception if the attribute is already present. If safe=False, then
+        an existing value will be overwritten.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identify it
+
+        val : <anything>
+            An object or primitive we wish to associate with this attribute
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an attribute with the same
+            name already exists, otherwise the newly introduced attribute will overwrite
+            the previous one.
+
+        Returns
+        ---------
+            None - but adds an attribute to the calling object
+
+        """
+
+        if safe:
+            if name in self._attributes:
+                raise TrackException("Trying to add attribute [%s=%s] to Track [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                
+        self._attributes[name] = val

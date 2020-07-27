@@ -134,7 +134,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
 
 ## ------------------------------------------------------------------------
 ##
-def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, include_attributes_in_header=False):
+def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False):
     """
     Stand alone function that allows the user to write a FASTA file from a
     Proteome file. 
@@ -166,10 +166,6 @@ def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, inc
             fasta_header = "%s | UID=%s" %(protein.name, protein.unique_ID)
         else:
             fasta_header = protein.name
-            
-        # this is where we append the FASTA header with attrabutes    
-        if include_attributes_in_header:
-            fasta_header = fasta_header + ' '.join(["%s=%s" % (i,j) for i,j in protein._attributes.items()]) 
             
         outlist.append([fasta_header, protein.sequence])
         

@@ -71,7 +71,7 @@ class Proteome:
             self._attributes = {}
 
         else:
-            raise exceptions.ProteinException('[FATAL]: If provided, protein attribute must a dictionary')
+            raise exceptions.ProteomeException('[FATAL]: If provided, Proteome attribute must a dictionary')
 
         # for each entry in the input list
         for entry in input_list:
@@ -222,7 +222,7 @@ class Proteome:
         Returns
         -------
         list
-            returns a list of the attribute keys associated with the protein. 
+            returns a list of the attribute keys associated with the Proteome. 
 
 
         """
