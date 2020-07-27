@@ -8,9 +8,10 @@ Contact: (g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 
-from .interface_exceptions import InterfaceException
+
 from . import interface_tools 
-from shephard.exceptions import ProteinException
+from shephard.exceptions import InterfaceException, ProteinException, DomainException
+import shephard.exceptions as shephard_exceptions
 
 class _DomainsInterface:
 
@@ -29,7 +30,9 @@ class _DomainsInterface:
 
         Note that the first four arguments are required, while all of the key:value pairs 
         are optional. Key value must be separated by a ':', but any delimiter (other than ':') 
-        is allowed
+        is allowed.
+
+        
 
         """
 
@@ -53,7 +56,7 @@ class _DomainsInterface:
                 start = int(sline[1].strip())
                 end = int(sline[2].strip())
                 domain_type = sline[3].strip()
-                attribute_dictionary = {}
+                attributes = {}
             except Exception:
 
                 msg = 'Failed parsing file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line)
@@ -68,12 +71,12 @@ class _DomainsInterface:
             
             # if some key/value pairs were included then parse these out one at a time
             if len(sline) > 4:
-                attribute_dictionary = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
+                attributes = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
                                           
             if unique_ID in ID2domain:
-                ID2domain[unique_ID].append([start, end, domain_type, attribute_dictionary])
+                ID2domain[unique_ID].append([start, end, domain_type, attributes])
             else:
-                ID2domain[unique_ID] =[[start, end, domain_type, attribute_dictionary]]
+                ID2domain[unique_ID] =[[start, end, domain_type, attributes]]
 
         self.data = ID2domain
 
@@ -123,11 +126,17 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
         this feature in place is useful. In general we want to avoid this as it makes it 
         easy to include duplicates which by default are prevented when autoname = False. 
         Default = False.
-    
-    safe : boolean 
-        If set to True over-writing domains will raise an exception. If False, overwriting
-        a domain will silently over-write. Default = True.
 
+    safe : boolean 
+        If set to True then any exceptions raised during the domain-adding process (i.e. after file
+        parsing) are acted on. If set to false, exceptions simply mean the domain in question is skipped. 
+        Note if set to False, pre-existing domains with the same name would be silently overwritten (although 
+        this is not consider an error), while overwriting will trigger an exception in safe=True.
+        There are various reasons domain addition could fail (start/end position outside of the 
+        protein limits etc) and so if verbose=True then the cause of an exception is also printed to 
+        screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
+        Default = True.
+        
     skip_bad : boolean
         Flag that means if bad lines (lines that trigger an exception) are encountered the code 
         will just skip them. By default this is true, which adds a certain robustness to file 
@@ -143,7 +152,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
         No return value, but domains are added to the Proteome object passed as the first argument
             
     """        
-
 
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_domains_from_file (si_domains)')
@@ -169,23 +177,23 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     [0] = start position
     [1] = end position 
     [2] = domain type
-    [3] = attribute dictionary
+    [3] = attributes dictionary
 
     The start and end positions should be locations within the sequence defined by the unique_ID, 
     and if they are out of the sequence bounds this will throw an exception. Domain type is a string
-    that names the type of domain. The attribute dictionary is an arbitrary key-value pair dictionary 
-    where key-values map an arbitrary key to an arbitrary value. 
+    that names the type of domain. The attributes dictionary is an arbitrary key-value pair dictionary 
+    where key-values map an arbitrary key to an arbitrary value (read in as strings).
 
     In this way, each domain that maps to a give unique_ID will be added. Note the attribute is
     optional.
 
     Parameters
     ----------
-    proteome : Proteome Object
+    proteome : Proteome object
         Proteome object to which domains will be added
 
     domain_dictionary : dict
-        Dictionary that maps unique_IDs to domain lists [start, end, type, attribute_dictionary].
+        Dictionary that maps unique_IDs to domain lists [start, end, type, attributes].
 
     autoname : boolean
         If autoname is set to true, this function ensures each domain ALWAYS has a unique
@@ -196,14 +204,17 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         Default = False.
     
     safe : boolean 
-        If set to True over-writing domains will raise an exception. If False, overwriting
-        a domain will silently over-write. Default = True.
-
-    skip_bad : boolean
-        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
-        will just skip them. By default this is true, which adds a certain robustness to file 
-        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
-        printed (regardless of verbose flag). Default = True.
+        If set to True then any exceptions raised during the Domain-adding process are acted
+        on. If set to False, exceptions simply mean the domain in question is skipped. 
+        Note if set to False, pre-existing Domains with the same name would be silently overwritten (although 
+        this is not consider an error), while overwriting will trigger an exception in safe=True
+        There are various reasons Domain addition could fail (start/end position outside of the 
+        protein limits etc.) and so if verbose=True then the cause of an exception is also printed to 
+        screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
+        Default = True.
+    
+    verbose : boolean
+        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
 
     Returns
     -----------
@@ -231,18 +242,16 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
                 
                 # try and add the domain...
                 try:
-                    protein.add_domain(start, end, domain_type, attribute_dictionary=ad, safe=False, autoname=autoname)
-                except ProteinException as e:
+                    protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
+                except (ProteinException, DomainException) as e:
 
-                    msg='- skippiing domain at %i-$i on %s' %(start, end, protein)
+                    msg='- skipping domain at %i-$i on %s' %(start, end, protein)
                     if safe:
-                        # if safe=True fail on any errors
-                        print('Error %s' %(msg)) 
-                        raise e
+                        shephard_exceptions.print_and_raise_error(msg, e)
                     else:
                         if verbose:
-                            print('Warning %s' %(msg))
-                        continue
+                            shephard_exceptions.print_warning(msg,e)
+                            continue
 
 
 
@@ -250,25 +259,56 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 
 ## ------------------------------------------------------------------------
 ##
-def write_domains(proteome, filename, delimiter='\t', skip_bad=False):
+def write_domains(proteome, filename, delimiter='\t'):
     """
     Function that writes out domains to file in a standardized format.
     
-    <TO DO>
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    filename : str
+        Filename that will be used to write the new domains file
+
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_domains_from
+        file()` function
+
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of domains
+        from this proteome written to disk.
 
     """
 
     with open(filename, 'w') as fh:
         for protein in proteome:
             for d in protein.domains:
+
+                # systematically construct each line in the file 
+                line = ''
+                line = line + str(protein.unique_ID) + delimiter
+
                 start = protein.domain(d).start
+                line = line + str(start) + delimiter
+
                 end = protein.domain(d).end
-                domain_type = protein.domain(d).domain_type
-                fh.write('%s%s%i%s%i%s%s\n' % (protein.unique_ID, 
-                                               delimiter, 
-                                               start,
-                                               delimiter,
-                                               end,
-                                               delimiter,
-                                               domain_type))
-    
+                line = line + str(end) + delimiter
+
+                domain_type = protein.domain(d).domain_type                
+                line = line + str(domain_type)
+
+                if domain.attributes:
+                    for k in domain.attributes:
+                        line = line + delimiter
+                        line = line + str(k) + ":" + str(domain.attributes[k])
+
+                line = line + "\n"
+                        
+
+
+                fh.write('%s'%(line))

@@ -17,7 +17,7 @@ def test_proteome_len(TS1):
     assert len(TS1) == len(TS1.proteins)
 
     
-def test_proteins_retriev(TS1):
+def test_proteins_retrieve(TS1):
     # checks that all the unique IDs are there as expected
     for protein in TS1.proteins:
         assert protein in names_list
@@ -63,12 +63,9 @@ def test_domain_retriev(TS1_domains):
     assert len(TS1_domains.domains) == 21
 
 
-
 def test_domain_retriev(TS1_domains2_sites):
     # check we corretly can get all sites
     assert len(TS1_domains2_sites.sites) == 209
-
-
 
 def test_protein(TS1_domains2_sites):
     # check we corretly access a valid protein

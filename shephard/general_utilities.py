@@ -11,6 +11,8 @@ Holehouse Lab - Washington University in St. Louis
 from . import exceptions
 from shephard.exceptions import ShephardException
 
+STANDARD_AAs = 'ACDEFGHIKLMNPQRSTVWY'
+
 
 ## ------------------------------------------------------------------------
 ##
@@ -84,12 +86,43 @@ def numerical_average(l):
 ##
 def numerical_sum(l):
 
+
     t = 0
 
     for i in l:
         t = t + i
 
     return t
+
+## ------------------------------------------------------------------------
+##
+def variable_is_dictionary(v, exc, msg):
+    """
+    General function to verify if a variable is a dictionary.
+
+    Parameters
+    -----------
+    v : proposed dictionary
+        Variable we are check if is a dictionary or not
+
+    exc : Exception
+        Subclass of exception that will be raised upon failured
+
+    msg : str
+        String to be passed to the exception when it's raised
+
+    Returns
+    -------
+    None or exception-rasied
+        If the passed variable is a dictionary returns True, else
+        raises an exception
+
+    """
+    if not isinstance(v, dict):
+        raise exc(msg)
+
+    return None
+
 
 
 

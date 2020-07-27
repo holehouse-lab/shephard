@@ -11,8 +11,9 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import sequence_utilities
-from . import exceptions
-from shephard.tools import domain_tools
+from .exceptions import DomainException
+from . import general_utilities
+from .tools import domain_tools
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a sequence region 
@@ -50,7 +51,7 @@ class Domain:
         This is ONLY used such that you can re-reference a domain back to the protein
         if needed.
 
-    attribute_dictionary : dict
+    attributes  : dict
         Dictionary where key/value pairs allow a Domain to have
         arbitrary metadata associated with it.
         
@@ -58,7 +59,7 @@ class Domain:
 
     ## ------------------------------------------------------------------------
     ##          
-    def __init__(self, start, end, protein, domain_type, domain_name, attribute_dictionary=None):
+    def __init__(self, start, end, protein, domain_type, domain_name, attributes={}):
         """ 
         """
         
@@ -78,17 +79,10 @@ class Domain:
         self._domain_type = domain_type
         self._domain_name = domain_name
 
-        # set attribute dictionary IF a dictionary was passed. Otherwise we just ignore
-        # anything passed to attribute_dictionary
-        if isinstance(attribute_dictionary, dict):
-            self._attributes = attribute_dictionary
+        general_utilities.variable_is_dictionary(attributes, DomainException, 'attributes argument passed to domain %s [%i-%i] in protein %s is not a dictionary' %(self._domain_type, self._start, self._end, self._protein))
 
-        # set dictionary to an empty dictionary if none was passed
-        elif attribute_dictionary is None:
-            self._attributes = {}
+        self._attributes = attributes
 
-        else:
-            raise exceptions.DomainException('[FATAL]: If provided, protein attribute must a dictionary')
 
         # update unique domain types
         protein.proteome.__update_domain_types(self._domain_type)

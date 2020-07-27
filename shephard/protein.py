@@ -18,7 +18,7 @@ from .exceptions import ProteinException
 from .import general_utilities
 
 
-STANDARD_AAs = 'ACDEFGHIKLMNPQRSTVWY'
+
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Entry
@@ -54,15 +54,15 @@ class Protein:
         requirement of a unique ID as well as allowing effective cross-refering from 
         other databases.
 
-    attribute_dictionary : dict (optional)
-        The attribute_dictionary provides a key-value pairing for arbitrary information.
+    attributes : dict (optional)
+        The attributes provides a key-value pairing for arbitrary information.
         This could include gene names, different types of identifies, protein copy number,
         a set of protein partners, or anything else one might wish to associated with the
-        protein as a whole.
+        protein as a whole. Default = {}
 
     """
     
-    def __init__(self, seq, name, proteome, unique_ID = None, attribute_dictionary = None):
+    def __init__(self, seq, name, proteome, unique_ID, attributes = {}):
         """
         """
         
@@ -75,16 +75,10 @@ class Protein:
         self._len = len(seq) # protein length 
         self._true_len = len(self._sequence) # length of string the protein is in
 
-        # set attribute dictionary IF a dictionary was passed
-        if isinstance(attribute_dictionary, dict):
-            self._attributes = attribute_dictionary
+        general_utilities.variable_is_dictionary(attributes, ProteinException, 'attributes argument passed to protein %s is not a dictionary' %(self._name))
 
-        # set dictionary to an empty dictionary if none was passed
-        elif attribute_dictionary is None:
-            self._attributes = {}
+        self._attributes  = attributes
 
-        else:
-            raise exceptions.ProteinException('[FATAL]: If provided, protein attribute must a dictionary')
         
         # initialize the empty dictionaries for the set of sites, domains and tracks
         self._sites   = {}
@@ -285,7 +279,7 @@ class Protein:
         """
 
         for i in self._sequence:
-            if i not in STANDARD_AAs:
+            if i not in general_utilities.STANDARD_AAs:
                 return False
         return True
 
@@ -441,7 +435,7 @@ class Protein:
         
         """
 
-        # if name is in the _atributes dictionary the  return
+        # if name is in the _attributes dictionary the  return
         if name in self._attributes:
             return self._attributes[name]
         else:
@@ -1186,7 +1180,7 @@ class Protein:
         start : domain start position (in real sequence, not i0 indexing)
         end   : domain end position (in real sequence, not i0 indexing)
         domain_type : type of the domain (string)
-        attribute_dictionary : a dictionary of attributes to associated with the domain (optional)
+        attributes : a dictionary of attributes to associated with the domain (optional)
         
         Note that in start, end, and domain_type are the only required key-value pairs required in
         the dictionary.
@@ -1204,7 +1198,7 @@ class Protein:
             domain_type          : string (domain type)
 
             OPTIONAL:
-            attribute_dictionary : dictionary of arbitrary key-value pairs 
+            attributes           : dictionary of arbitrary key-value pairs 
                                    that will be associated with the domain
             
 
@@ -1245,8 +1239,8 @@ class Protein:
             except Exception:
                 raise ProteinException("When trying to add domains with the add_domains function one or more dictionaries in the return list lacked a 'start', 'end', or 'domain_type' key, and/or the start/end values could not be correctly coverted to integers")
                 
-            if 'attribute_dictionary' in new_domain:
-                ad = new_domain
+            if 'attributes' in new_domain:
+                ad = new_domain['attributes']
             else:
                 ad = {}
 
@@ -1256,7 +1250,7 @@ class Protein:
         
     ## ------------------------------------------------------------------------
     ##
-    def add_domain(self, start, end, domain_type, attribute_dictionary=None, safe=True, autoname=False):
+    def add_domain(self, start, end, domain_type, attributes={}, safe=True, autoname=False):
         """
         Function that adds a domain, automatically generating a unique name if 
         none is provided. Domain type can be used to assign a specific type if
@@ -1281,10 +1275,10 @@ class Protein:
             None unique string that allows a type identifier to be associated 
             with a domain. 
 
-        attribute_dictionary : dictionary [optional]
+        attributes : dictionary [optional]
             Optional dictionary which allows an arbitrary set of attributes to be
             associated with a domain, in much the same way that they can be associated
-            with a protein. Default = None.
+            with a protein. Default = {}.
 
         safe : boolean 
             If set to True over-writing tracks will raise an exception, otherwise overwriting
@@ -1323,7 +1317,7 @@ class Protein:
             elif safe:
                 raise exceptions.ProteinException('Domain [%s] already found in proteins %s' % (full_name, self.name))
             
-        self._domains[full_name] = Domain(start, end, self, domain_type, full_name, attribute_dictionary=attribute_dictionary)
+        self._domains[full_name] = Domain(start, end, self, domain_type, full_name, attributes=attributes)
 
 
 
@@ -1348,7 +1342,7 @@ class Protein:
             start : domain start position
             end   : domain end position
             domain_type : type of the domain
-            attribute_dictionary : a dictionary of attributes to associated with the domain (optional)
+            attributesc : a dictionary of attributes to associated with the domain (optional)
             
             Note that in principle only start and end are required, although we highly recommend  one/both of domain name and 
             domain type.
@@ -1502,7 +1496,7 @@ class Protein:
         if int(position) in self._sites:
             return self._sites[int(position)]
         elif safe:
-            raise exceptions.ProteinException('No sites at position [%i] in protein %s\n\nAvailable sites are: %s' % (name, self.unique_ID, str(self.site_positions)))
+            raise exceptions.ProteinException('No sites at position %i in protein %s\n\nAvailable sites are: %s' % (position, self.unique_ID, str(self.site_positions)))
             
 
             

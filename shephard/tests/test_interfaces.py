@@ -18,3 +18,6 @@ def test_load_protein_attribute(TS1_domains2_sites_tracks_protein_attributes):
 
     assert len(TS1_domains2_sites_tracks_protein_attributes.protein('O00401').attributes) == 5
 
+
+
+

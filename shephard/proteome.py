@@ -8,6 +8,7 @@ Contact: (g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 
+from . import general_utilities
 from .exceptions import ProteomeException
 from .protein import Protein
 from itertools import islice
@@ -31,11 +32,11 @@ class Proteome:
                                       
     ``unique_ID`` :  *str* - This must be unique with respect to all other unique_IDs in the set of proteins in the input list. 
                                       
-    ``attribute_dict`` : *dict* - Dictionary of one or more attributes to apply to this protein. Key/value pairs in this dictionary can be arbitrary and are user defined.
+    ``attributes`` : *dict* - Dictionary of one or more attributes to apply to this protein. Key/value pairs in this dictionary can be arbitrary and are user defined.
 
     As an example
 
-    >>> protein_dictionary_example = {'sequence':'ALAPSLLPAMPALSPALSP', 'name': 'my protein fragment', 'unique_ID':'UXX01', 'attribute_dict':{}}
+    >>> protein_dictionary_example = {'sequence':'ALAPSLLPAMPALSPALSP', 'name': 'my protein fragment', 'unique_ID':'UXX01', 'attributes':{}}
     >>> dictionary_list = []
     >>> dictionary_list.append(protein_dictionary_example)
     >>> P = Proteome(dictionary_list)
@@ -44,7 +45,7 @@ class Proteome:
     
     **Notes**
 
-    * NOTE that ALL FOUR of these are required for EACH protein, even if the attribute_dict is empty.
+    * NOTE that ALL FOUR of these are required for EACH protein, even if the attributes dictionary is empty.
     * The unique_ID is checked for uniqueness against all others in the Proteomes and will throw and exception if it is, in fact, not unique.
     * Additional proteins can be added using the `.add_protein()` or `.add_proteins() function.
 
@@ -52,7 +53,7 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def __init__(self, input_list, attribute_dictionary = None):
+    def __init__(self, input_list, attributes = {}):
         # See the Proteome class documentation for constructor info
         """
         """
@@ -61,39 +62,33 @@ class Proteome:
         self._records = {}
         self._unique_domain_types = []
         self._unique_site_types = []
+
         
-        # set attribute dictionary IF a dictionary was passed
-        if isinstance(attribute_dictionary, dict):
-            self._attributes = attribute_dictionary
+        general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary')
 
-        # set dictionary to an empty dictionary if none was passed
-        elif attribute_dictionary is None:
-            self._attributes = {}
+        self._attributes = attributes
 
-        else:
-            raise exceptions.ProteinException('[FATAL]: If provided, protein attribute must a dictionary')
-
-        # for each entry in the input list
+        # for each protein entry in the input list
         for entry in input_list:
         
             try:
                 sequence       = str(entry['sequence'])
                 name           = str(entry['name'])
                 unique_ID      = str(entry['unique_ID'])
-                attribute_dict = entry['attribute_dictionary']
+                attributes     = entry['attributes']
             except KeyError:
                 # if something goes wrong while extracting the four required attributes we build a 
                 # diagnosis string and then print this as we raise an exception. The goal here is to
                 # try and provide the user with as much info as possible to diagnose the problem
             
-                diagnosis_string = __build_diagnosis_string_proteome_construction(entry)
+                diagnosis_string = self.__build_diagnosis_string_proteome_construction(entry)
                 raise ProteomeException('%s'%(diagnosis_string))
             
             if unique_ID in self._records:
                 raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
 
             # add in a new protein
-            self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attribute_dict)
+            self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
 
 
 
@@ -156,12 +151,14 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def add_protein(self, sequence, name, unique_ID, attribute_dictionary, safe=True):
+    def add_protein(self, sequence, name, unique_ID, attributes, force_overwrite=False):
         """
         Function that allows the user to add a new protein to a Proteomes in an 
         ad-hoc fashion. In general most of the time it will make sense to add
         proteins all at once from some input source, but the ability to add
-        proteins one at a time is also useful
+        proteins one at a time is also useful.
+
+        If a duplicate unique_ID is passed an exception is raised
         
         Parameters
         -----------
@@ -175,15 +172,17 @@ class Proteome:
         unique_id : string
             String corresponding to a unique_ID associated with some protein
 
-        attribute_dictionary : dict
-            The attribute_dictionary provides a key-value pairing for arbitrary information.
+        attributes : dict
+            The attributes dictionary provides a key-value pairing for arbitrary information.
             This could include gene names, different types of identifies, protein copy number,
             a set of protein partners, or anything else one might wish to associated with the
             protein as a whole.
 
-        safe : boolean (default = True)
-            If set to True then a duplicate unique_ID will raise an exception. If false
-            then a duplicate unique_ID will simply return None
+        force_overwrite : False
+            Keyword unique to proteome add functions - if set to true will force a duplicate
+            protein entry to overwrite. Can be useful for update a proteome using data from
+            a newer source
+
 
         Returns
         --------
@@ -195,12 +194,10 @@ class Proteome:
         """
 
         if unique_ID in self._records:
-            if safe:
+            if  force_overwrite is False:
                 raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
-            else:
-                return
 
-        self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attribute_dictionary)
+        self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
         
 
      
@@ -632,11 +629,11 @@ class Proteome:
 
         # 
         try:
-            s = str(entry['attribute_dictionary'])
+            s = str(entry['attributes'])
         except Exception:
             s = 'FAILED'
 
-        ds = ds +"attribute_dictionary: %s\n" %(s)
+        ds = ds +"attributes: %s\n" %(s)
 
         return ds
                                         

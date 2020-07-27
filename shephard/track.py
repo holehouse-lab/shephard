@@ -80,7 +80,7 @@ class Track:
                 symbols = list(symbols)
             
             else:
-                raise TrackExceptio('Unable to convert passed symbols track to a list of symbols. Symbols track should be either a list of symbols or a string. [Track=%s, Protein=%s' %( name, str(protein)))
+                raise TrackException('Unable to convert passed symbols track to a list of symbols. Symbols track should be either a list of symbols or a string. [Track=%s, Protein=%s' %( name, str(protein)))
 
             # add leading ('-') for index purposes
             symbols = ['-'] + symbols 

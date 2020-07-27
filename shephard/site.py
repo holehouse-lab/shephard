@@ -9,7 +9,8 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import general_utilities
-from .exceptions import ProteinException
+from .exceptions import ProteinException, SiteException
+
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Site in sequence
@@ -43,9 +44,9 @@ class Site:
         Value associated with the site - a numerical value (cast to a float). Is not required.
         Default = None.
 
-    attribute_dictionary : dict
+    attributes : dict
         Dictionary where key/value pairs allow a Site to have arbitrary metadata 
-        associated with it.
+        associated with it. Default = {}.
     
         
     """
@@ -66,6 +67,9 @@ class Site:
 
         # a symbol associated with the site
         self._symbol    = general_utilities.cast_or_none(symbol, str)
+
+        # verify that the attributes dictionary is a dictionary
+        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed to site %i in protein %s is not a dictionary' %(self._position, self._protein))
 
         self._attributes = attributes
 

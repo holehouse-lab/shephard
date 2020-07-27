@@ -111,18 +111,18 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
         else:
             unique_ID = record_index
         
-        # get attribute dictionary 
+        # build an attributes dictionary using the user-provided custom function
         if build_attributes:
-            attribute_dictionary = build_attributes(k)
+            attributes = build_attributes(k)
         else:
-            attribute_dictionary = None
+            attributes = {}
             
             
         newdict = {}
         newdict['sequence'] = str(fasta_dictionary[k])
         newdict['name'] = k
         newdict['unique_ID'] = unique_ID
-        newdict['attribute_dictionary'] = attribute_dictionary
+        newdict['attributes'] = attributes
 
         proteome_list.append(newdict)
 
@@ -134,7 +134,7 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, inv
 
 ## ------------------------------------------------------------------------
 ##
-def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, include_attributes_in_header=False):
+def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
     """
     Stand alone function that allows the user to write a FASTA file from a
     Proteome file. 
@@ -148,9 +148,6 @@ def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, inc
 
     proteome : Proteome object
         The proteome object we wish to write to disk.
-
-    include_unique_ID_in_header : bool (default False)
-        Sometimes it may be desirable to annotate the unique ID
         
     include_attributes_in_header : bool (default False)
         Sometimes it may be desirable to annotate all attributes in header as key=value
@@ -162,14 +159,23 @@ def proteome_to_fasta(filename, proteome, include_unique_ID_in_header=False, inc
     for protein in proteome:
 
         # this is where we define the FASTA header...
-        if include_unique_ID_in_header:
-            fasta_header = "%s | UID=%s" %(protein.name, protein.unique_ID)
-        else:
-            fasta_header = protein.name
+        fasta_header = "SHPRD|%s|%s" % (protein.unique_ID, protein.name)
             
-        # this is where we append the FASTA header with attrabutes    
+        # this is where we append the FASTA header with attributes    
         if include_attributes_in_header:
-            fasta_header = fasta_header + ' '.join(["%s=%s" % (i,j) for i,j in protein._attributes.items()]) 
+            
+            for k in protein.attributes:
+                
+                # these lines ensure there are no tabs in the attribute names of
+                # values before we append them to the header file, ensuring that
+                # IF we want to read the fasta header info back in to attributes
+                # we can be confident that hidden tabs in the variables won't
+                # mess things up!
+                k_fixed = k.replace('\t', ' ' )
+                i = protein.attribute(k)
+                i_fixed = i.replace('\t', ' ')
+                
+                fasta_header = fasta_header + '\t' + "%s=%s" %(k_fixed, i_fixed)
             
         outlist.append([fasta_header, protein.sequence])
         
