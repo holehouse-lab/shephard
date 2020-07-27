@@ -166,6 +166,9 @@ class Protein:
             Returns a single character that corresponds to the string of interest
 
         """
+        
+        # only check if safe is true
+        self._check_position_is_valid(position)
 
         # cast to integer incase...
         return self._sequence[int(position)]
@@ -252,7 +255,7 @@ class Protein:
         """
         
         # sanity check position input
-        self._check_position_is_valid(position, helper_string='Sequence position is outside below 1 [%i]')
+        self._check_position_is_valid(position, helper_string='Sequence position %i is outside of protein limits (1-%i)'%(position, len(self)))
         
         # compute start/end of context according to the offset
         (p1, p2) = sequence_utilities.get_bounding_sites(position, offset, self._len)
@@ -278,7 +281,9 @@ class Protein:
         
         """
 
-        for i in self._sequence:
+        # recal we start at +1 to discard the leading '-' used to ensure we can use
+        # real-world indexing
+        for i in self._sequence[1:]:
             if i not in general_utilities.STANDARD_AAs:
                 return False
         return True
