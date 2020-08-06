@@ -219,7 +219,7 @@ class Proteome:
         Returns
         -------
         list
-            returns a list of the attribute keys associated with the protein. 
+            returns a list of the attribute keys associated with the Proteome. 
 
 
         """

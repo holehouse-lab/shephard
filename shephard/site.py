@@ -44,11 +44,12 @@ class Site:
         Value associated with the site - a numerical value (cast to a float). Is not required.
         Default = None.
 
-    attributes : dict
-        Dictionary where key/value pairs allow a Site to have arbitrary metadata 
-        associated with it. Default = {}.
+    attributes : dict (optional)
+        The attributes dictionary provides a key-value pairing for arbitrary information.
+        This could include different types of identifies, track generator functions,
+        a set of Site partners, or anything else one might wish to associated with the
+        track as a whole. Default = {}
     
-        
     """
     
     def __init__(self, position, site_type, protein, symbol=None, value=None, attributes={}):
@@ -141,15 +142,30 @@ class Site:
         return self._value
 
 
+     ###################################
+    ##                               ##
+    ##     ATTRIBUTE FUNCTIONS       ##
+    ##                               ##
+    ###################################
+
+
     ## ------------------------------------------------------------------------
     ##
     @property
     def attributes(self):
         """
-        Returns the attribute dictionary associated with this site. Note such a
-        dictionary is either a dictionary (surprise!) or None.
+        **[Property]**: Provides a list of the keys associated with every attribute associated
+        with this Site.
+
+        Returns
+        -------
+        list
+            returns a list of the attribute keys associated with the protein. 
+
+
         """
-        return self._attributes
+        return list(self._attributes.keys())
+
 
 
     ## ------------------------------------------------------------------------
@@ -157,25 +173,27 @@ class Site:
     def attribute(self, name, safe=True):
 
         """
-        Function that returns a specific attribute as defined by the name. This attribute
-        is extracted from the attribute dictionary.
+        Function that returns a specific attribute as defined by the name. 
 
         Recall that attributes are name : value pairs, where the 'value' can be 
         anything and is user defined. This function will return the value associated 
         with a given name.
 
-        Paramaters
+        Parameters
         ----------------
-        name : string
+        name : str
              The attribute name. A list of valid names can be found by calling the
-             <Site>.attributes (which returns a list of the valid names)
+             ``<Site>.attributes()`` (which returns a list of the valid names)
 
+        safe : bool (default = True)
+            Flag which if true with throw an exception if an attribute with the same
+            name  already exists
+            
         Returns
         ---------
         Unknown 
-            Will either return whatever was associated with that attribute (which could be anything),
-            or if the attribute is missing will raise an exception if safe=True (default) or return
-            None if safe=False.
+            Will either return whatever was associated with that attribute (which could be anything)
+            or None if that attribute is missing.
         
         """
 
@@ -186,12 +204,50 @@ class Site:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise ProteinException('Requesting attribute [%s] from site [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise SiteException('Requesting attribute [%s] from Site [%s] but this attribute has not been assigned' % (name, str(self))) 
 
             # if safe not passed just return None
             else:
                 return None
+                
 
+
+    ## ------------------------------------------------------------------------
+    ##
+    def add_attribute(self, name, val, safe=True):
+        """
+        Function that adds an attribute. Note that if safe is true, this function will
+        raise an exception if the attribute is already present. If safe=False, then
+        an existing value will be overwritten.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identify it
+
+        val : <anything>
+            An object or primitive we wish to associate with this attribute
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an attribute with the same
+            name already exists, otherwise the newly introduced attribute will overwrite
+            the previous one.
+
+        Returns
+        ---------
+            None - but adds an attribute to the calling object
+
+        """
+
+        if safe:
+            if name in self._attributes:
+                raise SiteException("Trying to add attribute [%s=%s] to Site [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                
+        self._attributes[name] = val
+
+        
+        
 
     ## ------------------------------------------------------------------------
     ##

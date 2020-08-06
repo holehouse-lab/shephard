@@ -6,6 +6,7 @@ Authors: Garrett M. Ginell & Alex S. Holehouse
 Contact: (g.ginell@wustl.edu)
 
 Holehouse Lab - Washington University in St. Louis
+
 """
 
 def print_warning(msg, e):
@@ -29,10 +30,9 @@ class ShephardException(Exception):
 #
 class SiteException(Exception):
     """
-    Exception for the Domain class
+    Exception for the Site class
     """
     pass
-
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
