@@ -8,10 +8,31 @@ Contact: (g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 
+def print_warning(msg, e):
+    print('Warning: %s' %(msg))
+    print('%s\n'%(e))
+
+def print_and_raise_error(msg, e):
+    print('Error: %s' %(msg))
+    raise e
+
+    
+
 class ShephardException(Exception):
     """
+    General exception
     """
     pass
+
+
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+#
+class SiteException(Exception):
+    """
+    Exception for the Domain class
+    """
+    pass
+
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #

@@ -57,7 +57,7 @@ def get_site_density_percentile_normalized_by_protein(domain, site_types):
     density_of_sites_in_domain = len(domain.get_sites_by_type(site_types))/domain_length
 
     # 
-    density_vector  = site_tools.build_site_density_vector(domain.protein, site_types=site_types, block_size=domain_length, append_leading_lagging=False)
+    density_vector  = site_tools.build_site_density_vector(domain.protein, site_types=site_types, window_size=domain_length, append_leading_lagging=False)
     density_vector.sort()
 
     c=0

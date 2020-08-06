@@ -1,0 +1,5 @@
+O00470	1	TEST_SITE_N	True	10.0
+O00470	72	Sumoylation	K	2
+O00470	196	Phosphoserine	S	6
+O00470	198	Phosphoserine	S	2
+O00470	390	TEST_SITE_C	TRUE	20.0	test_attribute:does this work?	second_test:10

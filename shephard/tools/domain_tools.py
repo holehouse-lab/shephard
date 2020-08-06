@@ -123,14 +123,18 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
         added to a protein via the add_domains() function.
     
     """
+
+    ##
+    ## NOTE -this function uses i0 indexing to keep things simple and then
+    ## corrects at the end
+    ##
     
     # first constrct an empty vector of 0s. We're going to build '1s' into
     # the positions in the sequence occupied by domains
     all_res = [0]*len(protein)
     
     # for each domain in the protein
-    for d_idx in protein.domains:
-        d = protein.domain(d_idx)
+    for d in protein.domains:
 
         # for each position in each domain (note this will overwrite
         # which is fine). NOTE that we cyle from d.start-1 to d.end because
@@ -277,10 +281,8 @@ def build_domains_from_track_values(proteome,
             print('On %i of %i' %(c, len(proteome)))
         
         # safe = false so will return None if no track of that name
-        # found
+        # found, and if so we continue to next protein
         t = protein.track(track_name, safe=False)
-        
-        # if no track found continue to next protein
         if t is None:
             continue
 
@@ -291,7 +293,7 @@ def build_domains_from_track_values(proteome,
         B = binerize_function(t)
 
         ## Part 1 - remove gapes
-        for g in range(1,gap_closure+1):
+        for g in range(1, gap_closure+1):
             # first fill in 
 
 

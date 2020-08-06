@@ -9,7 +9,8 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import general_utilities
-from .exceptions import ProteinException
+from .exceptions import ProteinException, SiteException
+
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a Site in sequence
@@ -43,15 +44,15 @@ class Site:
         Value associated with the site - a numerical value (cast to a float). Is not required.
         Default = None.
 
-    attribute_dictionary : dict (optional)
-        The attribute_dictionary provides a key-value pairing for arbitrary information.
+    attributes : dict (optional)
+        The attributes dictionary provides a key-value pairing for arbitrary information.
         This could include different types of identifies, track generator functions,
         a set of Site partners, or anything else one might wish to associated with the
-        track as a whole.
+        track as a whole. Default = {}
     
     """
     
-    def __init__(self, position, site_type, protein, symbol=None, value=None, attribute_dictionary=None):
+    def __init__(self, position, site_type, protein, symbol=None, value=None, attributes={}):
 
         # absolute position in protein associated with the site
         self._position  = int(position)
@@ -68,17 +69,10 @@ class Site:
         # a symbol associated with the site
         self._symbol    = general_utilities.cast_or_none(symbol, str)
 
-        # set attribute dictionary IF a dictionary was passed. Otherwise we just ignore
-        # anything passed to attribute_dictionary
-        if isinstance(attribute_dictionary, dict):
-            self._attributes = attribute_dictionary
+        # verify that the attributes dictionary is a dictionary
+        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed to site %i in protein %s is not a dictionary' %(self._position, self._protein))
 
-        # set dictionary to an empty dictionary if none was passed
-        elif attribute_dictionary is None:
-            self._attributes = {}
-
-        else:
-            raise exceptions.SiteException('[FATAL]: If provided, Site attribute must a dictionary')
+        self._attributes = attributes
 
         # update the proteome if this is a novel type of site
         protein.proteome.__update_site_types(self._site_type)
@@ -381,6 +375,6 @@ class Site:
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "|Site: %i-%s| in %s" % (self.position, self._site_type, self.protein)
+        return "|Site: %s @ %i in protein %s" % (self._site_type, self.position, self.protein.unique_ID)
     
     

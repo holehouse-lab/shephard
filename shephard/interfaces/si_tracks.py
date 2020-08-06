@@ -9,10 +9,10 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 
-from .interface_exceptions import InterfaceException
+from shephard.exceptions import InterfaceException, ProteinException, TrackException
 from . import interface_tools 
 from shephard import general_utilities
-from shephard.exceptions import ProteinException
+
 
 class _TracksInterface:
 
@@ -128,8 +128,13 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
         String used as a delimiter on the input file. Default = '\t'
 
     safe : boolean 
-        If set to True over-writing tracks will raise an exception. If False, overwriting
-        a track will silently over-write. Default = True.
+        If set to True then any exceptions raised during the Track-adding process (i.e. after file
+        parsing) are acted on. If set to False, exceptions simply mean the site in question is skipped. 
+        Note if set to False  pre-existing tracks with the same name would be silently overwritten (although 
+        this is not consider an error), while overwriting will trigger an exception in safe=True.
+        There are various reasons site addition could fail (e.g. track does not match length of protein)
+        so if verbose=True then the cause of an exception is also printed to screen. It is highly 
+        recommend that if you choose to use safe=False you also set verbose=True. Default = True.
 
     skip_bad : boolean
         Flag that means if bad lines (lines that trigger an exception) are encountered the code 
@@ -175,15 +180,21 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
     tracks_dictionary : dict
         Dictionary in which keys are unique IDs for proteins and the value is a list of lists,
         where each sublist where element 0 is the track name and element 1 is itself a list that
-        corresponds to the set of positions to be assigned to the track.
-    
+        corresponds to the set of positions to be assigned to the track.    
 
     mode : string {'symbol','value'}
        A selector that defines the type of track file to be read. Must be either 'symbol' or 
        'value'
 
     safe : bool (default = True)
-        Flag which if true with throw an exception of a track with the same name already exists
+        If set to True then any exceptions raised during the track-adding process are acted
+        on. If set to False, exceptions simply mean the Track in question is skipped. 
+        Note if set to False, pre-existing Tracks with the same name would be silently overwritten (although 
+        this is not consider an error), while overwriting will trigger an exception in safe=True
+        There are various reasons Track addition could fail (length does not match the protein etc) 
+        and so if verbose=True then the cause of an exception is also printed to 
+        screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
+        Default = True.
 
     verbose : boolean
         Flag that defines how 'loud' output is. Will warn about errors on adding tracks.
@@ -214,18 +225,20 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
                 # on what was provided
                 try:
                     if mode == 'values':
-                        protein.add_track(track_name, values=track[1], safe=False)
+                        protein.add_track(track_name, values=track[1], safe=safe)
                     else:
-                        protein.add_track(track_name, symbols=track[1], safe=False)
-                except ProteinException as e:                    
-                    msg='- not adding %s track [%s] to [%s] because it already exists ' % (mode, track_name, protein)
+                        protein.add_track(track_name, symbols=track[1], safe=safe)
+
+                # if an ProteinException was raised when trying to add a track some
+                # anticipated error occurred
+                except (ProteinException, TrackException) as e:      
+
+                    msg='- skipping track at %s on %s' %(track_name, protein)
                     if safe:
-                        # if safe=True fail on any errors
-                        print('Error %s' %(msg)) 
-                        raise e
+                        shephard_exceptions.print_and_raise_error(msg, e)
                     else:
                         if verbose:
-                            print('Warning %s' %(msg))
+                            shephard_exceptions.print_warning(msg, e)
                         continue
 
 

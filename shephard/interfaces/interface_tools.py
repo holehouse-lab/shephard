@@ -65,7 +65,7 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
 
     """
 
-    attribute_dictionary = {}
+    attributes = {}
 
     for idx in range(len(split_line)):
         try:
@@ -78,7 +78,7 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
         k = sentry[0].strip()
         v = sentry[1].strip()
                         
-        attribute_dictionary[k] = v
+        attributes[k] = v
 
-    return attribute_dictionary
+    return attributes
             
