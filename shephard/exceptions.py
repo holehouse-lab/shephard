@@ -30,10 +30,9 @@ class ShephardException(Exception):
 #
 class SiteException(Exception):
     """
-    Exception for the Domain class
+    Exception for the Site class
     """
     pass
-
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
