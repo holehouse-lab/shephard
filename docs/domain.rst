@@ -30,7 +30,6 @@ Domain Site Functions
 .. autofunction:: shephard.domain.Domain.sites
 .. autofunction:: shephard.domain.Domain.site
 .. autofunction:: shephard.domain.Domain.get_sites_by_type
-.. autofunction:: shephard.domain.Domain.get_sites_by_type
 
 
 Domain Track Functions
