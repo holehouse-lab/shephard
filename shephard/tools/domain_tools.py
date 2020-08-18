@@ -351,14 +351,12 @@ def build_domains_from_track_values(proteome,
         for i in range(1, minimum_region_size):                    
             B_string = B_string.replace('0' + i*'1' + '0', '0' + i*'0' + '0')
             B_string = B_string.replace('-'+i*'1' + '0', '-'+i*'0' + '0')
-            B_string = B_string.replace('0' + i*'1'+'-' , '0'+ i*'1'+'-' )
+            B_string = B_string.replace('0' + i*'1'+'-' , '0'+ i*'0'+'-' )
 
 
         # 1 to -1 to cut off the artifical caps we added
         for i in range(1, len(B_string)-1):
             B[i-1] = int(B_string[i])
-
-
 
         ## Part 3 - extend ends if required
         if extend_ends:
