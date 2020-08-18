@@ -348,10 +348,21 @@ def build_domains_from_track_values(proteome,
 
         B_string=B_string+'-'
         
-        for i in range(1, minimum_region_size):                    
+        # for sizes of contigous stretches that are up minimum_region_size + 1
+        # replace with empty ('0') strings
+        for i in range(1, minimum_region_size + 1):      
+
+            # 011110 -> 000000
             B_string = B_string.replace('0' + i*'1' + '0', '0' + i*'0' + '0')
+
+            # -11110 -> -00000
             B_string = B_string.replace('-'+i*'1' + '0', '-'+i*'0' + '0')
+
+            # 01111- -> 00000-
             B_string = B_string.replace('0' + i*'1'+'-' , '0'+ i*'0'+'-' )
+
+            # -1111- -> -0000-
+            B_string = B_string.replace('-' + i*'1'+'-' , '-'+ i*'0'+'-' )
 
 
         # 1 to -1 to cut off the artifical caps we added
