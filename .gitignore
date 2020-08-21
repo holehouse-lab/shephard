@@ -6,6 +6,7 @@ __pycache__/
 helper_code/
 \#\*
 docs/docs.zip
+\.ipynb_checkpoints/
 
 # C extensions
 *.so
