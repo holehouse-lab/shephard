@@ -5,6 +5,7 @@ __pycache__/
 *~
 helper_code/
 \#\*
+docs/docs.zip
 
 # C extensions
 *.so
