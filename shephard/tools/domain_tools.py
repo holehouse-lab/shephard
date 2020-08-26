@@ -91,7 +91,7 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
         d_long = domain_2
     else:
         d_short = domain_2
-        d_short = domain_1
+        d_long = domain_1
 
     
     # ......OOOOOOOOOOOOOOOOOOOOOOO............

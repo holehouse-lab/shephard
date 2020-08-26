@@ -293,13 +293,13 @@ def write_domains(proteome, filename, delimiter='\t'):
                 line = ''
                 line = line + str(protein.unique_ID) + delimiter
 
-                start = protein.domain(d).start
+                start = d.start
                 line = line + str(start) + delimiter
 
-                end = protein.domain(d).end
+                end = d.end
                 line = line + str(end) + delimiter
 
-                domain_type = protein.domain(d).domain_type                
+                domain_type = d.domain_type                
                 line = line + str(domain_type)
 
                 if domain.attributes:
