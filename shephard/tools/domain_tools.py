@@ -50,6 +50,71 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
             raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
             
     return domain_overlap_by_position(domain_1.start, domain_1.end, domain_2.start, domain_2.end)
+
+
+
+## ------------------------------------------------------------------------
+##
+def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
+    """
+    Given two domains asks what fraction the shorter domain overlaps the longer
+    one with
+
+    Parameters
+    -----------
+    domain_1 : Domain
+        The first domain object of interest
+
+    domain_2 : Domain
+        The first domain object of interest
+
+    check_origin : boolean
+        Flag that if set to True will cause an exception if domain_1 and
+        domain_2 are from different proteins. If set to false, no such
+        sanity checks are performed.
+
+    Returns
+    ----------
+    float
+        Returns a float between 0 and 1 that corresponds to what fraction of the
+        shorter domain overlaps with the longer domain
+      
+    """
+
+    if check_origin:
+        if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
+            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+
+
+    if len(domain_1) < len(domain_2):
+        d_short = domain_1
+        d_long = domain_2
+    else:
+        d_short = domain_2
+        d_short = domain_1
+
+    
+    # ......OOOOOOOOOOOOOOOOOOOOOOO............
+    #...XXXXXXXXXXXX????? 
+    #
+    if d_short.start < d_long.start:
+        if d_short.end < d_long.start:
+            return 0.0
+        else:
+            return (d_long.start - d_short.end)/len(d_short)
+
+    # ......OOOOOOOOOOOOOOOOOOOOOOO.............
+    #.                   ?????XXXXXXXXXXXX......
+    #
+    if d_short.end > d_long.end:
+        if d_short.start > d_long.end:
+            return 0.0
+        else:
+            return (d_short.start - d_long.end)/len(d_short)
+
+    # if we get here d_short.start equal to or larger than d_long start
+    # and d_short end equal to or smaller than d_long end, so 100% overlap
+    return 1.0
     
 
 
