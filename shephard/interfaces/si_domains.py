@@ -245,7 +245,7 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
                     protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
                 except (ProteinException, DomainException) as e:
 
-                    msg='- skipping domain at %i-$i on %s' %(start, end, protein)
+                    msg='- skipping domain at %i-%i on %s' %(start, end, protein)
                     if safe:
                         shephard_exceptions.print_and_raise_error(msg, e)
                     else:
@@ -302,10 +302,10 @@ def write_domains(proteome, filename, delimiter='\t'):
                 domain_type = d.domain_type                
                 line = line + str(domain_type)
 
-                if domain.attributes:
-                    for k in domain.attributes:
+                if d.attributes:
+                    for k in d.attributes:
                         line = line + delimiter
-                        line = line + str(k) + ":" + str(domain.attributes[k])
+                        line = line + str(k) + ":" + str(d.attributes[k])
 
                 line = line + "\n"
                         
