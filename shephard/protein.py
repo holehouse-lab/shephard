@@ -1394,8 +1394,8 @@ class Protein:
     ##
     def get_domains_by_type(self, domain_type, perfect_match=True):
         """
-        Function that returns a dictionary of domains that match a specific type
-        of domain. 
+        Function that returns a dictionary list domains as matched against
+        a specific domain type name.
         
         Parameters
         ------------
@@ -1406,14 +1406,14 @@ class Protein:
             Flag that identifies if the domain names should be a perfect match (=True) 
             or if the string passed should just appear somewhere in the domain_type 
 
-
         Returns
         -----------
-        dict
-            Returns a dictionary where keys are domain_id and values are the actual domain objects
-            that match the request
-            
+        list
+            Returns a list of Domain objects that match the requested type. Objects are ordered
+            by starting position in sequence.
+                    
         """
+
         if perfect_match:
             def selection(t):
                 if t  == domain_type: 
@@ -1427,12 +1427,15 @@ class Protein:
                 else:
                     return False
 
-        return_dict = {}
+        domain_list = []
         for d in self.domains:
             if selection(d.domain_type):
-                return_dict[d.domain_name] = d
+                domain_list.append(d)
 
-        return return_dict
+        domain_list.sort(key=lambda x: x.start, reverse=False)
+
+
+        return domain_list
             
         
 
