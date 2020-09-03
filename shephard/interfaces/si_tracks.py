@@ -56,14 +56,17 @@ class _TracksInterface:
                 track_name = sline[1].strip()
                 
                 # parse track values or symbols
-                if mode == 'value':
+                if mode == 'values':
 
                     # for each element in sline strip whitespace and convert to a float
                     data_vector = [float(i.strip()) for i in sline[2:]]
 
-                else:
+                elif mode == 'symbols':
                     # for each element in sline strip whitespace 
                     data_vector = [i.strip() for i in sline[2:]]
+                else:
+                    raise InterfaceException('Error: %s'% "mode passed = %s, yet this does not match 'symbols' or 'values'")
+
                         
                 if unique_ID not in ID2track:
                     ID2track[unique_ID] = [[track_name, data_vector]]
@@ -120,9 +123,9 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
     filename : str
         Name of the shephard domains file to read
 
-    mode : string {'symbol','value'}
-       A selector that defines the type of track file to be read. Must be either 'symbol' or 
-       'value'
+    mode : string {'symbols','values'}
+       A selector that defines the type of track file to be read. Must be either 'symbols' or 
+       'values'
 
     delimiter : str 
         String used as a delimiter on the input file. Default = '\t'
@@ -156,7 +159,7 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
     interface_tools.check_proteome(proteome, 'add_tracks_from_file (si_tracks)')
 
     # check mode is valid
-    general_utilities.valid_keyword('mode', mode, ['symbol','value'])
+    general_utilities.valid_keyword('mode', mode, ['symbols','values'])
     
     # next read in the file
     tracks_interface = _TracksInterface(filename, delimiter=delimiter, mode=mode, skip_bad=skip_bad)
@@ -182,9 +185,9 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         where each sublist where element 0 is the track name and element 1 is itself a list that
         corresponds to the set of positions to be assigned to the track.    
 
-    mode : string {'symbol','value'}
-       A selector that defines the type of track file to be read. Must be either 'symbol' or 
-       'value'
+    mode : string {'symbols','values'}
+       A selector that defines the type of track file to be read. Must be either 'symbols' or 
+       'values'
 
     safe : bool (default = True)
         If set to True then any exceptions raised during the track-adding process are acted
@@ -211,12 +214,12 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
     interface_tools.check_proteome(proteome, 'add_tracks_from_dictionary (si_tracks)')
 
     # check mode is valid
-    general_utilities.valid_keyword('mode', mode, ['symbol','value'])
+    general_utilities.valid_keyword('mode', mode, ['symbols','values'])
     
     # cycle through each protein in the proteome...
     for protein in proteome:
         if protein.unique_ID in tracks_dictionary:
-            for track in track_dictionary[protein.unique_ID]:
+            for track in tracks_dictionary[protein.unique_ID]:
 
                 # get the track name
                 track_name = track[0]
