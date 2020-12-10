@@ -141,7 +141,7 @@ class Domain:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise exceptions.DomainException('Requesting attribute [%s] from domain [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise DomainException('Requesting attribute [%s] from domain [%s] but this attribute has not been assigned' % (name, str(self))) 
 
             # if safe not passed just return None
             else:
@@ -179,7 +179,7 @@ class Domain:
 
         if safe:
             if name in self._attributes:
-                raise exceptions.DomainException("Trying to add attribute [%s=%s] to domain [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise DomainException("Trying to add attribute [%s=%s] to domain [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
                 
         self._attributes[name] = val 
 
