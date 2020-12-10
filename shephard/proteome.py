@@ -143,7 +143,7 @@ class Proteome:
             return self._records[unique_ID]
         except KeyError:
             if safe:
-                raise ProteomeException('unique_ID not found in proteome')
+                raise ProteomeException("unique_ID '%s' not found in proteome" % (str(unique_ID)))
             else:
                 return None
 

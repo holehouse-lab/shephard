@@ -30,13 +30,13 @@ def build_proteome(fn):
     return uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,fn))
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
     return TS1_proteome
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1_domains(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
@@ -44,7 +44,7 @@ def TS1_domains(request):
     return TS1_proteome
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1_domains2(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
@@ -62,19 +62,19 @@ def TS1_domains2_sites(request):
     return TS1_proteome
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1_domains2_sites_tracks(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
 
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[1]))
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
     si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
-    si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'value')
+    si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'values')
     
     return TS1_proteome
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1_domains2_sites_tracks_protein_attributes(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
 
@@ -82,7 +82,7 @@ def TS1_domains2_sites_tracks_protein_attributes(request):
     si_domains.add_domains_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[2]))
     si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[3]))
     si_sites.add_sites_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[6]))
-    si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'value')
+    si_tracks.add_tracks_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[4]), 'values')
     si_protein_attributes.add_protein_attributes_from_file(TS1_proteome, '%s/%s' %(test_data_dir, TS1_FILE[5]))
     
     return TS1_proteome

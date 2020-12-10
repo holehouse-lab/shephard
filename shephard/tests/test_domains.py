@@ -30,3 +30,20 @@ def test_bad_domain_add(TS1_domains2_sites_tracks):
         assert X.protein('O00401').add_domain(-1,20, 'fail')
 
 
+def test_bad_domain_add(TS1_domains2_sites_tracks):    
+    """
+    Note if any of these succeed the test suite will fail because it incrases
+    """
+
+    print(TS1_domains2_sites_tracks.protein('O00629').sequence)
+
+    local_protein = TS1_domains2_sites_tracks.protein('O00629')
+    
+    domain_type = 'test_domain'
+    local_protein.add_domain(1,10, domain_type)
+
+    # this is just a sanity check because if THIS fails the
+    # rest of the test definietly should not work
+    assert local_protein.sequence[0:10] == 'MADNEKLDNQ'
+    assert local_protein.get_domains_by_type(domain_type)[0].sequence == 'MADNEKLDNQ'
+    
