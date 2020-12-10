@@ -30,7 +30,7 @@ def test_bad_domain_add(TS1_domains2_sites_tracks):
         assert X.protein('O00401').add_domain(-1,20, 'fail')
 
 
-def test_bad_domain_add(TS1_domains2_sites_tracks):    
+def test_domain_add(TS1_domains2_sites_tracks):    
     """
     Note if any of these succeed the test suite will fail because it incrases
     """
