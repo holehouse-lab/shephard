@@ -328,7 +328,7 @@ class Domain:
         sites_dict = self._protein.get_sites_by_range(self.start, self.end)
         for k in sites_dict:
             for local_site in sites_dict[k]:
-                all_sites.append(local_sites)
+                all_sites.append(local_site)
 
         return all_sites
 
