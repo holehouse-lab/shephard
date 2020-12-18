@@ -59,7 +59,7 @@ class Domain:
 
     ## ------------------------------------------------------------------------
     ##          
-    def __init__(self, start, end, protein, domain_type, domain_name, attributes={}):
+    def __init__(self, start, end, protein, domain_type, domain_name, attributes=None):
         """ 
         """
         
@@ -79,9 +79,12 @@ class Domain:
         self._domain_type = domain_type
         self._domain_name = domain_name
 
-        general_utilities.variable_is_dictionary(attributes, DomainException, 'attributes argument passed to domain %s [%i-%i] in protein %s is not a dictionary' %(self._domain_type, self._start, self._end, self._protein))
+        general_utilities.variable_is_dictionary(attributes, DomainException, 'attributes argument passed to domain %s [%i-%i] in protein %s is not a dictionary' %(self._domain_type, self._start, self._end, self._protein), or_none=True)
 
-        self._attributes = attributes
+        if attributes is None:
+            self._attributes = {}
+        else:
+            self._attributes = attributes
 
 
         # update unique domain types

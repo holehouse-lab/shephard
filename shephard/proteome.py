@@ -53,7 +53,7 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def __init__(self, input_list, attributes = {}):
+    def __init__(self, input_list, attributes = None):
         # See the Proteome class documentation for constructor info
         """
         """
@@ -62,11 +62,14 @@ class Proteome:
         self._records = {}
         self._unique_domain_types = []
         self._unique_site_types = []
-
         
-        general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary')
+        # check attributs dictionary
+        general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary', or_none=True)
 
-        self._attributes = attributes
+        if attributes is None:            
+            self._attributes = {}
+        else:
+            self._attributes = attributes
 
         # for each protein entry in the input list
         for entry in input_list:

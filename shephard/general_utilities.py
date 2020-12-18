@@ -96,7 +96,7 @@ def numerical_sum(l):
 
 ## ------------------------------------------------------------------------
 ##
-def variable_is_dictionary(v, exc, msg):
+def variable_is_dictionary(v, exc, msg, or_none=False):
     """
     General function to verify if a variable is a dictionary.
 
@@ -111,6 +111,10 @@ def variable_is_dictionary(v, exc, msg):
     msg : str
         String to be passed to the exception when it's raised
 
+    or_none : bool
+        Variable that if is true returns True if 'v' is dict or None
+        Otherwise only returns True if V is a dict
+
     Returns
     -------
     None or exception-rasied
@@ -118,11 +122,15 @@ def variable_is_dictionary(v, exc, msg):
         raises an exception
 
     """
+
+    if or_none:
+        if v is None:
+            return None
+
     if not isinstance(v, dict):
         raise exc(msg)
 
     return None
-
 
 
 

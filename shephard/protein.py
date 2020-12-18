@@ -62,7 +62,7 @@ class Protein:
 
     """
     
-    def __init__(self, seq, name, proteome, unique_ID, attributes = {}):
+    def __init__(self, seq, name, proteome, unique_ID, attributes = None):
         """
         """
         
@@ -75,9 +75,12 @@ class Protein:
         self._len = len(seq) # protein length 
         self._true_len = len(self._sequence) # length of string the protein is in
 
-        general_utilities.variable_is_dictionary(attributes, ProteinException, 'attributes argument passed to protein %s is not a dictionary' %(self._name))
+        general_utilities.variable_is_dictionary(attributes, ProteinException, 'attributes argument passed to protein %s is not a dictionary' %(self._name), or_none=True)
 
-        self._attributes  = attributes
+        if attributes is None:
+            self._attributes  = {}
+        else:
+            self._attributes  = attributes
 
         
         # initialize the empty dictionaries for the set of sites, domains and tracks
@@ -757,7 +760,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def build_track_values_from_sequence(self, name, trackfunction, input_dictionary={}, safe=True):
+    def build_track_values_from_sequence(self, name, trackfunction, input_dictionary=None, safe=True):
         """
         Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
         analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
@@ -884,7 +887,7 @@ class Protein:
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
-        if len(input_dictionary) == 0:
+        if input_dictionary is None:
             built_track = trackfunction(self.sequence)
         else:
             built_track = trackfunction(self.sequence, input_dictionary)
@@ -896,7 +899,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def build_track_symbols_from_sequence(self, name, trackfunction, input_dictionary={}, safe=True):
+    def build_track_symbols_from_sequence(self, name, trackfunction, input_dictionary = None, safe = True):
         """
         Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
         analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
@@ -933,7 +936,7 @@ class Protein:
             (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
                 from sequence to the trackfunction at runtime
 
-        function_keywords : dictionary
+        function_keywords : None
             This is a dictionary that will be passed to the trackfunction as the second argument IF it is provided.
             In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
             the build_track_symbols_from_sequence is called.
@@ -1021,7 +1024,7 @@ class Protein:
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
-        if len(input_dictionary) == 0:
+        if input_dictionary is None:
             built_track = trackfunction(self.sequence)
         else:
             built_track = trackfunction(self.sequence, input_dictionary)
@@ -1255,7 +1258,7 @@ class Protein:
         
     ## ------------------------------------------------------------------------
     ##
-    def add_domain(self, start, end, domain_type, attributes={}, safe=True, autoname=False):
+    def add_domain(self, start, end, domain_type, attributes=None, safe=True, autoname=False):
         """
         Function that adds a domain, automatically generating a unique name if 
         none is provided. Domain type can be used to assign a specific type if
@@ -1283,7 +1286,7 @@ class Protein:
         attributes : dictionary [optional]
             Optional dictionary which allows an arbitrary set of attributes to be
             associated with a domain, in much the same way that they can be associated
-            with a protein. Default = {}.
+            with a protein. Default = None.
 
         safe : boolean 
             If set to True over-writing tracks will raise an exception, otherwise overwriting
@@ -1512,7 +1515,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def add_site(self, position, site_type, symbol=None, value=None, attributes={}):
+    def add_site(self, position, site_type, symbol=None, value=None, attributes=None):
         """
         Function that adds a site to a specific position in the sequence. Sites are
         indexed by residue position, and multiple sites can co-exist on the same site,
@@ -1543,10 +1546,10 @@ class Protein:
             Numerical value associated with a site. Note that the value is cast
             to a float64. Default = None
 
-        attributes : dictionary [optional]
+        attributes : dictionary 
             Optional dictionary which allows an arbitrary set of attributes to be
             associated with a domain, in much the same way that they can be associated
-            with a protein. Default = empty dictionary.
+            with a protein. Default = None.
         
         """
         

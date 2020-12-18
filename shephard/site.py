@@ -48,11 +48,11 @@ class Site:
         The attributes dictionary provides a key-value pairing for arbitrary information.
         This could include different types of identifies, track generator functions,
         a set of Site partners, or anything else one might wish to associated with the
-        track as a whole. Default = {}
+        track as a whole. Default = None
     
     """
     
-    def __init__(self, position, site_type, protein, symbol=None, value=None, attributes={}):
+    def __init__(self, position, site_type, protein, symbol=None, value=None, attributes=None):
 
         # absolute position in protein associated with the site
         self._position  = int(position)
@@ -70,9 +70,12 @@ class Site:
         self._symbol    = general_utilities.cast_or_none(symbol, str)
 
         # verify that the attributes dictionary is a dictionary
-        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed to site %i in protein %s is not a dictionary' %(self._position, self._protein))
-
-        self._attributes = attributes
+        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed to site %i in protein %s is not a dictionary' %(self._position, self._protein), or_none=True)
+        
+        if attributes is None:
+            self._attributes = {}
+        else:
+            self._attributes = attributes
 
         # update the proteome if this is a novel type of site
         protein.proteome.__update_site_types(self._site_type)
