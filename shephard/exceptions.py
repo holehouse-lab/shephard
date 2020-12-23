@@ -86,3 +86,12 @@ class InterfaceException(Exception):
     Exception for general utility exceptions
     """
     pass
+
+
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+#
+class APIException(Exception):
+    """
+    Exception for general utility exceptions
+    """
+    pass

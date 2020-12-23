@@ -178,6 +178,7 @@ class Proteome:
         attributes : dict
             The attributes dictionary provides a key-value pairing for arbitrary information.
             This could include gene names, different types of identifies, protein copy number,
+
             a set of protein partners, or anything else one might wish to associated with the
             protein as a whole. Default is None.
 
@@ -197,7 +198,7 @@ class Proteome:
         """
 
         if unique_ID in self._records:
-            if  force_overwrite is False:
+            if force_overwrite is False:
                 raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
 
         self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
