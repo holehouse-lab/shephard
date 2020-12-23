@@ -83,55 +83,64 @@ def test_add_protein():
 
     # creating proteome and adding protein
     test_data_dir = shephard.get_data('test_data')
-    proteome = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
-    assert len(proteome.protein('O00401')) == 505
-    assert len(proteome.protein('O00470')) == 390
-    assert len(proteome.protein('O00472')) == 640
-    assert len(proteome.protein('O00499')) == 593
-    assert len(proteome.protein('O00629')) == 521
-    assert len(proteome.protein('O00712')) == 420
-    assert len(proteome.protein('O00716')) == 465
-    assert len(proteome.protein('O14786')) == 923
-    assert len(proteome.protein('Q9UJX3')) == 599
+    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    assert len(P.protein('O00401')) == 505
+    assert len(P.protein('O00470')) == 390
+    assert len(P.protein('O00472')) == 640
+    assert len(P.protein('O00499')) == 593
+    assert len(P.protein('O00629')) == 521
+    assert len(P.protein('O00712')) == 420
+    assert len(P.protein('O00716')) == 465
+    assert len(P.protein('O14786')) == 923
+    assert len(P.protein('Q9UJX3')) == 599
 
     # creating a proteome from a FASTA file (using defaul unique key)
-    proteome = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
-    assert len(proteome.protein('1')) == 390
-    assert len(proteome.protein('2')) == 640
-    assert len(proteome.protein('3')) == 593
-    assert len(proteome.protein('4')) == 521
-    assert len(proteome.protein('5')) == 420
-    assert len(proteome.protein('6')) == 465
-    assert len(proteome.protein('7')) == 923
-    assert len(proteome.protein('8')) == 599
+    P = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    assert len(P.protein('1')) == 390
+    assert len(P.protein('2')) == 640
+    assert len(P.protein('3')) == 593
+    assert len(P.protein('4')) == 521
+    assert len(P.protein('5')) == 420
+    assert len(P.protein('6')) == 465
+    assert len(P.protein('7')) == 923
+    assert len(P.protein('8')) == 599
 
     # create a proteome where FASTA header is used as uniqueID 
-    proteome = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'), use_header_as_unique_ID=True)
-    assert len(proteome.protein('sp|O00470|MEIS1_HUMAN Homeobox protein Meis1 OS=Homo sapiens OX=9606 GN=MEIS1 PE=1 SV=1')) == 390
-    assert len(proteome.protein('sp|O00472|ELL2_HUMAN RNA polymerase II elongation factor ELL2 OS=Homo sapiens OX=9606 GN=ELL2 PE=1 SV=2')) == 640
-    assert len(proteome.protein('sp|O00499|BIN1_HUMAN Myc box-dependent-interacting protein 1 OS=Homo sapiens OX=9606 GN=BIN1 PE=1 SV=1')) == 593
-    assert len(proteome.protein('sp|O00629|IMA3_HUMAN Importin subunit alpha-3 OS=Homo sapiens OX=9606 GN=KPNA4 PE=1 SV=1')) == 521
-    assert len(proteome.protein('sp|O00712|NFIB_HUMAN Nuclear factor 1 B-type OS=Homo sapiens OX=9606 GN=NFIB PE=1 SV=2')) == 420
-    assert len(proteome.protein('sp|O00716|E2F3_HUMAN Transcription factor E2F3 OS=Homo sapiens OX=9606 GN=E2F3 PE=1 SV=1')) == 465
-    assert len(proteome.protein('sp|O14786|NRP1_HUMAN Neuropilin-1 OS=Homo sapiens OX=9606 GN=NRP1 PE=1 SV=3')) == 923
-    assert len(proteome.protein('sp|Q9UJX3|APC7_HUMAN Anaphase-promoting complex subunit 7 OS=Homo sapiens OX=9606 GN=ANAPC7 PE=1 SV=4')) == 599
+    P = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'), use_header_as_unique_ID=True)
+    assert len(P.protein('sp|O00470|MEIS1_HUMAN Homeobox protein Meis1 OS=Homo sapiens OX=9606 GN=MEIS1 PE=1 SV=1')) == 390
+    assert len(P.protein('sp|O00472|ELL2_HUMAN RNA polymerase II elongation factor ELL2 OS=Homo sapiens OX=9606 GN=ELL2 PE=1 SV=2')) == 640
+    assert len(P.protein('sp|O00499|BIN1_HUMAN Myc box-dependent-interacting protein 1 OS=Homo sapiens OX=9606 GN=BIN1 PE=1 SV=1')) == 593
+    assert len(P.protein('sp|O00629|IMA3_HUMAN Importin subunit alpha-3 OS=Homo sapiens OX=9606 GN=KPNA4 PE=1 SV=1')) == 521
+    assert len(P.protein('sp|O00712|NFIB_HUMAN Nuclear factor 1 B-type OS=Homo sapiens OX=9606 GN=NFIB PE=1 SV=2')) == 420
+    assert len(P.protein('sp|O00716|E2F3_HUMAN Transcription factor E2F3 OS=Homo sapiens OX=9606 GN=E2F3 PE=1 SV=1')) == 465
+    assert len(P.protein('sp|O14786|NRP1_HUMAN Neuropilin-1 OS=Homo sapiens OX=9606 GN=NRP1 PE=1 SV=3')) == 923
+    assert len(P.protein('sp|Q9UJX3|APC7_HUMAN Anaphase-promoting complex subunit 7 OS=Homo sapiens OX=9606 GN=ANAPC7 PE=1 SV=4')) == 599
 
-    #for protein in proteome:
-    #    print("assert len(proteome.protein('%s')) == %i" % (protein.unique_ID, len(protein)))
+    
+
     
     # check manually adding proteomes    
     local_seq = 'PPPPP'
-    proteome.add_protein(local_seq, '5pp', 'U5P')
-    assert proteome.protein('U5P').sequence == local_seq
-    assert proteome.protein('U5P').name == '5pp'
+    P.add_protein(local_seq, '5pp', 'U5P')
+    assert P.protein('U5P').sequence == local_seq
+    assert P.protein('U5P').name == '5pp'
 
     # should trigger exception
     with pytest.raises(ProteomeException):
-        proteome.add_protein(local_seq, '5pp', 'U5P')
-    proteome.add_protein('ASDF', '5pp', 'U5P', force_overwrite=True)
-    assert proteome.protein('U5P').sequence == 'ASDF'
+        P.add_protein(local_seq, '5pp', 'U5P')
+    P.add_protein('ASDF', '5pp', 'U5P', force_overwrite=True)
+    assert P.protein('U5P').sequence == 'ASDF'
+
+    protein_list = []
+    p1 = {'sequence': 'ASDFGH', 'name': "Test protein 1", 'unique_ID':1.23, "attributes":None}
+    protein_list.append(p1)
     
-    
+
+    # check this works
+    P = proteome.Proteome(protein_list)
+    print(P.proteins)
+    P.protein(1.23).sequence == 'ASDFGH'
+    P.protein("1.23").sequence == 'ASDFGH'
 
     
             
