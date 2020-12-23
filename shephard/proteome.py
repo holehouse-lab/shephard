@@ -64,7 +64,7 @@ class Proteome:
         self._unique_site_types = []
         
         # check attributs dictionary
-        general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary', or_none=True)
+        general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary', or_none = True)
 
         if attributes is None:            
             self._attributes = {}
@@ -142,11 +142,15 @@ class Proteome:
 
         """
 
+        # convert unique IDs to strings because this typing also happens 
+        # when new proteins are added
+        unique_ID_str = str(unique_ID)
+
         try:
-            return self._records[unique_ID]
+            return self._records[unique_ID_str]
         except KeyError:
             if safe:
-                raise ProteomeException("unique_ID '%s' not found in proteome" % (str(unique_ID)))
+                raise ProteomeException("unique_ID '%s' not found in proteome" % (unique_ID))
             else:
                 return None
 
