@@ -154,7 +154,7 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def add_protein(self, sequence, name, unique_ID, attributes, force_overwrite=False):
+    def add_protein(self, sequence, name, unique_ID, attributes=None, force_overwrite=False):
         """
         Function that allows the user to add a new protein to a Proteomes in an 
         ad-hoc fashion. In general most of the time it will make sense to add
@@ -179,7 +179,7 @@ class Proteome:
             The attributes dictionary provides a key-value pairing for arbitrary information.
             This could include gene names, different types of identifies, protein copy number,
             a set of protein partners, or anything else one might wish to associated with the
-            protein as a whole.
+            protein as a whole. Default is None.
 
         force_overwrite : False
             Keyword unique to proteome add functions - if set to true will force a duplicate
