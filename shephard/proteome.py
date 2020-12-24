@@ -53,9 +53,42 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def __init__(self, input_list, attributes = None):
+    def __init__(self, input_list, attributes = None, force_overwrite=False):
         # See the Proteome class documentation for constructor info
         """
+        Constructor that generates a new Proteome object. This includes taking a list of Protein
+        objects (input_list) and, optionally an attributes dictionary for the proteome itself.
+
+        In addition, force_overwrite can be used to deal with duplicate entries in the input_list.
+
+        Parameters
+        -------------
+
+        Protein dictionaries are dictionaries that posses the following key-value pairs:
+
+            'sequence'   : amino acid sequence (str)
+            'name'       : protein name (str)
+            'unique_ID'  : The unique identification number used for the protein (str)
+            'attributes' : A dictionary of arbitrary key-value pairs to associate with
+                           the protein (dict or None)
+        
+
+        Additional keys/value pairs are ignored and ALL four of these must be included. If any are
+        missing for any protein entry this function raises a ProteomeException.
+        
+        Parameters
+        -----------
+        input_list : list
+            List of Protein dictionaries
+
+        attributes : dict
+            A an arbitrary set of key-value pairs to annotate the proteome with metadata
+        
+        force_overwrite : bool
+            If set to False and there are duplicate unique_IDs in protein dictionaries in the input_list
+            this will trigger an exception. However, if set to True then the 'last' entry overwrites a 
+            more recent one in the case of duplicates.
+
         """
 
         # initiallize book-keeping instruments
@@ -71,27 +104,8 @@ class Proteome:
         else:
             self._attributes = attributes
 
-        # for each protein entry in the input list
-        for entry in input_list:
-        
-            try:
-                sequence       = str(entry['sequence'])
-                name           = str(entry['name'])
-                unique_ID      = str(entry['unique_ID'])
-                attributes     = entry['attributes']
-            except KeyError:
-                # if something goes wrong while extracting the four required attributes we build a 
-                # diagnosis string and then print this as we raise an exception. The goal here is to
-                # try and provide the user with as much info as possible to diagnose the problem
-            
-                diagnosis_string = self.__build_diagnosis_string_proteome_construction(entry)
-                raise ProteomeException('%s'%(diagnosis_string))
-            
-            if unique_ID in self._records:
-                raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+        self.add_proteins(input_list)
 
-            # add in a new protein
-            self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
 
 
 
@@ -163,9 +177,11 @@ class Proteome:
         Function that allows the user to add a new protein to a Proteomes in an 
         ad-hoc fashion. In general most of the time it will make sense to add
         proteins all at once from some input source, but the ability to add
-        proteins one at a time is also useful.
+        proteins one at a time is also useful. 
 
-        If a duplicate unique_ID is passed an exception is raised
+
+
+        If a duplicate unique_ID is passed an exception (ProteomeException) is raised.
         
         Parameters
         -----------
@@ -186,27 +202,157 @@ class Proteome:
             a set of protein partners, or anything else one might wish to associated with the
             protein as a whole. Default is None.
 
-        force_overwrite : False
-            Keyword unique to proteome add functions - if set to true will force a duplicate
-            protein entry to overwrite. Can be useful for update a proteome using data from
-            a newer source
+        force_overwrite : Bool
+            If set to False and a unique_ID is included that already is found then this function
+            will raise an exception. However, if set to True it will automatically overwrite the
+            pre-existing entry. (Default = False).
+           
+        Returns
+        --------        
+        None
+            No return status, but valid proteins included in the input_list will be added to
+            to the underlying proteome
+
+
+        """
+        
+        unique_ID_str = str(unique_ID)
+
+        if unique_ID_str in self._records:
+            if force_overwrite is False:
+                raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID_str))
+
+        self._records[unique_ID_str] = Protein(sequence, name, self, unique_ID_str, attributes)
+
+
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def add_proteins(self, input_list, force_overwrite=False):
+        """
+        Function that allows the user to add a multiple new proteins using a list
+        of Protein dictionaries.
+
+        Protein dictionaries are dictionaries that posses the following key-value pairs:
+
+            'sequence'   : amino acid sequence (str)
+            'name'       : protein name (str)
+            'unique_ID'  : The unique identification number used for the protein (str)
+            'attributes' : A dictionary of arbitrary key-value pairs to associate with
+                           the protein (dict or None)
+        
+
+        Additional keys/value pairs are ignored and ALL four of these must be included. If any are
+        missing for any protein entry this function raises a ProteomeException.
+        
+        Parameters
+        -----------
+        input_list : list
+            List of Protein dictionaries
+        
+        force_overwrite : bool
+            If set to False and a unique_ID is included that already is found then this function
+            will raise an exception. However, if set to True it will automatically overwrite the
+            pre-existing entry. (Default = False).
 
 
         Returns
         --------
         
-        Protein object or None
-            Depending on if the passed unique_ID is found in the Proteomes, a Protein 
-            object or None will be returned
+        None
+            No return status, but valid proteins included in the input_list will be added to
+            to the underlying proteome
+
+        """
+        # for each protein entry in the input list
+        for entry in input_list:
+        
+            try:
+                sequence       = str(entry['sequence'])
+                name           = str(entry['name'])
+                unique_ID      = str(entry['unique_ID'])
+                attributes     = entry['attributes']
+            except KeyError:
+                # if something goes wrong while extracting the four required attributes we build a 
+                # diagnosis string and then print this as we raise an exception. The goal here is to
+                # try and provide the user with as much info as possible to diagnose the problem
+            
+                diagnosis_string = self.__build_diagnosis_string_proteome_construction(entry)
+                raise ProteomeException('%s'%(diagnosis_string))
+            
+            if unique_ID in self._records:
+                if force_overwrite is False:
+                    raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+
+            # add in a new protein
+            self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
+
+
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def remove_protein(self, unique_ID, safe=True):
+        """
+        Function that removes a given proteome from the Proteome based on the passed unique_ID.
+        If the passed unique_ID does not exist then this will trigger an exception unless
+        safe=False
+
+        Parameters
+        ------------
+        unique_ID : str
+            Unique ID that will be used to retrieve a given protein
+
+        safe : bool
+            Flag that if set to True means if a passed unique_ID is missing from the underlying
+            proteome object an exception wll be raised (ProteomeException). If False a missing
+            unique_ID is ignored
+
+        Returns
+        -----------
+        None
+            No return type but will remove an entry from the proteome
+           
+        """
+
+        unique_ID_str = str(unique_ID)
+
+        if unique_ID_str in self._records:
+            del self._records[unique_ID_str]
+        else:
+            if safe:
+                raise ProteomeException('Passed unique_ID [%s] not found in this proteome' % (unique_ID_str))
+            
+
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def remove_proteins(self, input_list, safe=True):
+        """
+        Function that removes a given proteome from the Proteome based on the passed unique_ID.
+        If the passed unique_ID does not exist then this will trigger an exception unless
+        safe=False
+
+        Parameters
+        ------------
+        input_list : list of str
+            List that contains the unique IDs that will be used to select proteins for deletion
+
+        safe : bool
+            Flag that if set to True means if a passed unique_ID is missing from the underlying
+            proteome object an exception wll be raised (ProteomeException). If False a missing
+            unique_ID is ignored
+
+        Returns
+        -----------
+        None
+            No return type but will remove an entry from the proteome           
 
         """
 
-        if unique_ID in self._records:
-            if force_overwrite is False:
-                raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+        for unique_ID in input_list:
+            self.remove_protein(unique_ID, safe=safe)
+            
 
-        self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
-        
 
      
     ###################################

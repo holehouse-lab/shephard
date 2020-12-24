@@ -14,10 +14,16 @@ from shephard.exceptions import APIException
 
 ## ------------------------------------------------------------------------
 ##
-def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use_header_as_unique_ID=False, invalid_sequence_action='fail'):
+def fasta_to_proteome(filename, 
+                      proteome=None, 
+                      build_unique_ID=None, 
+                      build_attributes=None, 
+                      use_header_as_unique_ID=False, 
+                      force_overwrite=False,
+                      invalid_sequence_action='fail'):
     """
     Stand alone function that allows the user to build a Proteome from a standard
-    FASTA file. 
+    FASTA file, or add sequences in a FASTA file to an existing Proteome.
 
     The input filename must be a FASTA file without duplicate headers. If the file
     has duplicate headers and these have to be further processed we suggest using
@@ -44,7 +50,11 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use
     filename : string
         Name of the FASTA file we're going to parse in. Note the protein name will be
         defined as the full FASTA header for each entry **unless** a ``header_parser``
-        function is provided
+        function is provided.
+
+    proteome : Proteome
+        If a Proteome object is provided the FASTA file will be read and added to the existing
+        proteome, whereas if set to None a new Proteome will be generated.
 
     build_unique_ID : function
         [**Default = None**] ``build_unique_ID`` allows a user-defined function that is 
@@ -65,6 +75,13 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use
         set to true and `build_unique_ID` function not being set to None will trigger an exception as this means
         there are two conflicting definitions of how the unique_ID should be defined. Note that if non-unique
         headers are found this will trigger an exception.
+
+    force_overwrite : bool
+        [**Default = False**] Flag that if set to true and we encounter a unique_ID that is already in the proteome
+        the newer value overwrites the older one without predudice. This is mostly useful if you are adding in a file
+        with known duplicate entries OR combining multiple FASTA files where you know there's some duplications. Note
+        that if build_unique_ID = None and user_header_as_unique_ID = None then fasta_to_proteome guarentees that every
+        FASTA entry will be given a unique_ID (meaning force_overwrite is irrelevant in this case).
 
     invalid_sequence_action : ``'ignore'``, ``'fail'``, ``'remove'``, ``'convert'``, ``'convert-ignore'``
         [**Default = 'fail'**] Selector that determines how to deal with invalid sequences. If ``convert``
@@ -100,6 +117,21 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use
     # numbering used for construction. Also initialize the proteom_dict, which is
     # a dictionary of protein entries we passed to Proteome.
     record_index  = 0
+
+    # IF we're adding to a new proteome this bit of code sets the record_index to the largest new integer
+    # such that we can add multiple proteomes in succession and we'll get a proteome where there are numerically
+    # contigous unique_IDs.  Note we only do this if we'll be using the record_index
+    if proteome is not None and (build_unique_ID is None or use_header_as_unique_ID is None):
+        numeric_record_ids = []
+        for uid in proteome.proteins:
+            try:
+                numeric_record_ids.append(int(uid))
+            except ValueError:
+                pass
+        if len(numeric_record_ids) > 0:
+            record_index = max(numeric_record_ids)+1
+
+    # initialize the empty list
     proteome_list = []
 
     # for each entry
@@ -132,7 +164,6 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use
         else:
             attributes = {}
             
-            
         # now create an input dictionary orbject
         newdict = {}
         newdict['sequence'] = str(fasta_dictionary[k])
@@ -143,14 +174,18 @@ def fasta_to_proteome(filename, build_unique_ID=None, build_attributes=None, use
         proteome_list.append(newdict)
 
         record_index = record_index + 1
-
         
-    # finally actually build the proteome and return it
-    return Proteome(proteome_list)
+    # finally if a proteome was provided then 
+    if proteome is not None:
+        proteome.add_proteins(proteome_list, force_overwrite=force_overwrite)
+        return proteome
+    else:
+        # no proteome provided so build a new proteome and return it    
+        return Proteome(proteome_list, force_overwrite=force_overwrite)
 
 
 
-## ------------------------------------------------------------------------
+        ## ------------------------------------------------------------------------
 ##
 def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
     """

@@ -139,8 +139,13 @@ def test_add_protein():
     # check this works
     P = proteome.Proteome(protein_list)
     print(P.proteins)
-    P.protein(1.23).sequence == 'ASDFGH'
-    P.protein("1.23").sequence == 'ASDFGH'
+    assert P.protein(1.23).sequence == 'ASDFGH'
+    assert P.protein("1.23").sequence == 'ASDFGH'
+
+    P.remove_protein(1.23)
+    with pytest.raises(ProteomeException):
+        assert P.protein(1.23).sequence == 'ASDFGH'
+        
 
     
             

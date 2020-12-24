@@ -92,8 +92,8 @@ class Protein:
         # domains or sites by type. This provides a mode of conditional memoization, so at 
         # least within a single session we do not have to search through domains and sites
         # multiple times to find a specific type
-        self._domains_by_type ={}
-        self._sites_by_type ={}
+        self._domains_by_type = {}
+        self._sites_by_type = {}
 
 
 
