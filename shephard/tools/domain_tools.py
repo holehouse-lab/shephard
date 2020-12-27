@@ -326,18 +326,15 @@ def build_domains_from_track_values(proteome,
         Returns a list of domain dictionaries which can be then parsed or
         added to a protein via the add_domains() function.
 
-
-    
-
     """
     
-    new_domains={}
+    new_domains = {}
 
     c=0
     for protein in proteome:
 
         # if our protein is too short do not try and generate a domain
-        if len(protein) < 3*gap_closure+1:
+        if len(protein) < 3*gap_closure + 1:
             continue
         
         # this is the counter of proteins we've actually scanned - if
@@ -358,16 +355,20 @@ def build_domains_from_track_values(proteome,
         # and apply the binerize function to the values
         B = binerize_function(t)
 
+        # add to help debugging
+        if len(B) != len(protein):
+            raise exceptions.DomainException('Binerize function failed to return an array or list that matches the protein sequence length')
+            
+
         ## Part 1 - remove gapes
         for g in range(1, gap_closure+1):
             # first fill in 
 
 
             # for each position
-            i=0
+            i = 0
             finished = False
             while not finished:
-
 
                 p1 = i
                 p2 = i + g
@@ -376,11 +377,9 @@ def build_domains_from_track_values(proteome,
 
                 # if the complete set of smaller regions ahead is empty or 
                 # fully assigned skip ahead because nothing to do here...
-                #if general_utilities.numerical_sum(B[p1:p4]) == 0:
                 if np.sum(B[p1:p4]) == 0:
                     i = p4
 
-                #elif general_utilities.numerical_sum(B[p1:p4]) == 3*g:
                 elif np.sum(B[p1:p4]) == 3*g:
 
                     # we jump to the p3 position (and NOT p4) as this allows us to skip along without
@@ -390,7 +389,6 @@ def build_domains_from_track_values(proteome,
 
                 else:
                     # if we have gapsize number of hits
-                    #if general_utilities.numerical_sum(B[p1:p2])  == g:
                     if np.sum(B[p1:p2])  == g:
 
                         # and if a gap away there is another gapsize 
