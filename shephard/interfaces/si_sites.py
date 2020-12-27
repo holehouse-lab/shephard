@@ -54,16 +54,14 @@ class _SitesInterface:
 
                 # should update this to also display the actual error...
                 if skip_bad:
-                    print('Warning: %s'%msg)
-                    print('Skipping this line...')
+                    shephard_exceptions.print_warning(msg + "\nSkipping this line...")
                     continue
                 else:
-                    raise InterfaceException('Error: %s'%msg)
+                    raise InterfaceException(msg)
 
             # if there's more parse attribute dictionary entries
             if len(sline) > 5:
                 attributes = interface_tools.parse_key_value_pairs(sline[5:], filename, linecount, line)
-
 
             if unique_ID in ID2site:
                 ID2site[unique_ID].append([position, site_type, symbol, value, attributes])
@@ -231,7 +229,7 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                         shephard_exceptions.print_and_raise_error(msg, e)
                     else:
                         if verbose:
-                            shephard_exceptions.print_warning(msg, e)
+                            shephard_exceptions.print_warning(msg)
                             continue
                     
 

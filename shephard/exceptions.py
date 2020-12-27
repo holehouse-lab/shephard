@@ -9,12 +9,16 @@ Holehouse Lab - Washington University in St. Louis
 
 """
 
-def print_warning(msg, e):
-    print('Warning: %s' %(msg))
-    print('%s\n'%(e))
+def print_warning(msg):
+    """
+    Function that prints a warning message (with an exception if provided).
+    """
+    
+    print('WARNING: %s' %(msg))
 
-def print_and_raise_error(msg, e):
-    print('Error: %s' %(msg))
+
+def print_and_raise_error(msg, e):    
+    print('ERROR: %s' %(msg))
     raise e
 
     

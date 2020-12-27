@@ -41,16 +41,20 @@ class _TracksInterface:
         with open(filename,'r') as fh:
             content = fh.readlines()
 
-        ID2track={}
+        ID2track = {}
 
-        linecount=0
+        linecount = 0
+
+        # cycle over every line in the file
         for line in content:
 
-            linecount=linecount+1
+            linecount = linecount + 1
 
-            sline = line.strip().split(delimiter)
-                        
-            data_vector=[]
+            # extract chop off lagging whitespace and divide up using the delimiter
+            sline = line.strip().split(delimiter)                        
+            data_vector = []
+            
+            # for this list 
             try:
 
                 # extract track name and unique_id
@@ -81,11 +85,10 @@ class _TracksInterface:
 
                 # should update this to also display the actual error...
                 if skip_bad:
-                    print('Warning: %s'%msg)
-                    print('Skipping this line...')
+                    shephard_exceptions.print_warning(msg + "\nSkipping this line...")
                     continue
                 else:
-                    raise InterfaceException('Error: %s'%msg)
+                    raise InterfaceException(msg)
 
         self.data = ID2track
 
@@ -248,5 +251,77 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
 
 
 
+
+## ------------------------------------------------------------------------
+##
+def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, delimiter='\t'):
+    """
+    Function that writes out tracks to file in a standardized format.
+    
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    filename : str
+        Filename that will be used to write the new domains file
+
+    track_selector : str
+        Selector that allows a specific track to be written out. If none are
+
+    value_fmt : str
+        Format string that will be used for values. Default = "%.3f"
+        
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_tracks_from_files()`
+        function.
+    
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of domains
+        from this proteome written to disk.
+
+
+    """
+
+    # test the passed value_fmt string works. This is not fullproof but at least validates that
+    # the string can parse a float (which is a necessary requirement for tracks values to be read
+    # back in again by shephard
+    try:
+        a = value_fmt %( 1.5 )
+
+        if float(a) != 1.5:
+            raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
+    except TypeError:
+        raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
+
+    
+    with open(filename, 'w') as fh:
+        
+        for protein in proteome:
+
+            if track_selector is not None:
+                tracklist = [protein.track(track_selector)]
+            else:
+                tracklist = protein.tracks
+
+            unqique_ID = protein.unqique_ID
+
+            for t in tracklist:
+                # build the initial string
+                out_string = "%s%s%s%s" % (unique_ID, delimiter, t.name, delimiter)
+
+                if t.values is not None:
+                    for v in t.values:
+                        out_string = out_string + "%s%s" % (value_fmt %(v), delimiter)
+                else:
+                    for v in t.values:
+                        out_string = out_string + "%s%s" % (v, delimiter)
+
+
+                fh.write('%s\n'%(out_string))
                     
-                        
+                    

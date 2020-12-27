@@ -55,11 +55,10 @@ class _ProteinAttributesInterface:
 
                 # should update this to also display the actual error...
                 if skip_bad:
-                    print('Warning: %s'%msg)
-                    print('Skipping this line...')
+                    shephard_exceptions.print_warning(msg + "\nSkipping this line...")
                     continue
                 else:
-                    raise InterfaceException('Error: %s'%msg)
+                    raise InterfaceException(msg)
 
             # if some key/value pairs were included then parse these out one at a time
             if len(sline) > 1:
