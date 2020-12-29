@@ -49,9 +49,9 @@ class _ProteinAttributesInterface:
             try:
                 unique_ID = sline[0].strip()
                 attributes = {}                
-            except Exception:
+            except Exception as e:
 
-                msg = 'Failed parsing file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line)
+                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
 
                 # should update this to also display the actual error...
                 if skip_bad:

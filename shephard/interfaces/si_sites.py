@@ -48,9 +48,8 @@ class _SitesInterface:
                 symbol = sline[3].strip()
                 value = float(sline[4].strip())
                 attributes = {}
-            except Exception:
-
-                msg = 'Failed parsing file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line)
+            except Exception as e:
+                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
 
                 # should update this to also display the actual error...
                 if skip_bad:

@@ -57,9 +57,9 @@ class _DomainsInterface:
                 end = int(sline[2].strip())
                 domain_type = sline[3].strip()
                 attributes = {}
-            except Exception:
+            except Exception as e:
 
-                msg = 'Failed parsing file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line)
+                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
 
                 # if we're skipping bad things then...
                 if skip_bad:
