@@ -113,6 +113,10 @@ class Track:
         self._name = name
         self._protein = protein
         
+        # update track name types
+        protein.proteome.__update_track_names(self._name)
+
+        
         
 
     ## ------------------------------------------------------------------------

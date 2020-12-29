@@ -95,6 +95,7 @@ class Proteome:
         self._records = {}
         self._unique_domain_types = []
         self._unique_site_types = []
+        self._unique_track_names = []
         
         # check attributs dictionary
         general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary', or_none = True)
@@ -533,7 +534,7 @@ class Proteome:
         # which checks if the domain_type of the domain being added is already in the
         # __unique_domain_types list. If yes, fine, if no, it gets added. This means
         # _unique_domain_types keeps track of a count of the complete number of unique
-        # domains in the Proteome. An analogous setup holds true for the sites.        
+        # domains in the Proteome. An analogous setup holds true for the sites and tracks.
         
         return self._unique_domain_types
     
@@ -559,10 +560,37 @@ class Proteome:
         # which checks if the domain_type of the domain being added is already in the
         # __unique_site_types list. If yes, fine, if no, it gets added. This means
         # _unique_site_types keeps track of a count of the complete number of unique
-        # sites in the Proteome. An analogous setup holds true for the domains.        
+        # sites in the Proteome. An analogous setup holds true for domains and tracks.
+        
 
         return self._unique_site_types
     
+
+    ## ------------------------------------------------------------------------
+    ##                
+    @property
+    def unique_track_names(self):
+        """
+        Returns the list of unique Track names associated with this Proteome.
+
+        Return
+        -------
+
+        list of strings
+            Each element in the list is a string that corresponds to a Track name
+            found in one (or more) proteins
+
+        """
+
+        # Some description of what's going on here is in order. Every time a new track
+        # is added, the Track constructor calls the function _Track__update_track_names
+        # which checks if the track_name of the domain being added is already in the
+        # __unique_track_types list. If yes, fine, if no, it gets added. This means
+        # _unique_track_names keeps track of a count of the complete number of unique
+        # domains in the Proteome. An analogous setup holds true for sites and domains
+        
+        
+        return self._unique_track_names
 
 
     ## ------------------------------------------------------------------------
@@ -707,6 +735,35 @@ class Proteome:
         """
         if domain_type not in self.unique_domain_types:
             self._unique_domain_types.append(domain_type)
+
+
+    ## ------------------------------------------------------------------------
+    ##                
+    def _Track__update_track_names(self, track_name):
+        """
+        INTERNAL FUNCTION (not for public API use)
+
+        
+        Note - we this function is named as __Track_... so it can be specifically
+        and uniquely be called from a Domain object. This function is ONLY called
+        last thing in the Track constructor where it allows the Proteome object
+        to keep track of the total number of unique Track types in the Proteome.
+
+        The function is (by default) called by the Domain constructor
+
+        Parameters
+        ----------------
+        track_name : string
+            String that defines the Track name 
+
+        Returns
+        ---------------
+
+        No return value, but will appropriately update the Proteome object
+
+        """
+        if track_name not in self.unique_track_names:
+            self._unique_track_names.append(track_name)
 
 
 
