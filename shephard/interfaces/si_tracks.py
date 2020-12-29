@@ -13,6 +13,7 @@ from shephard.exceptions import InterfaceException, ProteinException, TrackExcep
 import shephard.exceptions as shephard_exceptions
 from . import interface_tools 
 from shephard import general_utilities
+import os
 
 
 
@@ -79,9 +80,9 @@ class _TracksInterface:
                 else:
                     ID2track[unique_ID].append([track_name, data_vector])
 
-            except Exception:
+            except Exception as e:
 
-                msg = 'Failed parsing file [%s] on line [%i]... line printed below:\n%s'%(filename, linecount, line)
+                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
 
                 # should update this to also display the actual error...
                 if skip_bad:
@@ -254,9 +255,14 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
 
 ## ------------------------------------------------------------------------
 ##
-def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, delimiter='\t'):
+def write_all_tracks(proteome, outdirectory='.', value_fmt = "%.3f", delimiter='\t'):
     """
-    Function that writes out tracks to file in a standardized format.
+    Function that writes all tracks associated with a proteome out, whereby the output
+    filenames are defined as:
+    
+    shephard_track_<trackname>.tsv
+    
+    and are written to the outdirectory
     
     Parameters
     -----------
@@ -264,11 +270,9 @@ def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, 
     proteome :  Proteome object
         Proteome object from which the domains will be extracted from
 
-    filename : str
-        Filename that will be used to write the new domains file
-
-    track_selector : str
-        Selector that allows a specific track to be written out. If none are
+    outdirectory : str
+        String that defines the output directory. By default sets to the present
+        working directory ('.').
 
     value_fmt : str
         Format string that will be used for values. Default = "%.3f"
@@ -287,6 +291,50 @@ def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, 
 
     """
 
+    for t_name in protein.unique_track_names:
+        outname = os.path.join(outdirectory, "shephard_track_%s.tsv" %( t_name))
+        write_tracks(proteome, outname, t_name, value_fmt, delimiter)
+    
+
+            
+
+
+
+## ------------------------------------------------------------------------
+##
+def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\t'):
+    """
+    Function that writes out a specific track to file in a standardized format. Note that
+    because track files are inevitably quite big default behaviour is to only write out a
+    single trackl
+    
+    Parameters
+    -----------
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    filename : str
+        Filename that will be used to write the new domains file
+
+    track_name : str
+        Name of the track to be written out.
+
+    value_fmt : str
+        Format string that will be used for values. Default = "%.3f"
+        
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_tracks_from_files()`
+        function.
+    
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of domains
+        from this proteome written to disk.
+
+    """
+
     # test the passed value_fmt string works. This is not fullproof but at least validates that
     # the string can parse a float (which is a necessary requirement for tracks values to be read
     # back in again by shephard
@@ -298,19 +346,17 @@ def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, 
     except TypeError:
         raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
 
-    
+            
     with open(filename, 'w') as fh:
         
         for protein in proteome:
 
-            if track_selector is not None:
-                tracklist = [protein.track(track_selector)]
-            else:
-                tracklist = protein.tracks
+            
+            # try and extract out the track in question
+            t = protein.track(track_name, safe=False)
+            if t is not None:
+                unique_ID = protein.unique_ID
 
-            unqique_ID = protein.unqique_ID
-
-            for t in tracklist:
                 # build the initial string
                 out_string = "%s%s%s%s" % (unique_ID, delimiter, t.name, delimiter)
 
@@ -318,10 +364,13 @@ def write_tracks(proteome, filename, value_fmt = "%.3f", track_selector = None, 
                     for v in t.values:
                         out_string = out_string + "%s%s" % (value_fmt %(v), delimiter)
                 else:
-                    for v in t.values:
+                    for v in t.symbols:
                         out_string = out_string + "%s%s" % (v, delimiter)
 
 
                 fh.write('%s\n'%(out_string))
                     
                     
+
+
+    
