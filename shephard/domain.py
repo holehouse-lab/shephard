@@ -86,7 +86,6 @@ class Domain:
         else:
             self._attributes = attributes
 
-
         # update unique domain types
         protein.proteome.__update_domain_types(self._domain_type)
 
