@@ -219,12 +219,3 @@ def test_write_track_part3():
             assert len(protein.tracks) == 2               
         else:
             assert len(protein.tracks) == 0      
-
-    
-
-
-        
-    
-
-
-
