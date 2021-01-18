@@ -306,7 +306,7 @@ class Site:
         offset : int
             +/- values around the site from which regions are taken
 
-        safe : boolean
+        safe : bool
             If set to True, missing tracks trigger an exception, else they 
             just return None
 
@@ -350,7 +350,7 @@ class Site:
         name : str
             Track name
 
-        safe : boolean
+        safe : bool
             If set to True, missing tracks trigger an exception, else they 
             just return None
 

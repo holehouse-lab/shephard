@@ -16,6 +16,7 @@ from .site import Site
 from .track import Track
 from .exceptions import ProteinException
 from .import general_utilities
+from .interfaces.si_domains import add_domains_from_dictionary
 
 
 
@@ -740,7 +741,7 @@ class Protein:
             A symbolic collection of characters, where each symbol maps to a specific 
            residue in the sequence. 
         
-        safe : boolean (default = True)
+        safe : bool (default = True)
             If set to True over-writing tracks will raise an exception, otherwise overwriting
             a track will simply over-write it.
 
@@ -802,7 +803,7 @@ class Protein:
             In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
             the build_track_values_from_sequence is called.
 
-        safe : boolean (default = True)
+        safe : bool (default = True)
             If set to True over-writing tracks will raise an exception, otherwise overwriting
             a track will simply over-write it.
 
@@ -941,7 +942,7 @@ class Protein:
             In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
             the build_track_symbols_from_sequence is called.
 
-        safe : boolean (default = True)
+        safe : bool (default = True)
             If set to True over-writing tracks will raise an exception, otherwise overwriting
             a track will simply over-write it.
 
@@ -1058,7 +1059,7 @@ class Protein:
             Function that takes in `input_data` and returns a dictionary with a 'values' and a 'symbols' key and value
             pairing. The values that map to 'values' and 'symbols' will be added as a single new track defined by name.
 
-        safe : boolean (default = True)
+        safe : bool (default = True)
             If set to True over-writing tracks will raise an exception, otherwise overwriting
             a track will simply over-write it.
 
@@ -1178,7 +1179,7 @@ class Protein:
       
     ## ------------------------------------------------------------------------
     ##
-    def add_domains(self, list_of_domains, safe=True, autoname=False):
+    def add_domains(self, list_of_domains, safe=True, autoname=False, verbose=False):
         """
 
         Function that takes a list of domain dictionaries and adds those domains to the protein.
@@ -1192,6 +1193,8 @@ class Protein:
         
         Note that in start, end, and domain_type are the only required key-value pairs required in
         the dictionary.
+
+        If you wish to add many domains to main proteins, see interfaces.si_domains.add_domains_from_dictionary()
 
         Parameters
         -------------
@@ -1209,17 +1212,19 @@ class Protein:
             attributes           : dictionary of arbitrary key-value pairs 
                                    that will be associated with the domain
             
-
-        safe : boolean 
+        safe : bool (default = True)
             If set to True over-writing domains will raise an exception. If False, overwriting
             a domain will silently over-write. Default = True.
 
-        autoname : boolean
+        autoname : bool (default = False)
             If autoname is set to true, this function ensures each domain ALWAYS has a unique
             name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
             this feature in place is useful. In general we want to avoid this as it makes it 
             easy to include duplicates which by default are prevented when autoname=False.
+
+        verbose : bool (default = True)
+            Flag that defines how 'loud' output is. Will warn about errors on adding domains.
 
 
         Returns
@@ -1230,6 +1235,13 @@ class Protein:
 
         """
 
+        # create the input dictionary
+        in_dict = {self.unique_ID:list_of_domains}
+        add_domains_from_dictionary(self.proteome, in_dict, autoname=autoname, safe=safe, verbose=verbose)
+
+        ## old manual code, now we leverage interfaces code
+        """
+        
         # for each domain definition check we can extract the relevant info 
         for new_domain in list_of_domains:
 
@@ -1253,6 +1265,8 @@ class Protein:
                 ad = {}
 
             self.add_domain(start, end, domain_type, ad, safe, autoname)
+
+        """
 
 
         
@@ -1288,11 +1302,11 @@ class Protein:
             associated with a domain, in much the same way that they can be associated
             with a protein. Default = None.
 
-        safe : boolean 
+        safe : bool 
             If set to True over-writing tracks will raise an exception, otherwise overwriting
             a track will simply over-write it. Default = True.
 
-        autoname : boolean
+        autoname : bool
             If autoname is set to true, this function ensures each domain ALWAYS has a unique
             name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
@@ -1362,7 +1376,7 @@ class Protein:
         safe : bool (default = True)
             Flag which if true with throw an exception of a domain with the same name already exists
 
-        autoname : boolean
+        autoname : bool
             If autoname is set to True, this function ensures each domain ALWAYS has a unique
             name - i.e. the allows for multiple domains to be perfectly overlapping in position
             and type. This is generally not going to be required and/or make sense, but having
@@ -1405,7 +1419,7 @@ class Protein:
         domain_type : string
             String associated domain_type that you want to search for
 
-        perfect_match : boolean
+        perfect_match : bool
             Flag that identifies if the domain names should be a perfect match (=True) 
             or if the string passed should just appear somewhere in the domain_type 
 
@@ -1487,9 +1501,9 @@ class Protein:
     def site(self, position, safe=True):
         """
         Returns the list of sites that are found at a given position. Note that - in general
-        site() should be used to retrieve sites you know exist while get_sites_by_position()
+        site() should be used to retrieve sites you know exist while `get_sites_by_position()`
         offers a way to more safely get sites at a position. Site will throw an exception 
-        if the position passed does not exist (while get_sites_by_position() will not).
+        if the position passed does not exist (while `get_sites_by_position()` will not).
 
         Parameters
         -------------
@@ -1526,6 +1540,10 @@ class Protein:
 
         Sites can be associated with a numerical value, a symbol, or both. Sites can
         also have attributes associated with them.
+
+        If you wish to add many sites to many proteins, see:
+        
+            interfaces.si_sites.add_sites_from_dictionary()
         
         Parameters
         -----------
@@ -1577,19 +1595,18 @@ class Protein:
         position : int
             Residue position of interest (position in sequence)
 
-        wiggle : int (default = 0)
+        wiggle : int, default = 0
             Value +/- the position (i.e. lets you look at sites around a 
             specific position)
 
         Returns
         -----------
-        dictionary
+        dict
 
             Returns a dictionary where key-value pairs are
 
-            keys: positions along the sequence
-
-            values: list of one or more sites found at that position
+            * **keys**: positions along the sequence (int)
+            * **value**: list of one or more sites found at that position (list of shephard.site)
 
         """
 
@@ -1616,13 +1633,12 @@ class Protein:
 
         Returns
         -----------
-        dictionary
+        dict
 
             Returns a dictionary where key-value pairs are
 
-            keys: positions along the sequence
-
-            values: list of one or more sites found at that position
+            * **keys**: positions along the sequence (int)
+            * **value**: list of one or more sites found at that position (list of shephard.site)
 
         """
        

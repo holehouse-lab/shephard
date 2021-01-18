@@ -90,14 +90,14 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     Function that takes a correctly formatted protein_atttribute dictionary and will add those 
     attributes to the proteins in the Proteome.
 
-    protein_attribute dictionaries are key-value pairs, where the key is a unique ID and the value
-    is a list of dictionaries, where for each dictionary the key-value pair is a key-value pair of protein
-    attributes.
+    protein attribute dictionaries are key-value pairs, where the key is a unique ID and the value
+    is a list of dictionaries. For each sub-dictionary, the key-value pair reflects the attribute
+    key-value pairing.
 
     Parameters
     ----------
     proteome : Proteome Object
-        Proteome object to which domains will be added
+        Proteome object to which attributes will be added
 
     protein_attribute_dictionary : dict
         Dictionary that defines protein attributes. This is slightly confusing, but the keys for this
@@ -119,12 +119,13 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
         Default = True.
     
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+        Flag that defines how 'loud' output is. Will warn about errors on adding attributes.
 
     Returns
     -----------
     None
-        No return value, but domains are added to the Proteome object passed as the first argument
+        No return value, but attributes are added to proteins in the Proteome object passed as 
+        the first argument
     
     """
 
@@ -159,18 +160,17 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
 ##
 def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=True, skip_bad=True, verbose=True):
     """
-    Function that takes a correctly formatted Proteome 'domains' file and reads 
-    all domains into the passed Proteome.
+    Function that takes a correctly formatted 'protein attributes' file and reads 
+    all attributes into the proteins in the passed proteome.
 
-    Expect Domain files to have the following format:
+    The function expects protein attribute files to have the following format:
 
-    One domain per line where:
-    
-    Unique_ID    start    stop    domain_type    key_1:value_1    key_2:value_2, ...,     key_n:value_n
+    One protein defined per line (although the same protein can appear multiple times)
+
+    Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
 
     A couple of key points here:
     - The default delimiter is tabs ('\t') but this can be changed with the delimiter argument
-    - The first four arguments are required, while all of the key:value pairs are optional
     - Key value must be separated by a ':', as a result any delimiter (other than ':') can be 
       used, but ':' is reserved for this role
     
@@ -178,10 +178,10 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=Tr
     Parameters
     ----------
     proteome : Proteome Object
-        Proteome object to which domains will be added
+        Proteome object to which attributes will be added
 
     filename : str
-        Name of the shephard domains file to read
+        Name of the shephard protein attributes file to read
 
     delimiter : str 
         String used as a delimiter on the input file. Default = '\t'
@@ -210,7 +210,7 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=Tr
         printed (regardless of verbose flag). Default = True
     
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+        Flag that defines how 'loud' output is. Will warn about errors on adding attributes.
 
     Returns
     -----------
@@ -221,7 +221,7 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=Tr
         
     """        
     # check first argument is a proteome
-    interface_tools.check_proteome(proteome, 'add_domains_from_file (si_domains)')
+    interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
 
     # next read in the file
     protein_attribute_interface = _ProteinAttributesInterface(filename, 
@@ -243,6 +243,9 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', safe=Tr
 def write_protein_attributes(proteome, filename, delimiter='\t'):
     """
     Function that writes out protein attributes to file in a standardized format.
+    Note that attributes are converted to a string, which for simple attributes is 
+    reasonable but is not really a viable stratergy for complex objects, although 
+    this will not yeild and error.
 
     
     Parameters

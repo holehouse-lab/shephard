@@ -32,6 +32,21 @@ class _DomainsInterface:
         are optional. Key value must be separated by a ':', but any delimiter (other than ':') 
         is allowed.
 
+        When created, this constructor parses the keyfile to generate a .data class object, 
+        which itself maps a uniqueID to a list of domain dictionaries.
+
+        Domain dictionaries have the following key-value pairs
+
+        REQUIRED:
+        start                : int (domain start position)
+        end                  : int (domain end position)
+        domain_type          : string (domain type)
+
+        OPTIONAL:
+        attributes           : dictionary of arbitrary key-value pairs 
+                               that will be associated with the domain
+
+
         
 
         """
@@ -73,9 +88,9 @@ class _DomainsInterface:
                 attributes = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
                                           
             if unique_ID in ID2domain:
-                ID2domain[unique_ID].append([start, end, domain_type, attributes])
+                ID2domain[unique_ID].append({'start':start, 'end':end, 'domain_type':domain_type, 'attributes':attributes})
             else:
-                ID2domain[unique_ID] =[[start, end, domain_type, attributes]]
+                ID2domain[unique_ID] =[{'start':start, 'end':end, 'domain_type':domain_type, 'attributes':attributes}]
 
         self.data = ID2domain
 
@@ -119,7 +134,7 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, sa
         String used as a delimiter on the input file. Default = '\t'
 
     autoname : boolean
-        If autoname is set to true, this function ensures each domain ALWAYS has a unique
+        If autoname is set to True, this function ensures each domain ALWAYS has a unique
         name - i.e. the allows for multiple domains to be perfectly overlapping in position
         and type. This is generally not going to be required and/or make sense, but having
         this feature in place is useful. In general we want to avoid this as it makes it 
@@ -171,12 +186,13 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     domains to the proteins in the Proteome.
 
     Domains dictionaries are key-value pairs, where the key is a unique_ID associated 
-    with a given protein, and the value is a list of lists. Each sublist has four positions
+    with a given protein, and the value is a list of dictionaries. Each subdictionary has 
+    four key-value pairs:
 
-    [0] = start position
-    [1] = end position 
-    [2] = domain type
-    [3] = attributes dictionary
+    'start' = start position (int showing start of the domain, starting at 1)
+    'end' = end position (int showing end of the domain, inclusive)
+    'domain_type' = domain type (string that names the domain)
+    'attributes' = dictionary of arbitrary key:value pairings (optional)
 
     The start and end positions should be locations within the sequence defined by the unique_ID, 
     and if they are out of the sequence bounds this will throw an exception. Domain type is a string
@@ -192,9 +208,9 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         Proteome object to which domains will be added
 
     domain_dictionary : dict
-        Dictionary that maps unique_IDs to domain lists [start, end, type, attributes].
+        Dictionary that maps unique_IDs to a list of one or more domain dictionaries
 
-    autoname : boolean
+    autoname : bool
         If autoname is set to true, this function ensures each domain ALWAYS has a unique
         name - i.e. the allows for multiple domains to be perfecly overlapping in position
         and type. This is generally not going to be required and/or make sense, but having
@@ -202,7 +218,7 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         easy to include duplicates which by default are prevented when autoname = False. 
         Default = False.
     
-    safe : boolean 
+    safe : bool
         If set to True then any exceptions raised during the Domain-adding process are acted
         on. If set to False, exceptions simply mean the domain in question is skipped. 
         Note if set to False, pre-existing Domains with the same name would be silently overwritten (although 
@@ -212,7 +228,7 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
         Default = True.
     
-    verbose : boolean
+    verbose : bool
         Flag that defines how 'loud' output is. Will warn about errors on adding domains.
 
     Returns
@@ -234,10 +250,10 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
             for domain in domain_dictionary[protein.unique_ID]:
 
                 # extract
-                start       = domain[0]
-                end         = domain[1]
-                domain_type = domain[2]
-                ad          = domain[3]
+                start       = domain['start']
+                end         = domain['end']
+                domain_type = domain['domain_type']
+                ad          = domain['attributes']
                 
                 # try and add the domain...
                 try:
@@ -251,16 +267,16 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
                         if verbose:
                             shephard_exceptions.print_warning(msg,e)
                             continue
-
-
-
                 
 
 ## ------------------------------------------------------------------------
 ##
 def write_domains(proteome, filename, delimiter='\t'):
     """
-    Function that writes out domains to file in a standardized format.
+    Function that writes out domains to file in a standardized format. Note that
+    attributes are converted to a string, which for simple attributes is reasonable
+    but is not really a viable stratergy for complex objects, although this will 
+    not yeild and error.
     
     Parameters
     -----------
@@ -304,10 +320,8 @@ def write_domains(proteome, filename, delimiter='\t'):
                 if d.attributes:
                     for k in d.attributes:
                         line = line + delimiter
-                        line = line + str(k) + ":" + str(d.attributes[k])
+                        line = line + str(k) + ":" + str(d.attributes(k))
 
                 line = line + "\n"
-                        
-
 
                 fh.write('%s'%(line))

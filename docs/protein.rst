@@ -64,8 +64,10 @@ Site functions
 ..................
 .. autofunction:: shephard.proteome.Protein.sites
 .. autofunction:: shephard.proteome.Protein.site
+.. autofunction:: shephard.proteome.Protein.site_positions
 .. autofunction:: shephard.proteome.Protein.add_site
 .. autofunction:: shephard.proteome.Protein.add_sites_by_position
+.. autofunction:: shephard.proteome.Protein.get_sites_by_position
 .. autofunction:: shephard.proteome.Protein.get_sites_by_range
 .. autofunction:: shephard.proteome.Protein.get_sites_by_type
 .. autofunction:: shephard.proteome.Protein.get_sites_by_type_and_range

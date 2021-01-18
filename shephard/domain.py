@@ -193,6 +193,11 @@ class Domain:
     def start(self):
         """
         **[Property]**: Returns the start position that defines this domain
+
+        :getter: Returns the start of the domain (indexed from 1) 
+        :setter: None
+        :type: int
+
         """
 
         return self._start
@@ -428,7 +433,7 @@ class Domain:
         name : str
             Track name
 
-        safe : boolean
+        safe : bool
             If set to True, missing tracks trigger an exception, else they 
             just return None
 
@@ -465,15 +470,15 @@ class Domain:
         name : str
             Track name
 
-        safe : boolean
+        safe : bool
             If set to True, missing tracks trigger an exception, else they 
             just return None
 
         Returns
         ----------
         list
-            Returns a list of strs that corresponds to the set of residues associated
-            with the domain of interest.
+            Returns a list of strings that corresponds to the set of residues 
+            associated with the domain of interest.
 
         """
 

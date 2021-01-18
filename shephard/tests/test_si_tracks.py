@@ -83,7 +83,7 @@ def test_add_track_from_dictionary():
 
     
     random_vals = np.random.rand(len(P.protein('O00401')))
-    track_dict = {'O00401': [['random_vals', random_vals]]}
+    track_dict = {'O00401': [{'track_name':'random_vals', 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
     assert len(P.protein('O00401')) == len(P.protein('O00401').track('random_vals').values)
 
@@ -95,7 +95,7 @@ def test_add_track_from_dictionary():
         else:
             newstring = newstring + "-"
 
-    track_dict = {'O00401': [['phosres', newstring]]}
+    track_dict = {'O00401': [{'track_name':'phosres', 'track_data':newstring}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
 
 
@@ -155,7 +155,7 @@ def test_write_track_part2():
     track_name = 'random_vals'
     outname = 'output_test/track_%s.tsv'%(track_name)
 
-    track_dict = {special_ID: [[track_name, random_vals]]}
+    track_dict = {special_ID: [{'track_name':track_name, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
     interfaces.si_tracks.write_track(P, outname,track_name)
 
@@ -188,7 +188,7 @@ def test_write_track_part3():
     track_name_rv = 'random_vals'
     outname_rv = 'output_test/track_%s.tsv'%(track_name_rv)
 
-    track_dict = {special_ID: [[track_name_rv, random_vals]]}
+    track_dict = {special_ID: [{'track_name':track_name_rv, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
     interfaces.si_tracks.write_track(P, outname_rv, track_name_rv)
 
@@ -206,7 +206,7 @@ def test_write_track_part3():
         else:
             newstring = newstring + "-"
 
-    track_dict = {special_ID: [[track_name, newstring]]}
+    track_dict = {special_ID: [{'track_name':track_name, 'track_data':newstring}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')    
     interfaces.si_tracks.write_track(P, outname, track_name)
 

@@ -53,7 +53,7 @@ class _TracksInterface:
 
             # extract chop off lagging whitespace and divide up using the delimiter
             sline = line.strip().split(delimiter)                        
-            data_vector = []
+            track_data = []
             
             # for this list 
             try:
@@ -66,19 +66,20 @@ class _TracksInterface:
                 if mode == 'values':
 
                     # for each element in sline strip whitespace and convert to a float
-                    data_vector = [float(i.strip()) for i in sline[2:]]
+                    track_data = [float(i.strip()) for i in sline[2:]]
 
                 elif mode == 'symbols':
                     # for each element in sline strip whitespace 
-                    data_vector = [i.strip() for i in sline[2:]]
+                    track_data = [i.strip() for i in sline[2:]]
                 else:
                     raise InterfaceException('Error: %s'% "mode passed = %s, yet this does not match 'symbols' or 'values'")
 
                         
-                if unique_ID not in ID2track:
-                    ID2track[unique_ID] = [[track_name, data_vector]]
+                if unique_ID in ID2track:
+                    ID2track[unique_ID].append({'track_name':track_name, 'track_data':track_data})                    
                 else:
-                    ID2track[unique_ID].append([track_name, data_vector])
+                    ID2track[unique_ID] = [{'track_name':track_name, 'track_data':track_data}]
+                    
 
             except Exception as e:
 
@@ -179,7 +180,20 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', safe=True, sk
 ##
 def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, verbose=True):
     """
-    Function that takes a 
+
+    Function that takes a correctly formatted tracks dictionary and will add those tracks to 
+    the proteins in the Proteome.
+    
+
+    track dictionaries are key-value pairs, where the key is a unique ID and the value
+    is a list of dictionaries. For each sub-dictionary, there are two key-value pairs that
+    reflect:
+
+        'track_name'  : name of the track (str)
+        'track_data' : parsed list of floats (if expecting values) or strings (if expecting symbols)
+                        that should equal the length of the associated protein.
+
+
     Parameters
     ----------
 
@@ -187,10 +201,13 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         Proteome object which tracks will be added to
 
     tracks_dictionary : dict
-        Dictionary in which keys are unique IDs for proteins and the value is a list of lists,
-        where each sublist where element 0 is the track name and element 1 is itself a list that
-        corresponds to the set of positions to be assigned to the track.    
+        Dictionary in which keys are unique IDs for proteins and the value is a list of dictionaries,
+        where each subdictionary has the two key-value pairs:
 
+        'track_name'  : name of the track (str)
+        'track_data' : parsed list of floats (if expecting values) or strings (if expecting symbols)
+                        that should equal the length of the associated protein.
+    
     mode : string {'symbols','values'}
        A selector that defines the type of track file to be read. Must be either 'symbols' or 
        'values'
@@ -227,16 +244,18 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         if protein.unique_ID in tracks_dictionary:
             for track in tracks_dictionary[protein.unique_ID]:
 
-                # get the track name
-                track_name = track[0]
+                print(track)
+                # get the track name and vector info
+                track_name = track['track_name']
+                track_data = track['track_data']
 
                 # add the track as either values or symbols depending 
                 # on what was provided
                 try:
                     if mode == 'values':
-                        protein.add_track(track_name, values=track[1], safe=safe)
+                        protein.add_track(track_name, values=track_data, safe=safe)
                     else:
-                        protein.add_track(track_name, symbols=track[1], safe=safe)
+                        protein.add_track(track_name, symbols=track_data, safe=safe)
 
                 # if an ProteinException was raised when trying to add a track some
                 # anticipated error occurred
@@ -262,7 +281,10 @@ def write_all_tracks(proteome, outdirectory='.', value_fmt = "%.3f", delimiter='
     
     shephard_track_<trackname>.tsv
     
-    and are written to the outdirectory
+    and are written to the outdirectory.
+
+    Because track files MUST be written as one per track_name, this function is equivalent
+    to cycling through each unique track name and writing it out sequentially. 
     
     Parameters
     -----------
@@ -306,7 +328,11 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
     """
     Function that writes out a specific track to file in a standardized format. Note that
     because track files are inevitably quite big default behaviour is to only write out a
-    single trackl
+    single track file at a time (i.e. unlike write_domains or write_sites where ALL domains
+    or all sites are - by default - written out, here ONLY a single type of track, defined
+    by track_name, can be written.
+
+    To write ALL the tracks from a file, see si_tracks.write_all_tracks().
     
     Parameters
     -----------
@@ -320,7 +346,9 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
         Name of the track to be written out.
 
     value_fmt : str
-        Format string that will be used for values. Default = "%.3f"
+        Format string that will be used for values. Default = "%.3f". Note that this is not
+        a smart value so if the actual value used means that %.3f looses all meaning this will
+        not trigger a warning, so, be careful!
         
     delimiter : str
         Character (or characters) used to separate between fields. Default is '\t'

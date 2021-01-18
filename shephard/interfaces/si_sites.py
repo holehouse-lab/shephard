@@ -63,9 +63,9 @@ class _SitesInterface:
                 attributes = interface_tools.parse_key_value_pairs(sline[5:], filename, linecount, line)
 
             if unique_ID in ID2site:
-                ID2site[unique_ID].append([position, site_type, symbol, value, attributes])
+                ID2site[unique_ID].append({'position':position, 'site_type':site_type, 'symbol':symbol, 'value':value, 'attributes':attributes})
             else:
-                ID2site[unique_ID] =[[position, site_type, symbol, value, attributes]]
+                ID2site[unique_ID] =[{'position':position, 'site_type':site_type, 'symbol':symbol, 'value':value, 'attributes':attributes}]
 
         self.data = ID2site
 
@@ -90,15 +90,6 @@ def add_sites_from_file(proteome, filename, delimiter='\t', safe=True, skip_bad=
     
     Each line has six required values and then can have as many key:value pairs as may be
     desired.
-
-    Those required values are
-
-    unique_ID : the
-    [0] = site position
-    [1] = site type
-    [2] = site symbol 
-    [3] = site value 
-    [4] = site attribute dictionary
 
 
     Parameters
@@ -153,15 +144,19 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
     sites to the proteins in the Proteome.
 
     Sites dictionaries are key-value pairs, where the key is a unique_ID associated 
-    with a given protein, and the value is a list of lists. Each sublist has five positions
+    with a given protein, and the value is a list of dictionaries. Each subdirectionay has 
+    the following elements
 
-    [0] = site position
-    [1] = site type
-    [2] = site symbol 
-    [3] = site value 
-    [4] = site attribute dictionary
+    'position' = site position
+    'site_type' = site type
+    'symbol' = site symbol 
+    'value' = site value 
+    'attributes' = site attribute dictionary
 
-    In this way, each site that maps to a give unique_ID will be added. 
+    In this way, each site that maps to a give unique_ID will be added to the associated
+    protein.
+
+    NOTE: In 
 
     Parameters
     -------------
@@ -172,19 +167,20 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
         which should be the key used in the sites_dictionary
 
     sites_dictionary : dict
-        A sites dictionary is a defined dictionary that maps a unique_ID back to a list with five
-        elements. Each of those elements is position-specific information for the site, specifically:
-
-            [0] = site position
-            [1] = site type
-            [2] = site symbol 
-            [3] = site value 
-            [4] = site attribute dictionary
+        A sites dictionary is a defined dictionary that maps a unique_ID back to a list of dictionaries,
+        where each subdictionay has five elements. Each dictionary entry provides information on the site
+        as a key-value pair, specifically:
+    
+        'position' = site position
+        'site_type' = site type
+        'symbol' = site symbol 
+        'value' = site value 
+        'attributes' = site attribute dictionary
 
         Recall the only type-specific values (position and value) are cast automatically when a 
         site is added by the Protein object, so no need to do that in this function too.
 
-        Extra elements in the each sites_dictionary value are ignored.
+        Extra key-value paris in each sub-dictionary are ignored
 
     safe : boolean 
         If set to True then any exceptions raised during the site-adding process are acted
@@ -210,19 +206,19 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
             for site in sites_dictionary[protein.unique_ID]:
 
                 try:
-                    position = site[0]
-                    site_type = site[1]
-                    symbol = site[2]
-                    value = site[3]
-                    ad    = site[4]
-                except:
+                    position = site['position']
+                    site_type = site['site_type']
+                    symbol = site['symbol']
+                    value = site['value']
+                    ad    = site['attributes'] 
+                except Exception:
                     raise InterfaceException('When sites dictionary for key [%s] was unable to extract five distinct parametes. Entry is:\n%s\n'% (protein.unique_ID, site))
 
+                # assuming we can read all five params try and add the site
                 try:
                     protein.add_site(position, site_type, symbol, value, attributes = ad)                
 
                 except ProteinException as e:
-
                     msg='- skipping site %s at %i on %s' %(site_type, position, protein)
                     if safe:
                         shephard_exceptions.print_and_raise_error(msg, e)
@@ -233,3 +229,53 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                     
 
 
+##
+def write_sites(proteome, filename, delimiter='\t'):
+    """
+    Function that writes out sites to file in a standardized format. Note that
+    attributes are converted to a string, which for simple attributes is reasonable
+    but is not really a viable stratergy for complex objects, although this will 
+    not yeild and error.
+    
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the sites will be extracted from
+
+    filename : str
+        Filename that will be used to write the new sites file
+
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_sites_from
+        file()` function
+
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of sites
+        from this proteome written to disk.
+
+    """
+
+    with open(filename, 'w') as fh:
+        for protein in proteome:
+            for s in protein.sites:
+
+                # systematically construct each line in the file 
+                line = ''
+                line = line + str(protein.unique_ID) + delimiter
+                line = line + str(s.position) + delimiter
+                line = line + str(s.site_type) + delimiter                
+                line = line + str(s.symbol) + delimiter
+                line = line + str(s.value) + delimiter
+                
+                if s.attributes:
+                    for k in s.attributes:
+                        line = line + delimiter
+                        line = line + str(k) + ":" + str(s.attributes(k))
+
+                line = line + "\n"
+
+                fh.write('%s'%(line))
