@@ -253,7 +253,10 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
                 start       = domain['start']
                 end         = domain['end']
                 domain_type = domain['domain_type']
-                ad          = domain['attributes']
+                try:
+                    ad          = domain['attributes']
+                except:
+                    ad = {}
                 
                 # try and add the domain...
                 try:

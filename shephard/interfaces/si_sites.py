@@ -210,7 +210,10 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                     site_type = site['site_type']
                     symbol = site['symbol']
                     value = site['value']
-                    ad    = site['attributes'] 
+                    try:
+                        ad = site['attributes'] 
+                    except:
+                        ad = {}
                 except Exception:
                     raise InterfaceException('When sites dictionary for key [%s] was unable to extract five distinct parametes. Entry is:\n%s\n'% (protein.unique_ID, site))
 
