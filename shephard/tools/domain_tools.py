@@ -272,7 +272,7 @@ def build_domains_from_track_values(proteome,
                                     binerize_function, 
                                     domain_type, 
                                     gap_closure = 3, 
-                                    minimum_region_size = 1, 
+                                    minimum_region_size = 20, 
                                     extend_ends = None, 
                                     print_progress = False,
                                     verbose = True):

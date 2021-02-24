@@ -3,7 +3,7 @@ SHEPHARD:
 Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 Authors: Garrett M. Ginell & Alex S. Holehouse
-Contact: (g.ginell@wustl.edu)
+Contact: (alex.holehouse@wustl.edu, g.ginell@wustl.edu)
 
 Holehouse Lab - Washington University in St. Louis
 """
@@ -22,7 +22,7 @@ from .interfaces.si_domains import add_domains_from_dictionary
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-# Class that defines a Entry
+# Class that defines a protein entry
 #
 class Protein:
     """
@@ -61,6 +61,16 @@ class Protein:
         a set of protein partners, or anything else one might wish to associated with the
         protein as a whole. Default = {}
 
+
+    Returns
+    ---------
+    Proteine object (constructor)
+
+
+    Raises
+    ----------
+    shephard.exceptions.ProteinException
+    
     """
     
     def __init__(self, seq, name, proteome, unique_ID, attributes = None):

@@ -1,3 +1,7 @@
+
+# avoid
+shephard/tests/output_test/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

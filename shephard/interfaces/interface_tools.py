@@ -3,7 +3,7 @@ SHEPHARD:
 Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 Authors: Garrett M. Ginell & Alex S. Holehouse
-Contact: (g.ginell@wustl.edu)
+Contact: (alex.holehouse@wustl.edu, g.ginell@wustl.edu)
 
 Holehouse Lab - Washington University in St. Louis
 """
@@ -37,6 +37,37 @@ def check_proteome(p, function_name):
         return None
     else:
         raise InterfaceException('First argument passed to function [%s] was not a proteome' %(function_name))
+
+## ------------------------------------------------------------------------
+##
+def clean_string(instring, delimiter='\t', replace_char=' '):
+    """
+    Function that takes in a string that is to be written to a SHEPHARD complient file and ensures it has no 
+    delimiter characters in it. This avoids the scenario where - for example - your protein name as a tab in it
+    which introduces a new filed into the TSV file inadverntently.
+
+    If such delimiter characters are found they're replaced by a replace_char, which by default is just a space    
+    
+    Parameters
+    ---------------
+    instring : str
+        String to be checked
+
+    delimiter : str
+        Character or string that we do NOT want to find in the string
+
+    replace_char : str
+        Character or string that, if a delimiter is found, will replace the delimiter
+
+    Returns
+    ---------
+    str
+        Returns a string which will be essentially identical to the input string but cleaned up to remove
+        any bad delimiters if they exist
+
+    """
+
+    return instring.replace(delimiter, replace_char)
 
 
 
