@@ -1,6 +1,7 @@
 
 # avoid
 shephard/tests/output_test/*
+shephard/tests/output_test/track_random_vals.tsv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
