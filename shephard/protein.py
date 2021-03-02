@@ -608,13 +608,13 @@ class Protein:
              The track name. A list of valid names can be found by calling the
              <Protein>.tracks (which returns a list of the valid track names)
 
-        start : int (default none)
-            If provided defines the start position along the track. Note
-            if start is provided end must also be provided.
+        start : int (default None)
+            If provided defines the start position along the track. If not
+            provided defaults to 1 (first residue in the protein).
 
-        end : int (default none)
-            If provided defines the start position along the track. Note
-            if end is provided start must also be provided.
+        end : int (default None)
+            If provided defines the end position along the track. If not
+            provided defaults to the final residue in the protein.
 
         safe : bool (default = True)
             Flag which if true with throw an exception if a track that matches
@@ -629,7 +629,7 @@ class Protein:
         
         """
 
-        (_start, _end) = self._build_start_end(start,end)
+        (_start, _end) = self.__build_start_end(start,end)
         
         # call internal function
         return self.__get_track_info(name, safe, _start, _end, 'values')
@@ -655,12 +655,12 @@ class Protein:
              <Protein>.tracks (which returns a list of the valid track names)
 
         start : int (default none)
-            If provided defines the start position along the track. Note
-            if start is provided end must also be provided.
+            If provided defines the start position along the track. If not
+            provided defaults to 1 (first residue in the protein).
 
         end : int (default none)
-            If provided defines the start position along the track. Note
-            if end is provided start must also be provided.
+            If provided defines the end position along the track. If not
+            provided defaults to the final residue in the protein.
 
         safe : bool (default = True)
             Flag which if true with throw an exception if a track that matches
@@ -676,11 +676,54 @@ class Protein:
         """
 
         # build the start and end position
-        (_start, _end) = self._build_start_end(start,end)
+        (_start, _end) = self.__build_start_end(start,end)
 
         # call internal function
         return self.__get_track_info(name, safe, _start, _end, 'symbols')
 
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def __build_start_end(self, start, end):
+        """
+        Internal function that sanity checks requested start end positions and peforms
+        type conversion
+
+        Parameters
+        -----------
+        start : str or int or float or None:
+            Start position, will be type converted to Int if not None
+
+        end : str or int or float or None:
+            End position, will be type converted to Int if not None
+
+        Returns
+        ----------
+        tuple
+           Returns a 2-position tuple where the first position is the start po
+
+        """
+
+        # set to default values OR convert to int
+        try:
+            if start is None:
+                _start = 1
+            else:
+                _start = int(start)
+
+            if end is None:
+                _end = len(self)
+            else:
+                _end = int(end)
+
+        except ValueError:
+            raise exceptions.ProteinException('When selecting sub-region for track values could not convert one of the start/end to an int: start=%s, end=%s'% (start,end))
+            
+
+        return (_start, _end)
+
+            
 
 
     ## ------------------------------------------------------------------------
@@ -692,7 +735,7 @@ class Protein:
 
         """
         
-        t = self.get_track(name, safe)
+        t = self.track(name, safe)
 
         if t is None:
             # note - technically as the code is written now we don't need this, (the safety is dealt in get_track())

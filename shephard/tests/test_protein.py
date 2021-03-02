@@ -66,6 +66,30 @@ def test_build_track_values_from_sequence(TS1_domains2_sites_tracks):
     # now assert that the same function with safe=False will run ok!
     assert protein.build_track_values_from_sequence('hydrophobes', convert_sequence_values, local_residues, safe=False) == None
 
+def test_get_track_values(TS1_domains2_sites_tracks):  
+
+    p = TS1_domains2_sites_tracks.protein('O00401')
+
+    assert len(p.get_track_values('pscore')) == len(TS1_domains2_sites_tracks.protein('O00401'))
+    assert len(p.get_track_values('pscore', start=1)) == len(TS1_domains2_sites_tracks.protein('O00401'))
+    assert len(p.get_track_values('pscore', end=len(p))) == len(TS1_domains2_sites_tracks.protein('O00401'))
+    
+    # check values work
+    tvs = p.get_track_values('pscore', start=1, end=2)
+    assert tvs[0] + 0.522 < 0.0001
+
+    # get 26th position
+    tvs = p.get_track_values('pscore', start=26, end=26)
+    assert tvs[0] + 0.466 < 0.0001
+
+    # should fail as start < 1
+    with pytest.raises(ProteinException):
+        p.get_track_values('pscore', start=0, end=26)
+
+    # should fail as end passed end
+    with pytest.raises(ProteinException):
+        p.get_track_values('pscore', start=1, end=len(p)+1)
+    
 
 
 def test_build_track_symbols_from_sequence(TS1_domains2_sites_tracks):  
