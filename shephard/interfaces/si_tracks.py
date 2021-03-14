@@ -323,9 +323,9 @@ def write_all_tracks(proteome, outdirectory='.', value_fmt = "%.3f", delimiter='
 
     """
 
-    for t_name in protein.unique_track_names:
+    for t_name in proteome.unique_track_names:
         outname = os.path.join(outdirectory, "shephard_track_%s.tsv" %( t_name))
-        write_tracks(proteome, outname, t_name, value_fmt, delimiter)
+        write_track(proteome, outname, t_name, value_fmt, delimiter)
     
 
             
