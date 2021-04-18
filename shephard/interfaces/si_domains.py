@@ -335,7 +335,7 @@ def write_domains(proteome, filename, delimiter='\t'):
                 if d.attributes:
                     for k in d.attributes:
                         line = line + delimiter
-                        line = line + str(k) + ":" + str(d.attributes(k))
+                        line = line + str(k) + ":" + str(d.attribute(k))
 
                 line = line + "\n"
 

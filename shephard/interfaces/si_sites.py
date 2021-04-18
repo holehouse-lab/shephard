@@ -289,7 +289,7 @@ def write_sites(proteome, filename, delimiter='\t'):
                 if s.attributes:
                     for k in s.attributes:
                         line = line + delimiter
-                        line = line + str(k) + ":" + str(s.attributes(k))
+                        line = line + str(k) + ":" + str(s.attribute(k))
 
                 line = line + "\n"
 

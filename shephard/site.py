@@ -144,6 +144,56 @@ class Site:
         """
         return self._value
 
+    ## ------------------------------------------------------------------------
+    ##
+    def update_site_value(self, new_value):
+        """
+        Function that updates the site value. Values must be
+        numerical (float) or None.
+        
+        Parameters
+        -----------
+        new_value : float (or None)
+            Updated value
+
+        Returns
+        -----------
+        None
+            Nothing but sets the value to be the new value
+
+        """
+        if new_value is None:
+            self._value = None
+        else:
+            self._value = float(new_value)
+
+    ## ------------------------------------------------------------------------
+    ##
+    def update_site_symbol(self, new_symbol):
+        """
+        Function that updates the site_symbol. The site tyoe must be
+        a string. Note this function also updates the proteome list of
+        non-redudant sites
+        
+        Parameters
+        -----------
+        new_symbol : str (or None)
+            Updated symbol
+
+        Returns
+        -----------
+        None
+            Nothing but sets the symbol to be the new symbol
+
+        """
+        if new_symbol is None:
+            self._symbol = None
+        else:
+            self._symbol = str(new_symbol)
+
+
+
+
 
      ###################################
     ##                               ##

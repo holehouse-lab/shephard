@@ -255,6 +255,25 @@ class Domain:
         """
         return self._domain_name
 
+    ## ------------------------------------------------------------------------
+    ##      
+    def update_domain_name(self, new_name):
+        """
+        Function that updates the domains name
+        
+        Parameters
+        -----------
+        new_name : str
+            String passed as new name
+
+        Returns
+        -----------
+        None
+            Nothing but sets the name to be the new name
+
+        """
+        self._domain_name = new_name
+
 
 
 
