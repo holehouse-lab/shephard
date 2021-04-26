@@ -12,3 +12,4 @@ from . import si_sites
 from . import si_domains
 from . import si_tracks
 from . import si_protein_attributes
+from . import si_proteins 

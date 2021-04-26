@@ -154,6 +154,7 @@ def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, 
     
 
 
+
 ## ------------------------------------------------------------------------
 ##
 def build_missing_domains(protein, new_domain_type = 'missing'):
