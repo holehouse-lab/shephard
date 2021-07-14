@@ -340,3 +340,51 @@ def write_domains(proteome, filename, delimiter='\t'):
                 line = line + "\n"
 
                 fh.write('%s'%(line))
+
+## ------------------------------------------------------------------------
+##
+def write_domain_attributes(proteome, filename, delimiter='\t'):
+    """
+    Function that writes out domain attributes to file in a standardized format.
+    Note that attributes are converted to a string, which for simple attributes is 
+    reasonable but is not really a viable stratergy for complex objects, although 
+    this will not yeild and error.
+
+    
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    filename : str
+        Filename that will be used to write the new domains file
+
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_domain_attributes_from
+        file()` function
+
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of domain attributes
+        from this proteome written to disk.
+
+    """
+
+    with open(filename, 'w') as fh:
+        for protein in proteome:
+            for domain in protein.domains:
+                
+                if len(domain.attributes) > 0:
+
+                    line = domain.domain_name
+
+                    for k in domain.attributes:
+                        line = line + delimiter
+                        line = line + "%s:%s" %(k, domain.attribute(k))
+
+                    line = line + "\n"
+
+                    fh.write(line)
