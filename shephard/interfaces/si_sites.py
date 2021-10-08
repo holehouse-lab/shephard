@@ -245,7 +245,7 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
 
 
 ##
-def write_sites(proteome, filename, delimiter='\t'):
+def write_sites(proteome, filename, site_type=None, delimiter='\t'):
     """
     Function that writes out sites to file in a standardized format. Note that
     attributes are converted to a string, which for simple attributes is reasonable
@@ -260,6 +260,11 @@ def write_sites(proteome, filename, delimiter='\t'):
 
     filename : str
         Filename that will be used to write the new sites file
+
+    site_type : str
+        Identifier that allows you to specificy a specific site type to write
+        out
+
 
     delimiter : str
         Character (or characters) used to separate between fields. Default is '\t'
@@ -277,6 +282,10 @@ def write_sites(proteome, filename, delimiter='\t'):
     with open(filename, 'w') as fh:
         for protein in proteome:
             for s in protein.sites:
+
+                if site_type is not None:
+                    if s.site_type != site_type:
+                        continue
 
                 # systematically construct each line in the file 
                 line = ''

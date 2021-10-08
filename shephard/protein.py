@@ -285,7 +285,7 @@ class Protein:
 
         # note +1 because we're inclusive with positioning here (and index from 1)
         if return_indices:
-            return (self._sequence[p1:p2 + 1], p1, p2+1)
+            return (self._sequence[p1:p2 + 1], p1, p2)
         else:
             return self._sequence[p1:p2 + 1]
 

@@ -286,7 +286,7 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 
 ## ------------------------------------------------------------------------
 ##
-def write_domains(proteome, filename, delimiter='\t'):
+def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
     """
     Function that writes out domains to file in a standardized format. Note that
     attributes are converted to a string, which for simple attributes is reasonable
@@ -301,6 +301,10 @@ def write_domains(proteome, filename, delimiter='\t'):
 
     filename : str
         Filename that will be used to write the new domains file
+
+    domain_type : str
+        Identifier that allows you to specificy a specific domain type to write
+        out
 
     delimiter : str
         Character (or characters) used to separate between fields. Default is '\t'
@@ -318,6 +322,13 @@ def write_domains(proteome, filename, delimiter='\t'):
     with open(filename, 'w') as fh:
         for protein in proteome:
             for d in protein.domains:
+
+                # if we specified a domain type
+                if domain_type is not None:
+
+                    # if this domain is not that type... skip!
+                    if d.domain_type != domain_type:
+                        continue
 
                 # systematically construct each line in the file 
                 line = ''
