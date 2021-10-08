@@ -664,7 +664,6 @@ class Proteome:
         return "[Proteome]: Sequence dataset with %i protein records" %(len(self))
 
 
-
     ## ------------------------------------------------------------------------
     ##                
     def __iter__(self):

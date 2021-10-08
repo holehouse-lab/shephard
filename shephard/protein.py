@@ -246,7 +246,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sequence_context(self, position, offset=5):
+    def get_sequence_context(self, position, offset=5, return_indices=False):
         """
         Function that allows a local region of the sequence centered on a specific position
         to be extracted, including +/- an offset border that intelligently truncates if the 
@@ -261,10 +261,19 @@ class Protein:
             [**Default = 5**] Plus/Minus offset used to investigate the region around the position. Note that
             an offset is symmetrical around the position. 
 
+        return_indices : bool
+            [**Default = False**] Flag which, if set to true, means this function returns a TUPLE where position
+            0 is the string corresponding to the region of interest, position 2 is the start index (in normal SHEPHARD
+            indexing, i.e. starting from 1) and position 3 is the end index (in normal SHEPHARD indexing).
+
         Returns
-        ---------------
+        ---------------        
         str
-            Returns a string that corresponds to the region of interest
+            If return_indices is set to False, this just returns a string that corresponds to the region of interest
+
+        (str, int, int)
+            If return_indices is set to True, this just returns a string that corresponds to the region of interest, as 
+            well as the start and end positions that are inclusive in the sequence indexing from 1.
 
         """
         
@@ -275,7 +284,10 @@ class Protein:
         (p1, p2) = sequence_utilities.get_bounding_sites(position, offset, self._len)
 
         # note +1 because we're inclusive with positioning here (and index from 1)
-        return self._sequence[p1:p2 + 1]
+        if return_indices:
+            return (self._sequence[p1:p2 + 1], p1, p2+1)
+        else:
+            return self._sequence[p1:p2 + 1]
 
 
 
