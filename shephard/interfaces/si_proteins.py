@@ -175,9 +175,10 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
                     continue
 
 
+
 ## ------------------------------------------------------------------------
 ##
-def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary = True, safe=True, skip_bad=True, verbose=True):
+def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary = False, safe=True, skip_bad=True, verbose=True):
     """
     Function that takes a correctly formatted 'protein' file and reads every protein
     into the passed proteome.
@@ -254,7 +255,6 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
                                  proteins_interface.data, 
                                  safe=safe, 
                                  verbose=verbose)
-
 
 
                 
