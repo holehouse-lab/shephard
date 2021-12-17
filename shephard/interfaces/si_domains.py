@@ -618,9 +618,5 @@ def write_select_domains(domain_list, filename, delimiter='\t'):
                     line = line + str(k) + ":" + str(d.attribute(k))
 
             line = line + "\n"
-
-<<<<<<< HEAD
+            
             fh.write('%s'%(line))
-=======
-                    fh.write(line)
->>>>>>> c5335c902ae515fc75228e1e785a083f70f82f4d
