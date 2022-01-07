@@ -77,7 +77,6 @@ class _ProteinsInterface:
                 ID2protein[unique_ID] = {'name':name, 'sequence':sequence, 'attributes':attributes}
 
 
-        print(ID2protein)
         self.data = ID2protein
 
 
