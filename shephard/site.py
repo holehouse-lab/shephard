@@ -9,6 +9,7 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import general_utilities
+from . import sequence_utilities
 from .exceptions import ProteinException, SiteException
 
 
@@ -325,7 +326,7 @@ class Site:
 
         """
 
-        return self._protein.get_local_sequence_context(self.position, offset)    
+        return self._protein.get_sequence_context(self.position, offset)    
 
 
 
