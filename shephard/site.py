@@ -339,7 +339,7 @@ class Site:
 
     ## ------------------------------------------------------------------------
     ##      
-    def get_track_values(self, name, offset=5, safe=True):
+    def get_track_values(self, name, offset=0, safe=True):
         """
         Function that returns the region of a protein's values- track associated with
         this site, +/- some offset.
@@ -386,7 +386,7 @@ class Site:
 
     ## ------------------------------------------------------------------------
     ##      
-    def get_track_symbols(self, name, offset=5, safe=True):
+    def get_track_symbols(self, name, offset=0, safe=True):
         """
         Function that returns the region of a protein's symbols track associated with
         this domain.
