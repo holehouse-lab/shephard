@@ -1143,7 +1143,38 @@ class Protein:
 
         self._tracks[name] = Track(name, self, values=values, symbols=symbols)
 
-        
+    ## ------------------------------------------------------------------------
+    ##        
+    def remove_track(self, track_object, safe=True):
+        """
+        Function that removes a given domain from the protein based on the passed domain object.
+        If the passed site does not exist or is not associate with the protein then this will
+        trigger an exception unless safe=False
+
+        Parameters
+        ------------
+        site : Track Object
+            Track Object that will be used to retrieve a given protein
+
+        safe : bool
+            Flag that if set to True means if a passed track is missing from the underlying
+            protein object an exception wll be raised (ProteinException). If False a missing
+            track is ignored
+
+        Returns
+        -----------
+        None
+            No return type but will remove track from the protein
+           
+        """
+
+        track_ID_str = track_object.name
+        if track_ID_str in self._tracks:
+            del self._tracks[track_ID_str]
+        else:
+            if safe:
+                raise ProteinException('Passed Track [%s] not found in this protein' % (track_ID_str))
+                
 
 
 
@@ -1456,8 +1487,40 @@ class Protein:
         domain_definitions = domain_definition_function(input_data)
 
         self.add_domains(domain_definitions)
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def remove_domain(self, domain_object, safe=True):
+        """
+        Function that removes a given domain from the protein based on the passed domain object.
+        If the passed site does not exist or is not associate with the protein then this will
+        trigger an exception unless safe=False
+
+        Parameters
+        ------------
+        site : Domain Object
+            Domain Object that will be used to retrieve a given protein
+
+        safe : bool
+            Flag that if set to True means if a passed unique_ID is missing from the underlying
+            proteome object an exception wll be raised (ProteomeException). If False a missing
+            unique_ID is ignored
+
+        Returns
+        -----------
+        None
+            No return type but will remove an domain from the protein
+           
+        """
+
+        domain_ID_str = domain_object.domain_name
+        if domain_ID_str in self._domains:
+            del self._domains[domain_ID_str]
+        else:
+            if safe:
+                raise ProteinException('Passed Domain [%s] not found in this protein' % (domain_ID_str))
             
-                
+
     """
     ## To Do!
     ## ------------------------------------------------------------------------
@@ -1563,6 +1626,27 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
+    @property
+    def site_types(self):
+        """
+        **[Property]**: Returns a list of the unique site types associated 
+        with this protein. There will be no duplicates here.
+        
+        """
+
+        # define an empty set
+        site_types = set([])
+
+        # cycle through the domains and add the domain type to the set
+        for position in self._sites:
+            site_types.update(set(site.site_type for site in self._sites[position]))
+
+        # convert the set to a list and return
+        return list(site_types)
+
+
+    ## ------------------------------------------------------------------------
+    ##
     def site(self, position, safe=True):
         """
         Returns the list of sites that are found at a given position. Note that - in general
@@ -1647,6 +1731,45 @@ class Protein:
 
         # add the site!
         self._sites[position].append(Site(position, site_type, self, symbol, value, attributes))
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def remove_site(self, site_object, safe=True):
+        """
+        Function that removes a given site from the protein based on the passed site object.
+        If the passed site does not exist or is not associate with the protein then this will
+        trigger an exception unless safe=False
+
+        Parameters
+        ------------
+        site : Site Object
+            Unique ID that will be used to retrieve a given protein
+
+        safe : bool
+            Flag that if set to True means if a passed unique_ID is missing from the underlying
+            proteome object an exception wll be raised (ProteomeException). If False a missing
+            unique_ID is ignored
+
+        Returns
+        -----------
+        None
+            No return type but will remove site from the protein
+           
+        """
+
+        site_position = site_object.position
+
+        unique_ID_str = str(site_object)
+
+        if site_object in self._sites[site_position]:
+            # remove object
+            self._sites[site_position].remove(site_object)
+            # remove position entry if no other sites at that location 
+            if len(self._sites[site_position]) == 0:
+                del self._sites[site_position]
+        else:
+            if safe:
+                raise ProteinException('Passed site [%s] not found in this protein' % (unique_ID_str))
 
 
     ## ------------------------------------------------------------------------

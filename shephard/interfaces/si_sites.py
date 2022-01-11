@@ -243,8 +243,6 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                             continue
                     
 
-
-##
 def write_sites(proteome, filename, site_type=None, delimiter='\t'):
     """
     Function that writes out sites to file in a standardized format. Note that
@@ -303,3 +301,61 @@ def write_sites(proteome, filename, site_type=None, delimiter='\t'):
                 line = line + "\n"
 
                 fh.write('%s'%(line))
+
+def write_select_sites(site_list, filename, site_type=None, delimiter='\t'):
+    """
+    Function that writes out select sites pasted as a list of sites. Sites are 
+    written to file in a standardized format. Note that attributes are converted 
+    to a string, which for simple attributes is reasonable but is not really a 
+    viable stratergy for complex objects, although this will not yeild and error.
+    
+    Parameters
+    -----------
+
+    site_list : list 
+        List of SHEPHARD Site objects which will written
+
+    filename : str
+        Filename that will be used to write the new sites file
+
+    site_type : str
+        Identifier that allows you to specificy a specific site type to write
+        out
+
+
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_sites_from
+        file()` function
+
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of sites
+        from this proteome written to disk.
+
+    """
+
+    with open(filename, 'w') as fh:
+        for s in site_list:
+
+            if site_type is not None:
+                if s.site_type != site_type:
+                    continue
+
+            # systematically construct each line in the file 
+            line = ''
+            line = line + str(s.protein.unique_ID) + delimiter
+            line = line + str(s.position) + delimiter
+            line = line + str(s.site_type) + delimiter                
+            line = line + str(s.symbol) + delimiter
+            line = line + str(s.value) + delimiter
+            
+            if s.attributes:
+                for k in s.attributes:
+                    line = line + delimiter
+                    line = line + str(k) + ":" + str(s.attribute(k))
+
+            line = line + "\n"
+
+            fh.write('%s'%(line))
