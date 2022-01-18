@@ -9,6 +9,7 @@ Handles all I/O associated with uniprot-derived files.
 
 """
 
+from shephard.exceptions import UtilitiesException
 
 from . import fasta
 
@@ -46,7 +47,7 @@ def uniprot_accession_from_line(line):
     try:
         return line.split('|')[1].strip()
     except:
-        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(keystring))
+        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(line))
 
 
 ## ------------------------------------------------------------------------
@@ -83,7 +84,7 @@ def uniprot_attributes_from_header(line):
     try:
         return line.split('|')[1].strip()
     except:
-        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(keystring))
+        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(line))
 
 
         
