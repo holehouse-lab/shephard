@@ -3,6 +3,8 @@ SHEPHARD
 ####Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
+### Current major version: 0.1.4 (Feb 2022)
+
 [//]: # (Badges)
 [![Travis Build Status](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard.svg?branch=master)](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard)
 [![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/shephard/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/shephard/branch/master)
@@ -29,7 +31,7 @@ We are not yet at a release were backwards compatibility is guaranteed - i.e. we
 If you plan to use SHEPHARD in your science please let [Alex](http://holehouse.wustl.edu/) know, only so he can warn you if bugs are found or backwards compatibility is broken.
 
 ## Roadmap
-SHEPHARD is the base code for a large body of sequence-based bioinformatic tools developed by the holehouse lab. These include:
+SHEPHARD is the base code for a large body of sequence-based bioinformatic tools developed by the Holehouse lab. These include:
 
 * [metapredict](https://github.com/idptools/metapredict) - high-performance disorder predictor
 * [parrot](https://github.com/idptools/parrot) - a general tool for deep learning of sequence features
@@ -41,6 +43,13 @@ These tools together form the backbone of our informatics infrastructure, and SH
 
 ## Change log
 As we approach final release and versions of SHEPHARD are available for distribution, a change log is updated and changes that break backwards compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
+
+#### Version 0.1.4 (Feb 2022)
+* Added ability to remove Tracks, Sites and Domains from a Protein objects
+* Track number of unique domains, sites, and tracks rather than just their presence/absence
+* Updated Track writing
+* Added Tracks MUST be either symbolic or values-based but cannot be both
+* 
 
 #### Version 0.1.3.1 (May 2021)
 * Various bug fixes

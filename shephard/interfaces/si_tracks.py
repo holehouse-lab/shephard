@@ -95,6 +95,67 @@ class _TracksInterface:
         self.data = ID2track
 
 
+## ------------------------------------------------------------------------
+##
+def __write_all_tracks_single_file(proteome, 
+                                 outfile, 
+                                 track_type,
+                                 value_fmt = "%.3f", 
+                                 delimiter='\t'):
+    """
+    Internal function Function that writes all tracks associated with a 
+    proteome out to a single file. 
+
+    See also:
+
+        write_all_values_tracks_single_file() 
+        write_all_symbols_tracks_single_file() 
+    
+
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    outfile : str
+        String that defines the name of the output file.
+
+    value_fmt : str
+        Format string that will be used for values. Default = "%.3f"
+        
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_tracks_from_files()`
+        function.
+    
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of tracks
+        from this proteome written to disk.
+
+
+    """
+    
+    # open the file handle
+    fh = open(outfile,'w')
+
+    # build a list of track names that are values-tracks
+    tn2tt = proteome.track_names_to_track_type
+    
+    valid_names = []
+    for name in tn2tt:
+        if tn2tt[name] == track_type:
+            valid_names.append(name)
+        
+    # cyle through each track name we designated as valid
+    for t_name in valid_names:        
+        write_track(proteome, None, t_name, value_fmt, delimiter, file_handle=fh)
+
+    fh.close()
+
+
 ##############################################
 ##                                          ##
 ##     PUBLIC FACING FUNCTIONS BELOW        ##
@@ -282,13 +343,22 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
 
 
 
+
 ## ------------------------------------------------------------------------
 ##
-def write_all_tracks(proteome, outdirectory='.', value_fmt = "%.3f", delimiter='\t'):
+def write_all_tracks_separate_files(proteome, 
+                     outdirectory='.', 
+                     value_fmt = "%.3f", 
+                     delimiter='\t'):
     """
-    Function that writes all tracks associated with a proteome out, whereby the output
-    filenames are defined as:
-    
+    Function that writes all tracks associated with a proteome out to seperate
+    files. This may be preferable in some situations, but in others maybe only
+    a subset of tracks are requested, for which write_track() would be good, 
+    or alternatively you want all tracks in a single file, in which case
+    write_all_tracks_single_files() would be the way to go.
+
+    The the output filenames are defined as:
+        
     shephard_track_<trackname>.tsv
     
     and are written to the outdirectory.
@@ -324,17 +394,96 @@ def write_all_tracks(proteome, outdirectory='.', value_fmt = "%.3f", delimiter='
     """
 
     for t_name in proteome.unique_track_names:
-        outname = os.path.join(outdirectory, "shephard_track_%s.tsv" %( t_name))
+        outname = os.path.join(outdirectory, "shephard_track_%s.tsv" %( t_name))            
         write_track(proteome, outname, t_name, value_fmt, delimiter)
-    
-
-            
-
 
 
 ## ------------------------------------------------------------------------
 ##
-def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\t'):
+def write_all_values_tracks_single_file(proteome, 
+                                 outfile, 
+                                 value_fmt = "%.3f", 
+                                 delimiter='\t'):
+    """
+    Function that writes all tracks associated with a proteome out to a single
+    file. This may be preferable in some situations, but in others maybe only
+    a subset of tracks are requested, for which write_track() would be good, 
+    or alternatively you want all tracks in seperate files, in which case
+    write_all_tracks_separate_files() would be the way to go.
+    
+    
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    outfile : str
+        String that defines the name of the output file.
+
+    value_fmt : str
+        Format string that will be used for values. Default = "%.3f"
+        
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_tracks_from_files()`
+        function.
+    
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of tracks
+        from this proteome written to disk.
+
+
+    """
+    return __write_all_tracks_single_file(proteome, outfile, 'values', value_fmt, delimiter)
+
+## ------------------------------------------------------------------------
+##
+def write_all_symbols_tracks_single_file(proteome, 
+                                 outfile, 
+                                 value_fmt = "%.3f", 
+                                 delimiter='\t'):
+    """
+    Function that writes all tracks associated with a proteome out to a single
+    file. This may be preferable in some situations, but in others maybe only
+    a subset of tracks are requested, for which write_track() would be good, 
+    or alternatively you want all tracks in seperate files, in which case
+    write_all_tracks_separate_files() would be the way to go.
+    
+    
+    Parameters
+    -----------
+
+    proteome :  Proteome object
+        Proteome object from which the domains will be extracted from
+
+    outfile : str
+        String that defines the name of the output file.
+
+    value_fmt : str
+        Format string that will be used for values. Default = "%.3f"
+        
+    delimiter : str
+        Character (or characters) used to separate between fields. Default is '\t'
+        Which is recommended to maintain compliance with default `add_tracks_from_files()`
+        function.
+    
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of tracks
+        from this proteome written to disk.
+
+
+    """
+    return __write_all_tracks_single_file(proteome, outfile, 'symbols', value_fmt, delimiter)
+
+
+## ------------------------------------------------------------------------
+##
+def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\t', file_handle=None):
     """
     Function that writes out a specific track to file in a standardized format. Note that
     because track files are inevitably quite big default behaviour is to only write out a
@@ -364,6 +513,10 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
         Character (or characters) used to separate between fields. Default is '\t'
         Which is recommended to maintain compliance with default `add_tracks_from_files()`
         function.
+
+    file_handle : fh or None
+        If passed, output is written to this handle rather than to a new file. The filename variable
+        is ignored in this case.
     
     Returns
     --------
@@ -384,29 +537,34 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
     except TypeError:
         raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
 
-            
-    with open(filename, 'w') as fh:
-        
-        for protein in proteome:
+    if file_handle is not None:
+        fh  = file_handle
+    else:
+        fh = open(filename, 'w')
+
+    for protein in proteome:
 
             
-            # try and extract out the track in question
-            t = protein.track(track_name, safe=False)
-            if t is not None:
-                unique_ID = protein.unique_ID
+        # try and extract out the track in question
+        t = protein.track(track_name, safe=False)
+        if t is not None:
+            unique_ID = protein.unique_ID
 
-                # build the initial string
-                out_string = "%s%s%s%s" % (unique_ID, delimiter, t.name, delimiter)
+            # build the initial string
+            out_string = "%s%s%s%s" % (unique_ID, delimiter, t.name, delimiter)
 
-                if t.values is not None:
-                    for v in t.values:
-                        out_string = out_string + "%s%s" % (value_fmt %(v), delimiter)
-                else:
-                    for v in t.symbols:
-                        out_string = out_string + "%s%s" % (v, delimiter)
+            if t.values is not None:
+                for v in t.values:
+                    out_string = out_string + "%s%s" % (value_fmt %(v), delimiter)
+            else:
+                for v in t.symbols:
+                    out_string = out_string + "%s%s" % (v, delimiter)
 
 
-                fh.write('%s\n'%(out_string))
+            fh.write('%s\n'%(out_string))
+
+    if file_handle is None:
+        fh.close()
                     
                     
 

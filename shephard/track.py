@@ -17,35 +17,41 @@ class Track:
     """
     Tracks define information that maps along a protein sequence.
 
-    A track is, fundamentally, a vector which is the length of the sequence. This could be an way to re-code
-    the amino acid sequence, or reflect some kind of sliding window analysis.
-
-    Tracks can can either define a set of symbols that convert residues to symbols (i.e. discrete classifications)
-    or values (i.e. floating number values associated with each position).
-
+    A Track is, fundamentally, a vector which is the length of the sequence. 
+    This could be an way to re-code the amino acid sequence, or reflect some 
+    kind of sliding window analysis.
+    
+    Tracks can can either define a set of symbols that convert residues to 
+    symbols (i.e. discrete classifications) or values (i.e. floating number 
+    values associated with each position). Note that Tracks CANNOT define
+    both symbolic and numerical data (i.e. must be one or the other).
+    
     Parameters
     ------------
 
     name : string
-        Defines the name of the track. This can be any value, but should be something that makes sense. The name can be 
+        Defines the name of the track. This can be any value, but should be 
+        something that makes sense. The name can be 
         used by analysis routines.
 
     protein : Protein object
         the protein from which the track is being added to
 
     values : iterable of numerical values (default is None)
-        This iterable is passed over and convert into a list of floats. Must be same length as the number of residues
-        in the protein.
+        This iterable is passed over and convert into a list of floats. Must be 
+        same length as the number of residues in the protein.
+        
 
     symbols : iterable of strings (default is None)
-        This iterable is directly assigned to the track.symbols variable. Must be same length as the number of residues       
-        in the protein.
+        This iterable is directly assigned to the track.symbols variable. 
+        Must be same length as the number of residues in the protein.      
+        
         
     attribute_dictionary : dict (optional)
-        The attribute_dictionary provides a key-value pairing for arbitrary information.
-        This could include different types of identifies, track generator functions,
-        a set of Track partners, or anything else one might wish to associated with the
-        track as a whole.
+        The attribute_dictionary provides a key-value pairing for arbitrary 
+        information. This could include different types of identifies, track 
+        generator functions, a set of Track partners, or anything else one might 
+        wish to associated with the track as a whole.
 
     """
     
@@ -53,12 +59,16 @@ class Track:
         """
         """
 
-        # if values was provided for the track...
+        # if values were provided for the track...
         if values is not None:
 
+            # cannot have symbols and values!
+            if symbols is not None:
+                raise TrackException(f'Added tracks must be include either symbols or values but not both [Track={name}, Protein={protein}')
+                
             # check the values provided is the same length as the number of residues - if not raise an exception
             if len(protein.sequence) != len(values):
-                raise TrackException('Track length of %i does not match protein length of %i (values track)\b Track = %s\nProtein=%s' %(len(values), len(protein.sequence), name, str(protein)))
+                raise TrackException(f'Track length of %i does not match protein length of %i (values track)\b Track = %s\nProtein=%s' %(len(values), len(protein.sequence), name, str(protein)))
 
             # convert values to list of floats
             try:                
@@ -67,15 +77,16 @@ class Track:
                 # add leading zero for index purposes
                 values = [0.0] + values
             except ValueError:
-                raise TrackException('Unable to convert values passed into float64 numpy array [Track=%s, Protein=%s' % (name, str(protein)))
-            
+                raise TrackException(f'Unable to convert values passed into float64 numpy array [Track={name}, Protein={protein}')
+            track_type = 'values'
+
 
         # if the symbols were provided
-        if symbols is not None:
+        elif symbols is not None:
 
             # check lengths match up
             if len(protein.sequence) != len(symbols):
-                raise TrackException('Track length (symbols) does not match protein length [Track=%s, Protein=%s' %( name, str(protein)))
+                raise TrackException(f'Track length (symbols) does not match protein length\nTrack: {name}, length={len(symbols)}\nProtein: {protein}')
 
             # if we passed a list (which we now know is the right length) we're good!
             if isinstance(symbols, list):
@@ -86,10 +97,11 @@ class Track:
                 symbols = list(symbols)
             
             else:
-                raise TrackException('Unable to convert passed symbols track to a list of symbols. Symbols track should be either a list of symbols or a string. [Track=%s, Protein=%s' %( name, str(protein)))
+                raise TrackException(f'Unable to convert passed symbols track to a list of symbols. Symbols track should be either a list of symbols or a string. [Track={name}, Protein={protein}')
 
             # add leading ('-') for index purposes
             symbols = ['-'] + symbols 
+            track_type = 'symbols'
 
 
         # if NEITHER symbols nor track were provided through an exception
@@ -112,12 +124,11 @@ class Track:
         self._symbols = symbols
         self._name = name
         self._protein = protein
+        self._track_type = track_type
         
         # update track name types
-        protein.proteome.__update_track_names(self._name)
+        protein.proteome.__update_track_names(self._name, self._track_type)
 
-        
-        
 
     ## ------------------------------------------------------------------------
     ##
@@ -127,6 +138,17 @@ class Track:
         **[Property]**: Returns the track name
         """
         return self._name
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    @property
+    def track_type(self):
+        """
+        **[Property]**: Returns the track type. Will always be one of 'values'
+        or 'symbols'.
+        """
+        return self._track_type
 
     ## ------------------------------------------------------------------------
     ##
@@ -212,7 +234,6 @@ class Track:
             defined by start and end)
 
         """
-
 
         # this list comprehension checks start and end are valid options
         [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]

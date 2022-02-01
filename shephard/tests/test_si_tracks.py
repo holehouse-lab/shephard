@@ -5,7 +5,7 @@ from shephard.apis import uniprot
 from shephard import interfaces
 import numpy as np
 from shephard.exceptions import ProteinException 
-
+import os
 
 
 
@@ -125,7 +125,12 @@ def test_write_track_part1():
     # write
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P, track_file, mode='values')
-    interfaces.si_tracks.write_track(P, 'output_test/out_tracks.tsv', 'pscore')
+
+    fn = 'output_test/out_tracks.tsv'
+    interfaces.si_tracks.write_track(P, fn, 'pscore')
+
+    b = os.path.getsize(fn)
+    assert b == 32531 # file size in bytes if correctly written
 
     P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/out_tracks.tsv', mode='values')
@@ -158,6 +163,9 @@ def test_write_track_part2():
     track_dict = {special_ID: [{'track_name':track_name, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
     interfaces.si_tracks.write_track(P, outname,track_name)
+
+    b = os.path.getsize(outname)
+    assert b == 3050 # file size in bytes if correctly written
 
     P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P2, pscore_track_file, mode='values')
@@ -210,6 +218,9 @@ def test_write_track_part3():
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')    
     interfaces.si_tracks.write_track(P, outname, track_name)
 
+    b = os.path.getsize(outname)
+    assert b == 1032 # file size in bytes if correctly written
+
     P3 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P3, outname, mode='symbols')
     interfaces.si_tracks.add_tracks_from_file(P3, outname_rv, mode='values')
@@ -219,3 +230,126 @@ def test_write_track_part3():
             assert len(protein.tracks) == 2               
         else:
             assert len(protein.tracks) == 0      
+
+
+def test_write_tracks_separate_files():
+
+    ##
+    ## This code block just creates a proteome where we have 2 different
+    ## typs of tracks
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P, pscore_track_file, mode='values')
+
+    newstring = ''
+    for i in P.protein('O00401').sequence:
+
+        if i in ['S','T','Y']:
+            newstring = newstring + "P"
+        else:
+            newstring = newstring + "-"
+    track_dict = {'O00401': [{'track_name':'phosres', 'track_data':newstring}]}
+    interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
+
+    interfaces.si_tracks.write_all_tracks_separate_files(P, 'output_test')
+
+
+
+def test_write_tracks_separate_files():
+
+    ##
+    ## This code block just creates a proteome where we have 2 different
+    ## typs of tracks
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P, pscore_track_file, mode='values')
+
+    newstring = ''
+    for i in P.protein('O00401').sequence:
+
+        if i in ['S','T','Y']:
+            newstring = newstring + "P"
+        else:
+            newstring = newstring + "-"
+    track_dict = {'O00401': [{'track_name':'phosres', 'track_data':newstring}]}
+    interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
+
+    interfaces.si_tracks.write_all_tracks_separate_files(P, 'output_test')
+
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/shephard_track_pscore.tsv', mode='values')
+
+    for idx in P2.proteins:
+        assert P2.protein(idx).track('pscore').values == P.protein(idx).track('pscore').values
+
+
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/shephard_track_phosres.tsv', mode='symbols')
+
+    for idx in ['O00401']:
+        for position in range(1,len(P2.protein(idx))+1):
+            POS1 = P.protein(idx).track('phosres').symbols_region(position,position)
+            POS2 = P2.protein(idx).track('phosres').symbols_region(position,position)
+            assert POS1 == POS2
+
+        
+def test_write_tracks_single_file_symbols():
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+
+    
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    print(P.proteins)
+
+    # build phosphostring
+    newstring = ''
+    for i in P.protein('O00401').sequence:
+
+        if i in ['S','T','Y']:
+            newstring = newstring + "P"
+        else:
+            newstring = newstring + "-"
+    track_dict = {'O00401': [{'track_name':'phosres', 'track_data':newstring}]}
+    interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
+
+    # build phosphostring
+    newstring = ''
+    for i in P.protein('O00472').sequence:
+
+        if i in ['Y','F','W']:
+            newstring = newstring + "A"
+        else:
+            newstring = newstring + "-"
+    track_dict = {'O00472': [{'track_name':'aro', 'track_data':newstring}]}
+    
+    interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
+    interfaces.si_tracks.write_all_symbols_tracks_single_file(P, 'output_test/all_symbols_test.tsv')
+    
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/all_symbols_test.tsv', mode='symbols')
+
+    idx = 'O00401'
+    for position in range(1,len(P2.protein(idx))+1):
+        POS1 = P.protein(idx).track('phosres').symbols_region(position,position)
+        POS2 = P2.protein(idx).track('phosres').symbols_region(position,position)
+        assert POS1 == POS2
+
+
+    idx = 'O00472'
+    for position in range(1,len(P2.protein(idx))+1):
+        POS1 = P.protein(idx).track('aro').symbols_region(position,position)
+        POS2 = P2.protein(idx).track('aro').symbols_region(position,position)
+        assert POS1 == POS2
+
+
+def test_write_tracks_single_file_values():
+    pass
+    # TO DO!!!
+
+

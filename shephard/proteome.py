@@ -56,25 +56,32 @@ class Proteome:
     def __init__(self, input_list, attributes = None, force_overwrite=False):
         # See the Proteome class documentation for constructor info
         """
-        Constructor that generates a new Proteome object. This includes taking a list of Protein
-        objects (input_list) and, optionally an attributes dictionary for the proteome itself.
+        Constructor that generates a new Proteome object. This includes 
+        taking a list of Protein objects (input_list) and, optionally an 
+        attributes dictionary for the proteome itself.
+        
 
-        In addition, force_overwrite can be used to deal with duplicate entries in the input_list.
+        In addition, force_overwrite can be used to deal with duplicate 
+        entries in the input_list.
 
         Parameters
         -------------
 
-        Protein dictionaries are dictionaries that posses the following key-value pairs:
+        Protein dictionaries are dictionaries that posses the following 
+        key-value pairs:
 
             'sequence'   : amino acid sequence (str)
             'name'       : protein name (str)
-            'unique_ID'  : The unique identification number used for the protein (str)
-            'attributes' : A dictionary of arbitrary key-value pairs to associate with
-                           the protein (dict or None)
-        
+            'unique_ID'  : The unique identification number used for the 
+                           protein (str)
+            'attributes' : A dictionary of arbitrary key-value pairs to 
+                           associate with the protein (dict or None)
+                                   
 
-        Additional keys/value pairs are ignored and ALL four of these must be included. If any are
-        missing for any protein entry this function raises a ProteomeException.
+        Additional keys/value pairs are ignored and ALL four of these 
+        must be included. If any are missing for any protein entry this 
+        function raises a ProteomeException.
+        
         
         Parameters
         -----------
@@ -82,20 +89,23 @@ class Proteome:
             List of Protein dictionaries
 
         attributes : dict
-            A an arbitrary set of key-value pairs to annotate the proteome with metadata
+            A an arbitrary set of key-value pairs to annotate the proteome 
+            with metadata
         
         force_overwrite : bool
-            If set to False and there are duplicate unique_IDs in protein dictionaries in the input_list
-            this will trigger an exception. However, if set to True then the 'last' entry overwrites a 
+            If set to False and there are duplicate unique_IDs in protein 
+            dictionaries in the input_list this will trigger an exception. 
+            However, if set to True then the 'last' entry overwrites a             
             more recent one in the case of duplicates.
 
         """
 
         # initiallize book-keeping instruments
         self._records = {}
-        self._unique_domain_types = []
-        self._unique_site_types = []
-        self._unique_track_names = []
+        self._unique_domain_types = {}
+        self._unique_site_types = {}         # dict that mapes a Site type to a count
+        self._unique_track_names = {}        # dict that mapes Track name to count
+        self._track_name_to_track_type = {}  # dict that maps Track name to track type ('values' or 'symbols')
         
         # check attributs dictionary
         general_utilities.variable_is_dictionary(attributes, ProteomeException, 'attributes argument passed to proteome is not a dictionary', or_none = True)
@@ -221,7 +231,7 @@ class Proteome:
 
         if unique_ID_str in self._records:
             if force_overwrite is False:
-                raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID_str))
+                raise ProteomeException('Non-unique unitque_ID passed [%s]' % (unique_ID_str))
 
         self._records[unique_ID_str] = Protein(sequence, name, self, unique_ID_str, attributes)
 
@@ -532,11 +542,11 @@ class Proteome:
         # Some description of what's going on here is in order. Every time a new domain
         # is added, the Domain constructor calls the function _Domain__update_domain_types
         # which checks if the domain_type of the domain being added is already in the
-        # __unique_domain_types list. If yes, fine, if no, it gets added. This means
+        # _unique_domain_types list. If yes, fine, if no, it gets added. This means
         # _unique_domain_types keeps track of a count of the complete number of unique
         # domains in the Proteome. An analogous setup holds true for the sites and tracks.
         
-        return self._unique_domain_types
+        return list(self._unique_domain_types.keys())
     
 
 
@@ -558,12 +568,12 @@ class Proteome:
         # Some description of what's going on here is in order. Every time a new site
         # is added, the Site constructor calls the function _Site__update_site_types
         # which checks if the domain_type of the domain being added is already in the
-        # __unique_site_types list. If yes, fine, if no, it gets added. This means
+        # _unique_site_types list. If yes, fine, if no, it gets added. This means
         # _unique_site_types keeps track of a count of the complete number of unique
         # sites in the Proteome. An analogous setup holds true for domains and tracks.
         
 
-        return self._unique_site_types
+        return list(self._unique_site_types.keys())
     
 
     ## ------------------------------------------------------------------------
@@ -585,12 +595,31 @@ class Proteome:
         # Some description of what's going on here is in order. Every time a new track
         # is added, the Track constructor calls the function _Track__update_track_names
         # which checks if the track_name of the domain being added is already in the
-        # __unique_track_types list. If yes, fine, if no, it gets added. This means
+        # _unique_track_types list. If yes, fine, if no, it gets added. This means
         # _unique_track_names keeps track of a count of the complete number of unique
         # domains in the Proteome. An analogous setup holds true for sites and domains
         
         
-        return self._unique_track_names
+        return list(self._unique_track_names.keys())
+
+    ## ------------------------------------------------------------------------
+    ##                
+    @property
+    def track_names_to_track_type(self):
+        """
+        Returns a (copy of a) dictionry that maps track name to track type. We return
+        a copy so there's no way we can accidentally break the internal book-keeping
+        of the Proteome object
+
+        Return
+        -------
+        dict
+            A dictionary that contains the unique track names and maps each name to
+            either values or type.
+        
+        """
+
+        return dict(self._track_name_to_track_type)
 
 
     ## ------------------------------------------------------------------------
@@ -733,23 +762,61 @@ class Proteome:
         No return value, but will appropriately update the Proteome object
 
         """
-        if domain_type not in self.unique_domain_types:
-            self._unique_domain_types.append(domain_type)
+        # because _unique_track_names is a dictionary this scales O(1) with number 
+        # of track names
+        if domain_type not in self._unique_domain_types:
+            self._unique_domain_types[domain_type] = 1
+        else:
+            self._unique_domain_types[domain_type] = self._unique_domain_types[domain_type] + 1
+
+    ## ------------------------------------------------------------------------
+    ##                
+    def _Protein__decrement_domain_types(self, domain_type):
+        """
+        INTERNAL FUNCTION (not for public API use)
+
+        
+        Note - we this function is named as __Protein_... so it can be specifically
+        and uniquely be called from a Protein object. This function is ONLY called
+        last thing when a Protein object deletes a domain
+
+        Parameters
+        ----------------
+        track_name : string
+            String that defines a Domain type
+
+        Returns
+        ---------------
+
+        No return value, but will appropriately update the Proteome object
+
+        """
+
+        # if we can't find the domain name in the unique domain types... this is bad!
+        if domain_type not in self._unique_domain_types:
+            raise ProteomeException("Tried to remove a Domain type [{domain_type}] from the Proteome.unique_domain_types dictionary but the Domain type could not be found. This is a bug. Please report as a GitHub Issue.")
+            
+        # we are removing a unique domain_type name! Big event!
+        elif self._unique_domain_types[domain_type] == 1:
+            del self._unique_domain_types[domain_type]
+        # else decrement one
+        else:
+            self._unique_domain_types[domain_type] = self._unique_domain_types[domain_type] - 1
 
 
     ## ------------------------------------------------------------------------
     ##                
-    def _Track__update_track_names(self, track_name):
+    def _Track__update_track_names(self, track_name, track_type):
         """
         INTERNAL FUNCTION (not for public API use)
 
         
         Note - we this function is named as __Track_... so it can be specifically
-        and uniquely be called from a Domain object. This function is ONLY called
+        and uniquely be called from a Track object. This function is ONLY called
         last thing in the Track constructor where it allows the Proteome object
         to keep track of the total number of unique Track types in the Proteome.
 
-        The function is (by default) called by the Domain constructor
+        The function is (by default) called by the Track constructor
 
         Parameters
         ----------------
@@ -762,9 +829,54 @@ class Proteome:
         No return value, but will appropriately update the Proteome object
 
         """
-        if track_name not in self.unique_track_names:
-            self._unique_track_names.append(track_name)
 
+        # because _unique_track_names is a dictionary this scales O(1) with number 
+        # of track names
+        if track_name not in self._unique_track_names:
+            self._unique_track_names[track_name] = 1
+            self._track_name_to_track_type[track_name] = track_type
+
+        else:
+            self._unique_track_names[track_name] = self._unique_track_names[track_name] + 1
+            if self._track_name_to_track_type[track_name] != track_type:
+                raise ProteomeException("Tried to assigned track name [{track_name}] as a [{track_type}] track, but this track was already assigned as a [{self._track_name_to_track_type[track_name]}] track. Cannot have two tracks with the same name but different types")
+            
+
+    ## ------------------------------------------------------------------------
+    ##                
+    def _Protein__decrement_track_names(self, track_name):
+        """
+        INTERNAL FUNCTION (not for public API use)
+
+        
+        Note - we this function is named as __Protein_... so it can be specifically
+        and uniquely be called from a Protein object. This function is ONLY called
+        last thing when a Protein object deletes a Track
+
+        Parameters
+        ----------------
+        track_name : string
+            String that defines the Track name 
+
+        Returns
+        ---------------
+
+        No return value, but will appropriately update the Proteome object
+
+        """
+
+        # if we can't find the track name in the unique track names... this is bad!
+        if track_name not in self._unique_track_names:
+            raise ProteomeException("Tried to remove a Track name [{track_name}] from the Proteome.unique_track_names dictionary but the track could not be found. This is a bug. Please report as a GitHub Issue.")
+            
+        # we are removing a unique track name! Big event!
+        elif self._unique_track_names[track_name] == 1:
+            del self._unique_track_names[track_name]
+            del self._track_name_to_track_type[track_name]
+
+        # else decrement one
+        else:
+            self._unique_track_names[track_name] = self._unique_track_names[track_name] - 1
 
 
     ## ------------------------------------------------------------------------
@@ -777,7 +889,7 @@ class Proteome:
         Note - we this function is named as __SITE_... so it can be specifically
         and uniquely be called from a Site object. This function is ONLY called
         last thing in the Site constructor where it allows the Proteome object
-        to keep track of the total number of unique domain types in the Proteome
+        to keep track of the total number of unique Site types in the Proteome
 
         The function is (by default) called by the Site constructor
 
@@ -792,8 +904,49 @@ class Proteome:
         No return value, but will appropriately update the Proteome object
 
         """
-        if site_type not in self.unique_site_types:
-            self._unique_site_types.append(site_type)
+
+        # because _unique_track_names is a dictionary this scales O(1) with number 
+        # of track names
+        if site_type not in self._unique_site_types:
+            self._unique_site_types[site_type] = 1
+
+        else:
+            self._unique_site_types[site_type] = self._unique_site_types[site_type] + 1
+
+
+    ## ------------------------------------------------------------------------
+    ##                
+    def _Protein__decrement_site_types(self, site_type):
+        """
+        INTERNAL FUNCTION (not for public API use)
+
+        
+        Note - we this function is named as __Protein_... so it can be specifically
+        and uniquely be called from a Protein object. This function is ONLY called
+        last thing when a Protein object deletes a Site
+
+        Parameters
+        ----------------
+        track_name : string
+            String that defines a site type
+
+        Returns
+        ---------------
+
+        No return value, but will appropriately update the Proteome object
+
+        """
+
+        # if we can't find the track name in the unique track names... this is bad!
+        if site_type not in self._unique_site_types:
+            raise ProteomeException("Tried to remove a Site type [{site_type}] from the Proteome.unique_site_types dictionary but the Site type could not be found. This is a bug. Please report as a GitHub Issue.")
+            
+        # we are removing a unique site_type name! Big event!
+        elif self._unique_site_types[site_type] == 1:
+            del self._unique_site_types[site_type]
+        # else decrement one
+        else:
+            self._unique_site_types[site_type] = self._unique_site_types[site_type] - 1
 
 
 
