@@ -330,6 +330,58 @@ class Site:
 
 
 
+    #######################################
+    ##                                   ##
+    ##        SITE domain FUNCTIONS      ##
+    ##                                   ##
+    #######################################
+
+    ## ------------------------------------------------------------------------
+    ##      
+    def get_domains(self, offset=0, safe=True):
+        """
+        Function that returns the set of domains that the site lies within. The
+        oofset parameter defines the wiggle room +/- that is tolerated, but
+        defaults to 0.         
+
+        Parameters
+        --------------
+
+        offset : int
+            +/- values around the site from which regions are taken.
+            Default = 0
+
+        safe : bool
+            If set to True, missing tracks trigger an exception, else they 
+            just return None.
+            Default = True
+
+
+        Returns
+        ----------
+        list
+            Returns a list of domain objects for which this site can be found
+            in or near
+
+        """
+        
+        valid_domains = []
+
+        for domain in self.protein.domains:
+
+            # get start and end positions with offset
+            (p1, p2) = sequence_utilities.get_bounding_sites(domain.start, offset, self._protein._len)
+            start = p1
+            
+            (p1, p2) = sequence_utilities.get_bounding_sites(domain.end, offset, self._protein._len)
+            end = p2
+
+            if start <= self.position and end >= self.position:
+                valid_domains.append(domain)
+
+        return valid_domains
+
+
 
     #######################################
     ##                                   ##
