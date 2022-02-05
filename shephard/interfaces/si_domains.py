@@ -47,6 +47,24 @@ class _DomainsInterface:
                                that will be associated with the domain
 
 
+        Parameters
+        ----------------
+        
+        filename : str
+            Name of the shephard domains file to read
+
+        delimiter : str 
+            String used as a delimiter on the input file. 
+            Default = '\t'
+
+        skip_bad : boolean
+            Flag that means if bad lines (lines that trigger an exception) 
+            are encountered the code will just skip them. By default this is 
+            true, which adds a certain robustness to file parsing, but could 
+            also hide errors. Note that if lines are skipped a warning will be 
+            printed (regardless of verbose flag). 
+            Default = True
+
         
 
         """
@@ -62,7 +80,11 @@ class _DomainsInterface:
         linecount=0
         for line in content:
 
-            linecount=linecount+1
+            linecount = linecount + 1
+
+            # skip comment lines
+            if interface_tools.is_comment_line(line):
+                continue
 
             sline = line.strip().split(delimiter)
             
@@ -316,10 +338,10 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
         String used as a delimiter on the input file. Default = '\t'
 
     add_new : boolean 
-        If set to True then any new found domains are added to their associated protien. If False 
+        If set to True then any new found domains are added to their associated protein. If False 
         any unfound domains are not added and are skipped over. 
 
-        If a new domain is passed that does not have an associated protien in the passed proteome 
+        If a new domain is passed that does not have an associated protein in the passed proteome 
         an exception will always be raised regardless of the status of this parameter.
 
         Default = True
@@ -381,9 +403,9 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
     with a given protein, and the value is a list of dictionaries. Each subdictionary has 
     four key-value pairs:
 
-    'protien' = the unique_ID of the protein for which to domain is associated with
+    'protein'     = the unique_ID of the protein for which to domain is associated with
     'domain_name' = domain type (string that names the domain)
-    'attributes' = dictionary of arbitrary key:value pairings (optional)
+    'attributes'  = dictionary of arbitrary key:value pairings (optional)
 
     The start and end positions should be locations within the sequence defined by the unique_ID, 
     and if they are out of the sequence bounds this will throw an exception. Domain type is a string
@@ -402,10 +424,10 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
         Dictionary that maps unique_IDs to a list of one or more domain dictionaries
 
     add_new : boolean 
-        If set to True then any new found domains are added to their associated protien. If False 
+        If set to True then any new found domains are added to their associated protein. If False 
         any unfound domains are not added and are skipped over. 
 
-        If a new domain is passed that does not have an associated protien in the passed proteome 
+        If a new domain is passed that does not have an associated protein in the passed proteome 
         an exception will always be raised regardless of the status of this parameter.
 
         Default = True
@@ -439,13 +461,16 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
     
     # iterate proteins with new domains 
     for unique_ID in domain_dictionary:
+
         # check if protein in proteome  
         if unique_ID in proteome:
+
             # build dict of local domains with domain IDs as keys
-            local_domain_dict = {"%s_%i_%i" % (d.domain_type,d.start,d.end):d for d in proteome.protein(unique_ID).domains}
+            local_domain_dict = {"%s_%i_%i" % (d.domain_type, d.start, d.end): d for d in proteome.protein(unique_ID).domains}
+
             # iterate new domains
             for new_domain in domain_dictionary[unique_ID]:
-                new_domain_ID = "%s_%i_%i" % (new_domain['domain_type'],new_domain['start'],new_domain['end'])
+                new_domain_ID = "%s_%i_%i" % (new_domain['domain_type'], new_domain['start'], new_domain['end'])
                 
                 # check if domain is in local domain by ID 
                 if new_domain_ID in local_domain_dict:
@@ -456,13 +481,13 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                         ad = {}
 
                     # merge attributes
-                    for k,v in ad.items():
+                    for k, v in ad.items():
 
                         try:
-                            local_domain.add_attribute(k,v, safe=safe)
+                            local_domain.add_attribute(k, v, safe=safe)
                         except (ProteinException, DomainException) as e:
 
-                            msg='- skipping domain at %i-%i on %s' %(start, end, protein)
+                            msg = f"- skipping attribute being added to {unique_ID} for domain type {new_domain['domain_type']}, with start={new_domain['start']} and end={new_domain['end']})"
                             if safe:
                                 shephard_exceptions.print_and_raise_error(msg, e)
                             else:
@@ -494,17 +519,16 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                                 continue
 
 
-
     
 ## ------------------------------------------------------------------------
 ##
-def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
+def write_domains(proteome, filename, delimiter='\t', domain_types=None):
     """
-    Function that writes out domains to file in a standardized format. Note that
-    attributes are converted to a string, which for simple attributes is reasonable
-    but is not really a viable stratergy for complex objects, although this will 
-    not yeild and error.
-    
+    Function that writes out domains to a SHEPHARD domains file. Note that
+    attributes are converted to a string, which for simple attributes is 
+    reasonable but is not really a viable stratergy for complex objects, 
+    although this will not yeild and error.
+            
     Parameters
     -----------
 
@@ -514,20 +538,21 @@ def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
     filename : str
         Filename that will be used to write the new domains file
 
-    domain_type : str
-        Identifier that allows you to specificy a specific domain type to write
-        out
-
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_domains_from
-        file()` function
+        Character (or characters) used to separate between fields. 
+        Default is '\t' Which is recommended to maintain compliance 
+        with default `add_domains_from_file()` function.
 
+    domain_types : list
+        Lets you define a list of one or more domain types that will
+        be written out. Domain types are passed as strings
+        
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of domains
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete 
+        set of domains from this proteome written to disk.
+        
 
     """
 
@@ -535,11 +560,10 @@ def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
         for protein in proteome:
             for d in protein.domains:
 
-                # if we specified a domain type
-                if domain_type is not None:
-
-                    # if this domain is not that type... skip!
-                    if d.domain_type != domain_type:
+                # if domain_types is passed check if each domain
+                # is found in the list
+                if domain_types is not None:
+                    if d.domain_type not in domain_types:
                         continue
 
                 # systematically construct each line in the file 
@@ -557,9 +581,12 @@ def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
 
                 if d.attributes:
                     for k in d.attributes:
-                        line = line + delimiter
-                        line = line + str(k) + ":" + str(d.attribute(k))
 
+                        atrbt = interface_tools.clean_string(d.attribute(k))
+                        atrbt = interface_tools.clean_string(atrbt, ':','-')
+
+                        line = line + delimiter + "%s:%s" %(k, atrbt)
+                
                 line = line + "\n"
 
                 fh.write('%s'%(line))
@@ -567,13 +594,15 @@ def write_domains(proteome, filename, domain_type=None, delimiter='\t'):
 
 ## ------------------------------------------------------------------------
 ##
-def write_select_domains(domain_list, filename, delimiter='\t'):
+def write_domains_from_list(domain_list, filename, delimiter='\t'):
     """
-    Function that writes out domains to file in a standardized format. Note that
-    attributes are converted to a string, which for simple attributes is reasonable
-    but is not really a viable stratergy for complex objects, although this will 
-    not yeild and error.
+    Function that writes out domains to a SHEPHARD domains file from a list
+    of Domain objects. 
+    Note that attributes are converted to a string, which for simple 
+    attributes is reasonable but is not really a viable stratergy for 
+    complex objects, although this will not yeild and error.
     
+        
     Parameters
     -----------
 
@@ -614,8 +643,12 @@ def write_select_domains(domain_list, filename, delimiter='\t'):
 
             if d.attributes:
                 for k in d.attributes:
-                    line = line + delimiter
-                    line = line + str(k) + ":" + str(d.attribute(k))
+
+                    # 
+                    atrbt = interface_tools.clean_string(d.attribute(k))
+                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+
+                    line = line + delimiter + "%s:%s" %(k, atrbt)
 
             line = line + "\n"
             

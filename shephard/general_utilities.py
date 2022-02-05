@@ -79,12 +79,45 @@ def string_to_list_of_strings(inval):
 ## ------------------------------------------------------------------------
 ##
 def numerical_average(l):
+    """
+    Simple function that returns the mean of a list or any iterable
+    data type
+
+    Parameters:
+    ----------------
+    l : list, np.ndarray, or any intertable container type that can be
+        iterated over
+
+    Returns:
+    ----------------
+    float
+        Returns the average obtained by summing all elements and 
+        dividing by number of elements
+
+
+    """
     return numerical_sum(l)/len(l)
 
 
 ## ------------------------------------------------------------------------
 ##
 def numerical_sum(l):
+    """
+    Simple function that returns the sum of a list or any iterable
+    data type
+
+    Parameters:
+    ----------------
+    l : list, np.ndarray, or any intertable container type that can be
+        iterated over
+
+    Returns:
+    ----------------
+    numerical
+        Returns a value that reflects the sum of the elements, where type
+        will be dictated by the Python rules for numerical addition .
+
+    """
 
 
     t = 0
@@ -118,7 +151,7 @@ def variable_is_dictionary(v, exc, msg, or_none=False):
     Returns
     -------
     None or exception-rasied
-        If the passed variable is a dictionary returns True, else
+        If the passed variable is a dictionary returns None, else
         raises an exception
 
     """

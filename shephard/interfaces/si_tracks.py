@@ -31,11 +31,32 @@ class _TracksInterface:
 
         where n = length of protein.
 
-        This class allows a tracksfile to be read in and defined as either a values
-        track file, or a symbols track file, returning a tracks dictionary. 
+        This class allows a tracksfile to be read in and defined as either 
+        a values track file, or a symbols track file, returning a tracks 
+        dictionary. 
 
+        Parameters
+        ----------------
         
+        filename : str
+            Name of the SHEPHARD Tracks file to read.
 
+        delimiter : str 
+            String used as a delimiter on the input file. 
+            Default = '\t'
+
+        mode : str {'symbols','values'}
+            A selector that defines the type of track file to be read. 
+            Must be either 'symbols' or 'values'.
+            Default = 'values'
+
+        skip_bad : boolean
+            Flag that means if bad lines (lines that trigger an exception) 
+            are encountered the code will just skip them. By default this is 
+            true, which adds a certain robustness to file parsing, but could 
+            also hide errors. Note that if lines are skipped a warning will be 
+            printed (regardless of verbose flag). 
+            Default = True
 
         """
         
@@ -50,6 +71,10 @@ class _TracksInterface:
         for line in content:
 
             linecount = linecount + 1
+
+            # skip comment lines
+            if interface_tools.is_comment_line(line):
+                continue
 
             # extract chop off lagging whitespace and divide up using the delimiter
             sline = line.strip().split(delimiter)                        
@@ -98,13 +123,13 @@ class _TracksInterface:
 ## ------------------------------------------------------------------------
 ##
 def __write_all_tracks_single_file(proteome, 
-                                 outfile, 
-                                 track_type,
-                                 value_fmt = "%.3f", 
-                                 delimiter='\t'):
+                                   outfile, 
+                                   track_type,
+                                   value_fmt = "%.3f", 
+                                   delimiter='\t'):
     """
     Internal function Function that writes all tracks associated with a 
-    proteome out to a single file. 
+    Proteome out to a single file. 
 
     See also:
 
@@ -116,7 +141,7 @@ def __write_all_tracks_single_file(proteome,
     -----------
 
     proteome :  Proteome object
-        Proteome object from which the domains will be extracted from
+        Proteome object from which the Domains will be extracted from
 
     outfile : str
         String that defines the name of the output file.
@@ -125,16 +150,17 @@ def __write_all_tracks_single_file(proteome,
         Format string that will be used for values. Default = "%.3f"
         
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_tracks_from_files()`
-        function.
+        Character (or characters) used to separate between fields. 
+        Default is '\t' which is recommended to maintain compliance 
+        with default `add_tracks_from_files()` function.
+        Default = '\t'
     
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of tracks
-        from this proteome written to disk.
-
+        No return type, but generates a new file with the complete 
+        set of tracks from this Proteome written to disk.
+        
 
     """
     
@@ -167,7 +193,7 @@ def __write_all_tracks_single_file(proteome,
 def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictionary=False, safe=True, skip_bad=True, verbose=True):
     """
     Function that takes a correctly formatted shephard 'tracks' file and reads 
-    all Tracks into the passed proteome.
+    all Tracks into the passed Proteome.
 
     Expect Track files to have the following format:
 
@@ -175,13 +201,17 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
     
     Unique_ID    track_name    res1    res2    res3 .... resn
 
-    Where res1, res2, resn are symbol or values to be mapped to the 1st, 2nd, or nth residue.
-    There should be the same number of res1,2,...n entries are there are residues in the 
-    associated protein
+    Where res1, res2, resn are symbol or values to be mapped to the 1st, 
+    2nd, or nth residue. There should be the same number of res1,2,...n 
+    entries are there are residues in the associated protein.
     
     A couple of key points here:
-    - The default delimiter is tabs ('\t') but this can be changed with the delimiter argument
-    - Each track must assign a value or a symbol to EVERY residue in the protein
+
+    - The default delimiter is tabs ('\t') but this can be changed with 
+      the delimiter argument
+
+    - Each track must assign a value or a symbol to EVERY residue in the 
+      protein
     
     Parameters
     ----------
@@ -189,45 +219,57 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
         Proteome object 
 
     filename : str
-        Name of the shephard domains file to read
+        Name of the shephard Domains file to read
 
     mode : string {'symbols','values'}
-       A selector that defines the type of track file to be read. Must be either 'symbols' or 
-       'values'
+       A selector that defines the type of track file to be read. Must be 
+       either 'symbols' or  'values'.
 
     delimiter : str 
-        String used as a delimiter on the input file. Default = '\t'
+        String used as a delimiter on the input file. 
+        Default = '\t'
 
     return_dictionary : bool
-        If set to true, this function will return the tracks dictionary and will NOT add that
-        dictionary to the proteome - i.e. the function basically becomes a parser for SHEPHARD-compliant
-        tracks files. Default = False
-
+        If set to true, this function will return the tracks dictionary 
+        and will NOT add that dictionary to the Proteome - i.e. the function 
+        basically becomes a parser for SHEPHARD-compliant tracks files. 
+        Default = False
+        
     safe : boolean 
-        If set to True then any exceptions raised during the Track-adding process (i.e. after file
-        parsing) are acted on. If set to False, exceptions simply mean the site in question is skipped. 
-        Note if set to False  pre-existing tracks with the same name would be silently overwritten (although 
-        this is not consider an error), while overwriting will trigger an exception in safe=True.
-        There are various reasons site addition could fail (e.g. track does not match length of protein)
-        so if verbose=True then the cause of an exception is also printed to screen. It is highly 
-        recommend that if you choose to use safe=False you also set verbose=True. Default = True.
+        If set to True then any exceptions raised during the Track-adding 
+        process (i.e. after file parsing) are acted on. If set to False, 
+        exceptions simply mean the site in question is skipped. Note if set 
+        to False pre-existing tracks with the same name would be silently 
+        overwritten (although this is not consider an error), while 
+        overwriting will trigger an exception in safe=True.
+        Default = True
+
+        There are various reasons site addition could fail (e.g. track does 
+        not match length of protein) so if verbose=True then the cause of an
+        exception is also printed to screen. It is highly recommend that if 
+        you choose to use safe=False you also set verbose=True. 
+        Default = True.
 
     skip_bad : boolean
-        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
-        will just skip them. By default this is true, which adds a certain robustness to file 
-        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
-        printed (regardless of verbose flag). Default = True
-    
+        Flag that means if bad lines (lines that trigger an exception) are 
+        encountered the code will just skip them. By default this is true, 
+        which adds a certain robustness to file parsing, but could also hide 
+        errors. Note that if lines are skipped a warning will be printed 
+        (regardless of verbose flag). 
+        Default = True
+
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding tracks.
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding tracks.
 
     Returns
     -----------
     None or dict
-        If return_dictionary is set to False (default) then this function has no return
-        value, but the tracks are added to the Proteome object passed as the first argument. If
-        return_dictionary is set to True the function returns the parsed tracks dictionary without
-        adding the newly-read tracks to the proteome.
+        If return_dictionary is set to False (default) then this function 
+        has no return value, but the tracks are added to the Proteome object
+        passed as the first argument. If return_dictionary is set to True the 
+        function returns the parsed tracks dictionary without adding the 
+        newly-read tracks to the proteome.
         
     """        
 
@@ -253,19 +295,19 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
 def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, verbose=True):
     """
 
-    Function that takes a correctly formatted tracks dictionary and will add those tracks to 
-    the proteins in the Proteome.
+    Function that takes a correctly formatted tracks dictionary and 
+    will add those tracks to the proteins in the Proteome.
     
 
-    track dictionaries are key-value pairs, where the key is a unique ID and the value
-    is a list of dictionaries. For each sub-dictionary, there are two key-value pairs that
-    reflect:
+    track dictionaries are key-value pairs, where the key is a unique 
+    ID and the value is a list of dictionaries. For each sub-dictionary, 
+    there are two key-value pairs that reflect:
 
         'track_name'  : name of the track (str)
-        'track_data' : parsed list of floats (if expecting values) or strings (if expecting symbols)
-                        that should equal the length of the associated protein.
-
-
+        'track_data'  : parsed list of floats (if expecting values) or strings 
+                        (if expecting symbols) that should equal the length 
+                        of the associated protein.
+                       
     Parameters
     ----------
 
@@ -273,35 +315,43 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         Proteome object which tracks will be added to
 
     tracks_dictionary : dict
-        Dictionary in which keys are unique IDs for proteins and the value is a list of dictionaries,
-        where each subdictionary has the two key-value pairs:
-
+        Dictionary in which keys are unique IDs for proteins and the value 
+        is a list of dictionaries, where each subdictionary has the two 
+        key-value pairs:
+        
         'track_name'  : name of the track (str)
-        'track_data' : parsed list of floats (if expecting values) or strings (if expecting symbols)
-                        that should equal the length of the associated protein.
-    
+        'track_data'  : parsed list of floats (if expecting values) or 
+                        strings (if expecting symbols) that should equal 
+                        the length of the associated protein.
+                            
     mode : string {'symbols','values'}
-       A selector that defines the type of track file to be read. Must be either 'symbols' or 
-       'values'
-
+       A selector that defines the type of track file to be read. Must be 
+       either 'symbols' or 'values'
+       
     safe : bool (default = True)
-        If set to True then any exceptions raised during the track-adding process are acted
-        on. If set to False, exceptions simply mean the Track in question is skipped. 
-        Note if set to False, pre-existing Tracks with the same name would be silently overwritten (although 
-        this is not consider an error), while overwriting will trigger an exception in safe=True
-        There are various reasons Track addition could fail (length does not match the protein etc) 
-        and so if verbose=True then the cause of an exception is also printed to 
-        screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
+        If set to True then any exceptions raised during the track-adding 
+        process are acted on. If set to False, exceptions simply mean the 
+        Track in question is skipped. 
+        
+        Note if set to False, pre-existing Tracks with the same name would 
+        be silently overwritten (although this is not consider an error), 
+        while overwriting will trigger an exception in safe=True.
+        
+        There are various reasons Track addition could fail (length does 
+        not match the protein etc) and so if verbose=True then the cause
+        of an exception is also printed to screen. It is highly recommend 
+        that if you choose to use safe=False you also set verbose=True. 
         Default = True.
 
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding tracks.
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding tracks.
         
     Returns
     -----------
     None
-        No return value, but tracks are added to the Proteome object passed as the first argument
-
+        No return value, but tracks are added to the Proteome object 
+        passed as the first argument.
         
     """
         
@@ -350,6 +400,7 @@ def write_all_tracks_separate_files(proteome,
                      outdirectory='.', 
                      value_fmt = "%.3f", 
                      delimiter='\t'):
+
     """
     Function that writes all tracks associated with a proteome out to seperate
     files. This may be preferable in some situations, but in others maybe only
@@ -359,36 +410,38 @@ def write_all_tracks_separate_files(proteome,
 
     The the output filenames are defined as:
         
-    shephard_track_<trackname>.tsv
+    `shephard_track_<trackname>.tsv`
     
     and are written to the outdirectory.
 
-    Because track files MUST be written as one per track_name, this function is equivalent
-    to cycling through each unique track name and writing it out sequentially. 
+    Because track files MUST be written as one per track_name, this 
+    function is equivalent to cycling through each unique track name 
+    and writing it out sequentially. 
     
     Parameters
     -----------
 
     proteome :  Proteome object
-        Proteome object from which the domains will be extracted from
+        Proteome object from which the Domains will be extracted from
 
     outdirectory : str
-        String that defines the output directory. By default sets to the present
-        working directory ('.').
+        String that defines the output directory. By default sets to the 
+        present working directory ('.').
 
     value_fmt : str
         Format string that will be used for values. Default = "%.3f"
         
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_tracks_from_files()`
-        function.
+        Character (or characters) used to separate between fields. 
+        Default is '\t' Which is recommended to maintain compliance with 
+        default `add_tracks_from_files()` function.
     
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of domains
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete set of 
+        Domains from this Proteome written to disk.
+        
 
 
     """
@@ -405,7 +458,7 @@ def write_all_values_tracks_single_file(proteome,
                                  value_fmt = "%.3f", 
                                  delimiter='\t'):
     """
-    Function that writes all tracks associated with a proteome out to a single
+    Function that writes all tracks associated with a Proteome out to a single
     file. This may be preferable in some situations, but in others maybe only
     a subset of tracks are requested, for which write_track() would be good, 
     or alternatively you want all tracks in seperate files, in which case
@@ -416,7 +469,7 @@ def write_all_values_tracks_single_file(proteome,
     -----------
 
     proteome :  Proteome object
-        Proteome object from which the domains will be extracted from
+        Proteome object from which the Domains will be extracted from
 
     outfile : str
         String that defines the name of the output file.
@@ -425,15 +478,15 @@ def write_all_values_tracks_single_file(proteome,
         Format string that will be used for values. Default = "%.3f"
         
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_tracks_from_files()`
-        function.
+        Character (or characters) used to separate between fields. Default 
+        is '\t' Which is recommended to maintain compliance with default 
+        `add_tracks_from_files()` function.
     
     Returns
     --------
     None
         No return type, but generates a new file with the complete set of tracks
-        from this proteome written to disk.
+        from this Proteome written to disk.
 
 
     """
@@ -446,7 +499,7 @@ def write_all_symbols_tracks_single_file(proteome,
                                  value_fmt = "%.3f", 
                                  delimiter='\t'):
     """
-    Function that writes all tracks associated with a proteome out to a single
+    Function that writes all tracks associated with a Proteome out to a single
     file. This may be preferable in some situations, but in others maybe only
     a subset of tracks are requested, for which write_track() would be good, 
     or alternatively you want all tracks in seperate files, in which case
@@ -457,7 +510,7 @@ def write_all_symbols_tracks_single_file(proteome,
     -----------
 
     proteome :  Proteome object
-        Proteome object from which the domains will be extracted from
+        Proteome object from which the Domains will be extracted from
 
     outfile : str
         String that defines the name of the output file.
@@ -466,15 +519,15 @@ def write_all_symbols_tracks_single_file(proteome,
         Format string that will be used for values. Default = "%.3f"
         
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_tracks_from_files()`
-        function.
+        Character (or characters) used to separate between fields. Default
+        is '\t' Which is recommended to maintain compliance with default 
+        `add_tracks_from_files()` function.
     
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of tracks
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete set of 
+        tracks from this proteome written to disk.
 
 
     """
@@ -485,10 +538,11 @@ def write_all_symbols_tracks_single_file(proteome,
 ##
 def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\t', file_handle=None):
     """
-    Function that writes out a specific track to file in a standardized format. Note that
-    because track files are inevitably quite big default behaviour is to only write out a
-    single track file at a time (i.e. unlike write_domains or write_sites where ALL domains
-    or all sites are - by default - written out, here ONLY a single type of track, defined
+    Function that writes out a specific track to file in a standardized 
+    format. Note that because track files are inevitably quite big default 
+    behaviour is to only write out a single track file at a time (i.e. 
+    unlike write_domains or write_sites where ALL domains or all sites are
+    - by default - written out, here ONLY a single type of track, defined
     by track_name, can be written.
 
     To write ALL the tracks from a file, see si_tracks.write_all_tracks().
@@ -496,33 +550,35 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
     Parameters
     -----------
     proteome :  Proteome object
-        Proteome object from which the domains will be extracted from
+        Proteome object from which the Domains will be extracted from
 
     filename : str
-        Filename that will be used to write the new domains file
+        Filename that will be used to write the new Domains file
 
     track_name : str
         Name of the track to be written out.
 
     value_fmt : str
-        Format string that will be used for values. Default = "%.3f". Note that this is not
-        a smart value so if the actual value used means that %.3f looses all meaning this will
-        not trigger a warning, so, be careful!
+        Format string that will be used for values. Default = "%.3f". Note 
+        that this is not a smart value so if the actual value used means 
+        that %.3f looses all meaning this will not trigger a warning, so, 
+        be careful!
         
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_tracks_from_files()`
-        function.
+        Character (or characters) used to separate between fields. Default 
+        is '\t' which is recommended to maintain compliance with default 
+        `add_tracks_from_files()` function.
 
     file_handle : fh or None
-        If passed, output is written to this handle rather than to a new file. The filename variable
-        is ignored in this case.
+        If passed, output is written to this handle rather than to a new 
+        file. The filename variable is ignored in this case.
+        
     
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of domains
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete set of 
+        Domains from this Proteome written to disk.
 
     """
 

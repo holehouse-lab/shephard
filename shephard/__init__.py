@@ -24,3 +24,5 @@ def get_data(path):
     This function 
     """
     return os.path.join(_ROOT, 'data', path)
+
+from .proteome import Proteome

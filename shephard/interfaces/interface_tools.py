@@ -38,15 +38,21 @@ def check_proteome(p, function_name):
     else:
         raise InterfaceException('First argument passed to function [%s] was not a proteome' %(function_name))
 
+
+
 ## ------------------------------------------------------------------------
 ##
 def clean_string(instring, delimiter='\t', replace_char=' '):
     """
-    Function that takes in a string that is to be written to a SHEPHARD complient file and ensures it has no 
-    delimiter characters in it. This avoids the scenario where - for example - your protein name as a tab in it
-    which introduces a new filed into the TSV file inadverntently.
+    Function that takes in a string that is to be written to a SHEPHARD 
+    complient file and ensures it has no delimiter characters in it. This 
+    avoids the scenario where - for example - your protein name has a 
+    tab in it which introduces a new field into the SHEPHARD data file.
+    
+    
 
-    If such delimiter characters are found they're replaced by a replace_char, which by default is just a space    
+    If such delimiter characters are found they're replaced by a replace_char, 
+    which by default is just a space    
     
     Parameters
     ---------------
@@ -57,13 +63,15 @@ def clean_string(instring, delimiter='\t', replace_char=' '):
         Character or string that we do NOT want to find in the string
 
     replace_char : str
-        Character or string that, if a delimiter is found, will replace the delimiter
+        Character or string that, if a delimiter is found, will replace the 
+        delimiter
 
     Returns
     ---------
     str
-        Returns a string which will be essentially identical to the input string but cleaned up to remove
-        any bad delimiters if they exist
+        Returns a string which will be essentially identical to the input 
+        string but cleaned up to remove any bad delimiters if they exist
+        
 
     """
 
@@ -75,24 +83,29 @@ def clean_string(instring, delimiter='\t', replace_char=' '):
 ##
 def parse_key_value_pairs(split_line, filename, linecount, line):
     """
-    Helper function for parsing input files that have attributes (for Domains and Sites).
+    Helper function for parsing input files that have attributes (for 
+    Domains and Sites).
 
-    The function takes in a list of key-value pairs (where key-values are split by a ':'
-    symbol) and returns a parsed dictionary. Note that values will always be strings.
-
+    The function takes in a list of key-value pairs (where key-values 
+    are split by a ':' symbol) and returns a parsed dictionary. Note 
+    that values will always be strings.
+    
     Parameters
     -------------
     split_line : list of strings
         Each string in the list should have the format <KEY> : <VALUE> 
 
     filename : string
-        Name of the file the calling function is parsing. Only used when raising an exception.
+        Name of the file the calling function is parsing. Only used when 
+        raising an exception.
 
     linecount : int
-        Current line number the file processing is on. Only used when raising an exception.
+        Current line number the file processing is on. Only used when 
+        raising an exception.
 
     line : string
-        Full line that the file processing is on. Again, only used when raising an exception
+        Full line that the file processing is on. Again, only used when 
+        raising an exception
 
     """
 
@@ -112,4 +125,32 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
         attributes[k] = v
 
     return attributes
+
+
+## ------------------------------------------------------------------------
+##
+def is_comment_line(line):
+    """
+    Function that checks if a line should be skipped because it's a comment 
+    line or not.
+
+    Parameters
+    -------------
+    line : str
+        A line from an input file
+
+    Returns
+    -----------
+    bool
+        If the line starts with a '#' character then the function returns
+        True, else returns False
+
+
+    """
+    line = line.strip()
+
+    if line[0] == '#':
+        return True
+        
+
             

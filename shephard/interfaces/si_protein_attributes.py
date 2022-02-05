@@ -28,6 +28,25 @@ class _ProteinAttributesInterface:
 
         Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
 
+        Parameters
+        ----------------
+        
+        filename : str
+            Name of the shephard domains file to read
+
+        delimiter : str 
+            String used as a delimiter on the input file. 
+            Default = '\t'
+
+        skip_bad : boolean
+            Flag that means if bad lines (lines that trigger an exception) 
+            are encountered the code will just skip them. By default this is 
+            true, which adds a certain robustness to file parsing, but could 
+            also hide errors. Note that if lines are skipped a warning will be 
+            printed (regardless of verbose flag). 
+            Default = True
+
+
         """
 
         if delimiter == ':':
@@ -42,6 +61,10 @@ class _ProteinAttributesInterface:
         for line in content:
 
             linecount = linecount + 1
+
+            # skip comment lines
+            if interface_tools.is_comment_line(line):
+                continue
 
             sline = line.strip().split(delimiter)
 
@@ -87,11 +110,13 @@ class _ProteinAttributesInterface:
 ##
 def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
     """
-    Function that takes a correctly formatted protein_atttribute dictionary and will add those 
-    attributes to the proteins in the Proteome.
-
-    protein attribute dictionaries are key-value pairs, where the key is a unique ID and the value
-    is a list of dictionaries. For each sub-dictionary, the key-value pair reflects the attribute
+    Function that takes a correctly formatted protein_atttribute dictionary
+    and will add those attributes to the proteins in the Proteome.
+    
+    protein attribute dictionaries are key-value pairs, where the key is a 
+    unique ID and the value is a list of dictionaries. For each sub-dictionary, 
+    the key-value pair reflects the attribute
+    
     key-value pairing.
 
     Parameters
@@ -100,33 +125,38 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
         Proteome object to which attributes will be added
 
     protein_attribute_dictionary : dict
-        Dictionary that defines protein attributes. This is slightly confusing, but the keys for this
-        dictionary is a unique protein IDs and the values is a list of dictionaries. Each of THOSE sub
-        dictionaries has one (or more) key:value pairs that define key:value pairs that will be associated
-        with the protein of interest.
+        Dictionary that defines protein attributes. This is slightly 
+        confusing, but the keys for this dictionary is a unique 
+        protein IDs and the values is a list of dictionaries. Each of 
+        THOSE sub-dictionaries has one (or more) key:value pairs that 
+        define key:value pairs that will be associated with the protein 
+        of interest.
 
     safe : boolean 
-        If set to True then any exceptions raised during the protein_attribute-adding process are acted
-        on. If set to False, exceptions simply mean the protein_attribute in question is skipped. 
-        Note if set to False, pre-existing protein_attributes with the same name would be silently 
-        overwritten (although this is not consider an error), while overwriting will trigger an 
-        exception in safe=True.
+        If set to True then any exceptions raised during the process of 
+        adding a protein_attribute are further raised. If set to False, 
+        exceptions simply mean the protein_attribute in question is skipped.         
+        Note if set to False, pre-existing protein_attributes with the same 
+        name would be silently overwritten (although this is not consider an 
+        error), while overwriting will trigger an exception if safe=True.
+        Default = True
         
-        The only reason protein attribute addition could fail is if the attribute already exists, so
-        this is effectively a flag to define if pre-existing attributes should be overwritten (False) 
-        or not (True).
-
+        The only reason protein attribute addition could fail is if the 
+        attribute already exists, so this is effectively a flag to define 
+        if pre-existing attributes should be overwritten (False) or not 
+        (True).
         Default = True.
     
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding attributes.
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding attributes.
+        Default = True.
 
     Returns
     -----------
     None
-        No return value, but attributes are added to proteins in the Proteome object passed as 
-        the first argument
-    
+        No return value, but attributes are added to proteins in the Proteome 
+        object passed as the first argument
     """
 
     # check first argument is a Proteome
@@ -160,70 +190,84 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
 ##
 def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_dictionary=False, safe=True, skip_bad=True, verbose=True):
     """
-    Function that takes a correctly formatted 'protein attributes' file and reads 
-    all attributes into the proteins in the passed proteome.
+    Function that takes a correctly formatted 'protein attributes' file and 
+    reads all attributes into the proteins in the passed proteome.
 
-    The function expects protein attribute files to have the following format:
+    The function expects protein attribute files to have the following 
+    format:
 
-    One protein defined per line (although the same protein can appear multiple times)
+    One protein defined per line (although the same protein can appear 
+    multiple times)
 
     Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
 
     A couple of key points here:
-    - The default delimiter is tabs ('\t') but this can be changed with the delimiter argument
-    - Key value must be separated by a ':', as a result any delimiter (other than ':') can be 
-      used, but ':' is reserved for this role
-    
 
+    - The default delimiter is tabs ('\t') but this can be changed with 
+      the delimiter argument
+
+    - Key value must be separated by a ':', as a result any delimiter 
+      (other than ':') can be used, but ':' is reserved for this role
+      
     Parameters
     ----------
     proteome : Proteome Object
-        Proteome object to which attributes will be added
+        Proteome object to which attributes will be added.
 
     filename : str
-        Name of the shephard protein attributes file to read
+        Name of the shephard protein attributes file to read.
 
     delimiter : str 
-        String used as a delimiter on the input file. Default = '\t'
+        String used as a delimiter on the input file. 
+        Default = '\t'
 
     return_dictionary : bool
-        If set to true, this function will return the protein_attributes dictionary and will NOT add that
-        dictionary to the proteome - i.e. the function basically becomes a parser for SHEPHARD-compliant
-        protein_attributes files. Default = False
+        If set to true, this function will return the protein_attributes 
+        dictionary and will NOT add that dictionary to the proteome - 
+        i.e. the function basically becomes a parser for SHEPHARD-compliant        
+        protein_attributes files. 
+        Default = False
 
     safe : boolean 
-        If set to True then any exceptions raised during the protein_attribute-adding process are acted
-        on. If set to False, exceptions simply mean the protein_attribute in question is skipped. 
-        Note if set to False, pre-existing protein_attributes with the same name would be silently 
-        overwritten (although this is not consider an error), while overwriting will t]]rigger an 
-        exception in safe=True.
+        If set to True then any exceptions raised during the 
+        protein_attribute-adding process are acted on. If set to False, 
+        exceptions simply mean the protein_attribute in question is skipped.         
+        Note if set to False, pre-existing protein_attributes with the same 
+        name would be silently overwritten (although this is not consider an 
+        error), while overwriting will trigger an exception if safe=True.
         
-        The only reason protein attribute addition could fail is if the attribute already exists, so
-        this is effectively a flag to define if pre-existing attributes should be overwritten (False) 
-        or not (True).
-
+        The only reason protein attribute addition could fail is if the 
+        attribute already exists, so this is effectively a flag to define 
+        if pre-existing attributes should be overwritten (False) or not 
+        (True).
         Default = True.
 
     skip_bad : boolean
-        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
-        will just skip them. By default this is true, which adds a certain robustness to file 
-        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
-        printed (regardless of verbose flag). Default = True
+        Flag that means if bad lines (lines that trigger an exception) are 
+        encountered the code will just skip them. By default this is true, 
+        which adds a certain robustness to file parsing, but could also hide 
+        errors. Note that if lines are skipped a warning will be printed 
+        (regardless of verbose flag). skip_bad exclusively influences the 
+        file-reading part of the process.
+        Default = True.
     
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding attributes.
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding attributes.
+        Default = True.
+
 
     Returns
     ----------- 
     None or dict
-        If return_dictionary is set to False (default) then this function has no return
-        value, but the protein_attributes are added to the Proteome object passed as the first argument. If
-        return_dictionary is set to True the function returns the parsed domains_dictionary without
-        adding the newly-read protein_attributes to the proteome.
-           
-
-        
+        If return_dictionary is set to False (default) then this function 
+        has no return value, but the protein_attributes are added to the 
+        Proteome object passed as the first argument. If return_dictionary
+        is set to True the function returns the parsed domains_dictionary 
+        without adding the newly-read protein_attributes to the proteome.
     """        
+
+
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
 
@@ -251,10 +295,10 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
 ##
 def write_protein_attributes(proteome, filename, delimiter='\t'):
     """
-    Function that writes out protein attributes to file in a standardized format.
-    Note that attributes are converted to a string, which for simple attributes is 
-    reasonable but is not really a viable stratergy for complex objects, although 
-    this will not yeild and error.
+    Function that writes out protein attributes to file in a standardized 
+    format. Note that attributes are converted to a string, which for simple 
+    attributes is reasonable but is not really a viable stratergy for 
+    complex objects, although this will not yeild and error.
 
     
     Parameters
@@ -267,15 +311,17 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
         Filename that will be used to write the new domains file
 
     delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_protein_attributes_from
-        file()` function
-
+        Character (or characters) used to separate between fields. 
+        Default is '\t', which is recommended to maintain compliance 
+        with default `add_protein_attributes_from_file()` function.
+        Default = '\t'
+        
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of protein attributes
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete set 
+        of protein attributes from this proteome written to disk.
+        
 
     """
 
@@ -286,8 +332,11 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
                 line = protein.unique_ID
 
                 for k in protein.attributes:
-                    line = line + delimiter
-                    line = line + "%s:%s" %(k, protein.attribute(k))
+
+                    atrbt = interface_tools.clean_string(protein.attribute(k))
+                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+
+                    line = line + delimiter +  "%s:%s" %(k, atrbt)
 
                 line = line + "\n"
 

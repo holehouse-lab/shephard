@@ -71,31 +71,3 @@ def get_bounding_sites(position, offset, maxlen):
     return (p1,p2)
 
             
-def mega_string(intrest_objects): 
-    
-    """
-    This takes a list of protein or domain SHEPHARD objects and builds mega string 
-    of all of the sequences that can be used for amino acid statistics 
-    
-    Parameters
-    ----------
-    intrest_objects : list 
-        List of SHEPHARD objects with object.sequence function to concatinate
-
-    Returns
-    -------
-        A concatinated mega string of SHEPHARD object sequences 
-    """
-    megastring=''
-    for j in intrest_objects:  
-        s = j.sequence
-        megastring=megastring+s
-
-    return megastring
-
-
-def find_string_positions(A,B):
-    """
-    Returns list of start positions where stringA is in stringB - including overlaps 
-    """
-    return [s.start() for s in re.finditer('(?=%s)' % (A), B)]

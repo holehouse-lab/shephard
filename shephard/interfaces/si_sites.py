@@ -18,11 +18,29 @@ class _SitesInterface:
         """
         Expect files of the following format:
 
-        Unique_ID, position, site type, symbol, value, key1:value1, key2:value2, ..., keyn:valuen
+        Unique_ID position site_type symbol value key1:value1 key2:value2 ..., keyn:valuen
 
-        Note that the first four arguments are required, while all of the key:value pairs 
-        are optional. Key value must be separated by a ':', but any delimiter (other than ':') 
-        is allowed
+        Note that the first four arguments are required, while all of the 
+        key:value pairs are optional. Key value must be separated by a ':', 
+        but any delimiter (other than ':') is allowed. 
+
+        Parameters
+        ----------------
+        
+        filename : str
+            Name of the shephard domains file to read
+
+        delimiter : str 
+            String used as a delimiter on the input file. 
+            Default = '\t'
+
+        skip_bad : boolean
+            Flag that means if bad lines (lines that trigger an exception) 
+            are encountered the code will just skip them. By default this is 
+            true, which adds a certain robustness to file parsing, but could 
+            also hide errors. Note that if lines are skipped a warning will be 
+            printed (regardless of verbose flag). 
+            Default = True
 
         """
 
@@ -39,6 +57,11 @@ class _SitesInterface:
         for line in content:
 
             linecount = linecount + 1
+
+            # skip comment lines
+            if interface_tools.is_comment_line(line):
+                continue
+
             sline = line.strip().split(delimiter)
 
             try:
@@ -78,6 +101,8 @@ class _SitesInterface:
 ##############################################
 
 
+## ------------------------------------------------------------------------
+##
 def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=False, safe=True, skip_bad=True, verbose=True):
     """
     Function that provides the user-facing interface for reading correctly configured SHEPHARD 
@@ -150,6 +175,8 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
 
 
 
+## ------------------------------------------------------------------------
+##
 def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=False):
     """
     Function that takes a correctly formatted Sites dictionary and will add those 
@@ -241,8 +268,11 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                         if verbose:
                             shephard_exceptions.print_warning(msg)
                             continue
-                    
+  
 
+                  
+## ------------------------------------------------------------------------
+##
 def write_sites(proteome, filename, site_type=None, delimiter='\t'):
     """
     Function that writes out sites to file in a standardized format. Note that
@@ -295,13 +325,20 @@ def write_sites(proteome, filename, site_type=None, delimiter='\t'):
                 
                 if s.attributes:
                     for k in s.attributes:
-                        line = line + delimiter
-                        line = line + str(k) + ":" + str(s.attribute(k))
+
+                        atrbt = interface_tools.clean_string(s.attribute(k))
+                        atrbt = interface_tools.clean_string(atrbt, ':','-')
+
+                        line = line + delimiter + "%s:%s" % (k, atrbt)
 
                 line = line + "\n"
 
                 fh.write('%s'%(line))
 
+
+
+## ------------------------------------------------------------------------
+##
 def write_select_sites(site_list, filename, site_type=None, delimiter='\t'):
     """
     Function that writes out select sites pasted as a list of sites. Sites are 
@@ -353,8 +390,11 @@ def write_select_sites(site_list, filename, site_type=None, delimiter='\t'):
             
             if s.attributes:
                 for k in s.attributes:
-                    line = line + delimiter
-                    line = line + str(k) + ":" + str(s.attribute(k))
+
+                    atrbt = interface_tools.clean_string(s.attribute(k))
+                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+
+                    line = line + delimiter + "%s:%s" % (k, atrbt)
 
             line = line + "\n"
 

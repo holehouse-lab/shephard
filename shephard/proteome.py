@@ -115,7 +115,8 @@ class Proteome:
         else:
             self._attributes = attributes
 
-        self.add_proteins(input_list)
+        if len(input_list) > 0:
+            self.add_proteins(input_list)
 
 
 
@@ -241,8 +242,12 @@ class Proteome:
     ##        
     def add_proteins(self, input_list, force_overwrite=False):
         """
-        Function that allows the user to add a multiple new proteins using a list
-        of Protein dictionaries.
+        Function that allows the user to add a multiple new proteins using either a list
+        of protein dictionaries (described below) or a list of Protein objects.
+
+        Note that if P 
+
+        
 
         Protein dictionaries are dictionaries that posses the following key-value pairs:
 
@@ -275,6 +280,30 @@ class Proteome:
             to the underlying proteome
 
         """
+
+        # cycles over every element in the input list and builds a new
+        # list where each 
+        type_list = list(set([type(i) for i in input_list]))
+
+        if len(type_list) > 1:
+            raise ProteomeException(f'Trying to add Proteins to a Proteome and the input_list contains more than one type {type_list}')
+
+        if type_list[0] == dict:
+            self._add_proteins_dict(input_list, force_overwrite)
+        elif type_list[0] == Protein:
+            self._add_proteins_Protein(input_list, force_overwrite)
+
+        
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def _add_proteins_dict(self, input_list, force_overwrite=False):
+        """
+        Internal function that mirrors add_proteins() but operates if every
+        element in the input_list is a dictionary
+        
+        """
+        
         # for each protein entry in the input list
         for entry in input_list:
         
@@ -298,6 +327,31 @@ class Proteome:
             # add in a new protein
             self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
 
+
+    ## ------------------------------------------------------------------------
+    ##        
+    def _add_proteins_Protein(self, input_list, force_overwrite=False):
+        """
+        Internal function that mirrors add_proteins() but operates if every
+        element in the input_list is a Protein.
+
+        TO DO - enable a 'copy' mode where
+        
+        """
+        
+        # for each protein entry in the input list
+        for entry in input_list:
+            
+            unique_ID = entry.unique_ID
+
+            if unique_ID in self._records:
+                if force_overwrite is False:
+                    raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+
+            # add in a new protein
+            self._records[unique_ID] = entry
+           
+            
 
 
     ## ------------------------------------------------------------------------

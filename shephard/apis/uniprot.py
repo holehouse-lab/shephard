@@ -10,7 +10,7 @@ Handles all I/O associated with uniprot-derived files.
 """
 
 from shephard.exceptions import UtilitiesException
-
+import protfasta
 from . import fasta
 
 ## ------------------------------------------------------------------------
@@ -156,3 +156,44 @@ def uniprot_fasta_to_proteome(filename,
     """
     
     return fasta.fasta_to_proteome(filename, proteome=proteome, build_unique_ID=uniprot_accession_from_line, force_overwrite=force_overwrite, invalid_sequence_action=invalid_sequence_action)
+
+
+## ------------------------------------------------------------------------
+##
+def uniprot_proteome_to_fasta(proteome, filename):                              
+    """
+    Stand alone function that allows the user to write a FASTA file from
+    a proteome under the assumption that the Proteome was built from a 
+    uniprot FASTA.
+
+    Practically, this just means that the Protein.name variable is used
+    for the FASTA header, although the function will fail if duplicate
+    headers are found.
+
+    
+    Parameters
+    ------------
+
+    proteome : Proteome
+        The Proteome object from which FASTA file will be generated
+
+    filename : string
+        Name of the FASTA file we're going to write sequences to
+    
+    Returns 
+    --------
+    None
+        No return variable but wll write to file 
+    """
+
+    out_dict = {}
+    for p in proteome:
+
+        header = p.name
+
+        if header in out_dict:
+            raise UtilitiesException(f'Duplicate name entries found in Proteome ({header}). Should not happen for UniProt headers')
+        
+        out_dict[header] = p.sequence
+
+    protfasta.write_fasta(out_dict, filename, linelength=80)
