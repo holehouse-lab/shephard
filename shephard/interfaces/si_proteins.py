@@ -183,7 +183,8 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
     # for each entry in the overall dictionary
     for UID in protein_dictionary:
             
-        # if attributes are included read these out
+        # if attributes are included read these out. Note we expect
+        # ats to be a dictionary
         try:
             ats = protein_dictionary[UID]['attributes']
         except:
@@ -192,8 +193,9 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
                 
         s = protein_dictionary[UID]['sequence']
 
-        # note we use the clean_string to remove 
-        n = protein_dictionary[UID]['name']
+        # note we use the clean_string to remove tab characters from 
+        # the name should they exist
+        n = interface_tools.clean_string(protein_dictionary[UID]['name'])
             
         try:
             proteome.add_protein(s, n, UID, attributes=ats, force_overwrite=force_overwrite)
@@ -353,8 +355,7 @@ def write_proteins(proteome, filename, delimiter='\t'):
 
                 for k in protein.attributes:
 
-                    atrbt = interface_tools.clean_string(protein.attribute(k))
-                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+                    atrbt = interface_tools.full_clean_string(protein.attribute(k))
 
                     line = line + delimiter +  "%s:%s" %(k, atrbt)
 

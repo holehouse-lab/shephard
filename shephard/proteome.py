@@ -12,6 +12,8 @@ from . import general_utilities
 from .exceptions import ProteomeException
 from .protein import Protein
 from itertools import islice
+import copy
+
 
     
 
@@ -245,9 +247,6 @@ class Proteome:
         Function that allows the user to add a multiple new proteins using either a list
         of protein dictionaries (described below) or a list of Protein objects.
 
-        Note that if P 
-
-        
 
         Protein dictionaries are dictionaries that posses the following key-value pairs:
 
@@ -335,7 +334,10 @@ class Proteome:
         Internal function that mirrors add_proteins() but operates if every
         element in the input_list is a Protein.
 
-        TO DO - enable a 'copy' mode where
+        Importantly, this works by create a NEW protein, and ensure all complex
+        datatypes associated with that new protein are copied 
+
+        TO DO = update text
         
         """
         
@@ -348,8 +350,43 @@ class Proteome:
                 if force_overwrite is False:
                     raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
 
-            # add in a new protein
-            self._records[unique_ID] = entry
+
+            ##
+            ## New protein is fully created and all complex data types are copied, so this
+            ## new protein is a completely distinct entity to the protein in the original
+            ## input list. This avoids any possible issues with cross-referencing back against
+            ## old data structures and keeps things clean. Also ensures that the new proteome
+            ## has updated unique sites and unique domains lists in the usual way. Basically
+            ## this is the most appropritae way to add an existing protein to a new proteome
+            ##
+            # create new protein
+            np = Protein(entry.sequence, entry.name, self, entry.unique_ID)
+
+            # update attributes
+            for a in entry.attributes:
+                np.add_attribute(a, entry.attribute(a))
+
+            # update domains
+            for d in entry.domains:
+                np.add_domain(d.start, d.end, d.domain_type, copy.deepcopy(d._attributes))
+
+            # update sites
+            for s in entry.sites:
+                np.add_site(s.position. s.site_type, s.symbol, s.value, copy.deepcopy(s._attributes))
+
+            # update tracks
+            for t in entry.tracks:
+                vals = t.values
+
+                # if vals present then we're creating a values track. Note we can get away with
+                # a shallow copy because we know these tracks will only have ints or chars in their
+                # elements, which are appropriately copied by a shallow copy
+                if vals:                    
+                    np.add_track(t.name, vals.copy(), None)
+                else:
+                    np.add_track(t.name, None, t.symbols.copy())
+
+            self._records[unique_ID] = np
            
             
 

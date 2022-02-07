@@ -17,8 +17,15 @@ class _SitesInterface:
     def __init__(self, filename, delimiter='\t', skip_bad=True):
         """
         Expect files of the following format:
-
-        Unique_ID position site_type symbol value key1:value1 key2:value2 ..., keyn:valuen
+        
+        A SHEPHARD sites file is a tab (or other) delineated file where each 
+        line has the following convention::
+    
+               1        2          3       4      5   [      6            7        ...     n         ] 
+            Unique_ID position site_type symbol value [key_1:value_1 key_2:value_2 ... key_n:value_n ]
+    
+        Each line has six required values and then can have as many key:value pairs as may be
+        desired.
 
         Note that the first four arguments are required, while all of the 
         key:value pairs are optional. Key value must be separated by a ':', 
@@ -30,17 +37,16 @@ class _SitesInterface:
         filename : str
             Name of the shephard domains file to read
 
-        delimiter : str 
+        delimiter : str, default = \t
             String used as a delimiter on the input file. 
-            Default = '\t'
 
-        skip_bad : boolean
+        skip_bad : boolean, default = True 
             Flag that means if bad lines (lines that trigger an exception) 
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
             printed (regardless of verbose flag). 
-            Default = True
+
 
         """
 
@@ -104,60 +110,72 @@ class _SitesInterface:
 ## ------------------------------------------------------------------------
 ##
 def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=False, safe=True, skip_bad=True, verbose=True):
-    """
-    Function that provides the user-facing interface for reading correctly configured SHEPHARD 
-    sites files and adding those sites to the proteins of interest.
+    r"""
+    Function that provides the user-facing interface for reading correctly 
+    configured SHEPHARD sites files and adding those sites to the proteins 
+    of interest.
     
-    A SHEPHARD sites file is a tab (or other) delineated file where each line has the following
-    convention:
-
-    Unique_ID, position, site type, symbol, value, [ key_1:value_1, key_2:value_2, ..., key_n:value_n ]
+    
+    A SHEPHARD sites file is a tab (or other) delineated file where each 
+    line has the following convention::
+    
+          1        2          3       4      5   [      6            7        ...     n         ] 
+       Unique_ID position site_type symbol value [key_1:value_1 key_2:value_2 ... key_n:value_n ]
     
     Each line has six required values and then can have as many key:value pairs as may be
     desired.
 
 
     Parameters
-    -------------
+    ----------
     proteome : Proteome
-        Proteome object to which we're adding sites. Note that ONLY sites for which a protein
-        is found will be used. Protein-Site cross-referencing is done using the protein's unique_ID
-        which should be the key used in the sites_dictionary
+        Proteome object to which we're adding sites. Note that ONLY sites 
+        for which a protein is found will be used. Protein-Site 
+        cross-referencing is done using the protein's unique_ID which 
+        should be the key used in the sites_dictionary
 
     filename : str
         Name of the shephard site file to be read
 
-    delimiter : str 
-        String used as a delimiter on the input file. Default = '\t'
+    Other Parameters
+    ----------------
+    delimiter : str, default='\\t'
+        String used as a delimiter on the input file. 
 
-    return_dictionary : bool
-        If set to true, this function will return the sites dictionary and will NOT add that
-        dictionary to the proteome - i.e. the function basically becomes a parser for SHEPHARD-compliant
-        sites files. Default = False
+    return_dictionary : bool, default=False
+        If set to true, this function will return the sites dictionary 
+        and will NOT add that dictionary to the proteome - i.e. the 
+        function basically becomes a parser for SHEPHARD-compliant        
+        sites files. 
 
-    safe : boolean 
-        If set to True then any exceptions raised during the site-adding process (i.e. after file
-        parsing) are acted on. If set to False, exceptions simply mean the site in question is skipped. 
-        There are various reasons site addition could fail (e.g. site falls outside of protein position
-        so if verbose=True then the cause of an exception is also printed to screen. It is highly 
-        recommend that if you choose to use safe=False you also set verbose=True. Default = True.
+    safe : bool, default=True
+        If set to True then any exceptions raised during the site-adding 
+        process (i.e. after file parsing) are acted on. If set to False, 
+        exceptions simply mean the site in question is skipped. There are 
+        various reasons site addition could fail (e.g. site falls outside 
+        of protein position so if verbose=True then the cause of an exception 
+        is also printed to screen. It is highly recommend that if you choose 
+        to use safe=False you also set verbose=True. Default = True.
         
-    skip_bad : boolean
-        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
-        will just skip them. By default this is true, which adds a certain robustness to file 
-        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
-        printed (regardless of verbose flag). Default = True.
+    skip_bad : bool, default=True
+        Flag that means if bad lines (lines that trigger an exception) are 
+        encountered the code will just skip them. By default this is true, 
+        which adds a certain robustness to file parsing, but could also hide 
+        errors. Note that if lines are skipped a warning will be printed 
+        (regardless of verbose flag). 
 
-    verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding sites.
+    verbose : bool, default=True
+        Flag that defines how 'loud' output is. Will warn about errors 
+        on adding sites.
         
     Returns
     ---------
     None or dict
-        If return_dictionary is set to False (default) then this function has no return
-        value, but the sites are added to the Proteome object passed as the first argument. If
-        return_dictionary is set to True the function returns the parsed sites dictionary without
-        adding the newly-read sites to the proteome.
+        If return_dictionary is set to False (default) then this function 
+        has no return value, but the sites are added to the Proteome object 
+        passed as the first argument. If return_dictionary is set to True 
+        the function returns the parsed sites dictionary without adding the 
+        newly-read sites to the proteome.
 
     """
 
@@ -179,59 +197,59 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
 ##
 def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=False):
     """
-    Function that takes a correctly formatted Sites dictionary and will add those 
-    sites to the proteins in the Proteome.
+    Function that takes a correctly formatted Sites dictionary and will add 
+    those Sites to the proteins in the Proteome.
+    
+    Sites dictionaries are key-value pairs, where the key is a unique_ID 
+    associated with a given Protein, and the value is a list of dictionaries. 
+    Each subdirectionay has the following elements::
+    
+        'position'   = site position
+        'site_type'  = site type
+        'symbol'     = site symbol 
+        'value'      = site value 
+        'attributes' = site attribute dictionary
 
-    Sites dictionaries are key-value pairs, where the key is a unique_ID associated 
-    with a given protein, and the value is a list of dictionaries. Each subdirectionay has 
-    the following elements
-
-    'position' = site position
-    'site_type' = site type
-    'symbol' = site symbol 
-    'value' = site value 
-    'attributes' = site attribute dictionary
-
-    In this way, each site that maps to a give unique_ID will be added to the associated
-    protein.
-
-    NOTE: In 
+    In this way, each site that maps to a give unique_ID will be added to 
+    the associated protein. The use of a list of dictionaries (as opposed
+    to a simple unique_ID:site_dictionary pairing) means multiple sites 
+    for a single protein can be added at once.
 
     Parameters
     -------------
 
     proteome : Proteome
-        Proteome object to which we're adding sites. Note that ONLY sites for which a protein
-        is found will be used. Protein-Site cross-referencing is done using the protein's unique_ID
+        Proteome object to which we're adding sites. Note that ONLY sites 
+        for which a protein is found will be used. Protein:Site 
+        cross-referencing is done using the protein's unique_ID        
         which should be the key used in the sites_dictionary
 
     sites_dictionary : dict
-        A sites dictionary is a defined dictionary that maps a unique_ID back to a list of dictionaries,
-        where each subdictionay has five elements. Each dictionary entry provides information on the site
-        as a key-value pair, specifically:
-    
-        'position' = site position
-        'site_type' = site type
-        'symbol' = site symbol 
-        'value' = site value 
-        'attributes' = site attribute dictionary
+        A sites dictionary (defined above) is dictionary that maps a 
+        unique_ID back to a list of dictionaries, where each 
+        subdictionay has five elements, desribed above.
 
-        Recall the only type-specific values (position and value) are cast automatically when a 
-        site is added by the Protein object, so no need to do that in this function too.
+        Recall the only type-specific values (position and value) are 
+        cast automatically when a site is added by the Protein object, 
+        so there is no need to do that in this function too.
 
         Extra key-value paris in each sub-dictionary are ignored
 
-    safe : boolean 
-        If set to True then any exceptions raised during the site-adding process are acted
-        on. If set to false, exceptions simply mean the site in question is skipped. There 
-        are various reasons site addition could fail (notably position of the site is  
-        outside of the protein limits) and so if verbose=True then the cause of an exception 
-        is also  printed to screen. It is highly recommend that if you choose to
-        use safe=False you also set verbose=True
-        Default = True
+    Other Parameters
+    ----------------
 
-    verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding sites.
+    safe : bool, default=True
+        If set to True then any exceptions raised during the site-adding 
+        process are acted on. If set to false, exceptions simply mean the 
+        site in question is skipped. There are various reasons site addition 
+        could fail (notably position of the site is outside of the protein 
+        limits) and so if verbose=True then the cause of an exception is
+        also printed to screen. It is highly recommend that if you choose to
+        use safe=False you also set verbose=True
+
+    verbose : bool, default=False
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding sites.
 
     Returns
     ---------
@@ -273,31 +291,35 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                   
 ## ------------------------------------------------------------------------
 ##
-def write_sites(proteome, filename, site_type=None, delimiter='\t'):
-    """
-    Function that writes out sites to file in a standardized format. Note that
-    attributes are converted to a string, which for simple attributes is reasonable
-    but is not really a viable stratergy for complex objects, although this will 
-    not yeild and error.
+def write_sites(proteome, filename, delimiter='\t', site_types=None):
+    r"""
+    Function that writes out sites to file in a standardized format. Note 
+    that attributes are converted to a string, which for simple attributes 
+    is reasonable but is not really a viable stratergy for complex objects, 
+    although this will not yeild and error.
+
+    If a site_types list is provided, only site_types that match to
+    strings in this list are written out.
     
     Parameters
     -----------
-
-    proteome :  Proteome object
+    proteome :  shephard.proteome.Proteome
         Proteome object from which the sites will be extracted from
 
     filename : str
         Filename that will be used to write the new sites file
 
-    site_type : str
-        Identifier that allows you to specificy a specific site type to write
-        out
+    Other Parameters
+    ----------------
+    
+    site_type : str, default=None
+        If provided, this is an identifier that allows you to specificy 
+        a specific site type to write out.
 
-
-    delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_sites_from
-        file()` function
+    delimiter : str, default='\\t'
+        Character (or characters) used to separate between fields. 
+        Default is the tab character ('\\t'), which is recommended to 
+        maintain compliance with default SHEPHARD file-reading functions.     
 
     Returns
     --------
@@ -312,7 +334,7 @@ def write_sites(proteome, filename, site_type=None, delimiter='\t'):
             for s in protein.sites:
 
                 if site_type is not None:
-                    if s.site_type != site_type:
+                    if s.site_type not in site_types:
                         continue
 
                 # systematically construct each line in the file 
@@ -325,77 +347,10 @@ def write_sites(proteome, filename, site_type=None, delimiter='\t'):
                 
                 if s.attributes:
                     for k in s.attributes:
-
-                        atrbt = interface_tools.clean_string(s.attribute(k))
-                        atrbt = interface_tools.clean_string(atrbt, ':','-')
-
+                        atrbt = interface_tools.full_clean_string(s.attribute(k))
                         line = line + delimiter + "%s:%s" % (k, atrbt)
 
                 line = line + "\n"
 
                 fh.write('%s'%(line))
 
-
-
-## ------------------------------------------------------------------------
-##
-def write_select_sites(site_list, filename, site_type=None, delimiter='\t'):
-    """
-    Function that writes out select sites pasted as a list of sites. Sites are 
-    written to file in a standardized format. Note that attributes are converted 
-    to a string, which for simple attributes is reasonable but is not really a 
-    viable stratergy for complex objects, although this will not yeild and error.
-    
-    Parameters
-    -----------
-
-    site_list : list 
-        List of SHEPHARD Site objects which will written
-
-    filename : str
-        Filename that will be used to write the new sites file
-
-    site_type : str
-        Identifier that allows you to specificy a specific site type to write
-        out
-
-
-    delimiter : str
-        Character (or characters) used to separate between fields. Default is '\t'
-        Which is recommended to maintain compliance with default `add_sites_from
-        file()` function
-
-    Returns
-    --------
-    None
-        No return type, but generates a new file with the complete set of sites
-        from this proteome written to disk.
-
-    """
-
-    with open(filename, 'w') as fh:
-        for s in site_list:
-
-            if site_type is not None:
-                if s.site_type != site_type:
-                    continue
-
-            # systematically construct each line in the file 
-            line = ''
-            line = line + str(s.protein.unique_ID) + delimiter
-            line = line + str(s.position) + delimiter
-            line = line + str(s.site_type) + delimiter                
-            line = line + str(s.symbol) + delimiter
-            line = line + str(s.value) + delimiter
-            
-            if s.attributes:
-                for k in s.attributes:
-
-                    atrbt = interface_tools.clean_string(s.attribute(k))
-                    atrbt = interface_tools.clean_string(atrbt, ':','-')
-
-                    line = line + delimiter + "%s:%s" % (k, atrbt)
-
-            line = line + "\n"
-
-            fh.write('%s'%(line))

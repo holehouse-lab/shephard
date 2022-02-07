@@ -28,23 +28,26 @@ class _DomainsInterface:
 
         Unique_ID, start, stop, domain_type, key1:value1, key2:value2, ..., keyn:valuen
 
-        Note that the first four arguments are required, while all of the key:value pairs 
-        are optional. Key value must be separated by a ':', but any delimiter (other than ':') 
+        Note that the first four arguments are required, while all of the 
+        key:value pairs are optional. Key value must be separated by a ':', 
+        but any delimiter (other than ':') 
+        
         is allowed.
 
-        When created, this constructor parses the keyfile to generate a .data class object, 
+        When created, this constructor parses the keyfile to generate a .data 
+        class object, 
         which itself maps a uniqueID to a list of domain dictionaries.
 
         Domain dictionaries have the following key-value pairs
 
-        REQUIRED:
-        start                : int (domain start position)
-        end                  : int (domain end position)
-        domain_type          : string (domain type)
+        REQUIRED::
+            start                : int (domain start position)
+            end                  : int (domain end position)
+            domain_type          : string (domain type)
 
-        OPTIONAL:
-        attributes           : dictionary of arbitrary key-value pairs 
-                               that will be associated with the domain
+            OPTIONAL:
+            attributes           : dictionary of arbitrary key-value pairs 
+                                   that will be associated with the domain
 
 
         Parameters
@@ -134,68 +137,73 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, re
 
     Expect Domain files to have the following format:
 
-    One domain per line where:
+    One domain per line where with the format::
     
-    >>> Unique_ID    start    stop    domain_type    key_1:value_1    key_2:value_2     ...  key_n:value_n
+            1       2    3       4            5            6                   n
+        Unique_ID start stop domain_type key_1:value_1 key_2:value_2 ... key_n:value_n
 
     A couple of key points here:
-    - The default delimiter is tabs ('\t') but this can be changed with the delimiter argument
-    - The first four arguments are required, while all of the key:value pairs are optional
-    - Key value must be separated by a ':'. As a result any column delimiter (other than ':') can be 
-      used, but ':' is reserved for this role
-    
+
+        * The default delimiter is tabs ('\\t') but this can be changed with 
+          the delimiter argument. 
+          
+        * The first four elements in the each line are required, while all of 
+          the key:value pairs are optional
+
+        * Attribute key-value pairs must be separated by a ``:`` character. 
+          As a result any column delimiter (other than ``:``) can be used, 
+          but ``:`` is reserved for this role
+          
     Parameters
     ----------
-    proteome : Proteome Object
+    proteome : shephard.proteome.Proteome
         Proteome object to which domains will be added
-
     filename : str
         Name of the shephard domains file to read
-
-    delimiter : str 
-        String used as a delimiter on the input file. Default = '\t'
-
-    autoname : bool
-        If autoname is set to True, this function ensures each domain ALWAYS has a unique
-        name - i.e. the allows for multiple domains to be perfectly overlapping in position
-        and type. This is generally not going to be required and/or make sense, but having
-        this feature in place is useful. In general we want to avoid this as it makes it 
-        easy to include duplicates which by default are prevented when autoname = False. 
-        Default = False.
-
-    return_dictionary : bool
-        If set to true, this function will return the domains dictionary and will NOT add that
-        dictionary to the proteome - i.e. the function basically becomes a parser for SHEPHARD-compliant
-        domains files. Default = False
-
-    safe : bool
-        If set to True then any exceptions raised during the domain-adding process (i.e. after file
-        parsing) are acted on. If set to false, exceptions simply mean the domain in question is skipped. 
-        Note if set to False, pre-existing domains with the same name would be silently overwritten (although 
-        this is not consider an error), while overwriting will trigger an exception in safe=True.
-        There are various reasons domain addition could fail (start/end position outside of the 
-        protein limits etc) and so if verbose=True then the cause of an exception is also printed to 
-        screen. It is highly recommend that if you choose to use safe=False you also set verbose=True. 
-        Default = True.
-        
-    skip_bad : boolean
-        Flag that means if bad lines (lines that trigger an exception) are encountered the code 
-        will just skip them. By default this is true, which adds a certain robustness to file 
-        parsing, but could also hide errors. Note that if lines are skipped a warning will be 
+    delimiter : str, default='\\t'
+        String used as a delimiter on the input file.
+    autoname : bool, default=False
+        If autoname is set to True, this function ensures each domain ALWAYS 
+        has a unique name - i.e. the allows for multiple domains to be perfectly 
+        overlapping in position and type. This is generally not going to be 
+        required and/or make sense, but having this feature in place is useful. 
+        In general we want to avoid this as it makes it easy to include 
+        duplicates which by default are prevented when autoname = False. 
+    return_dictionary : bool, default=False
+        If set to true, this function will return the domains dictionary and 
+        will NOT add that dictionary to the proteome - i.e. the function 
+        basically becomes a parser for SHEPHARD-compliant domains files. 
+    safe : bool, default=True
+        If set to True then any exceptions raised during the domain-adding 
+        process (i.e. after file parsing) are acted on. If set to false, 
+        exceptions simply mean the domain in question is skipped. Note if 
+        set to False, pre-existing domains with the same name would be 
+        silently overwritten (although this is not consider an error), 
+        while overwriting will trigger an exception in safe=True. There 
+        are various reasons domain addition could fail (start/end position 
+        outside of the protein limits etc) and so if verbose=True then the
+        cause of an exception is also printed to screen. It is highly 
+        recommend that if you choose to use safe=False you also set 
+        verbose=True.       
+    skip_bad : bool, default=True
+        Flag that means if bad lines (lines that trigger an exception) are 
+        encountered the code will just skip them. By default this is true, 
+        which adds a certain robustness to file parsing, but could also 
+        hide errors. Note that if lines are skipped a warning will be 
         printed (regardless of verbose flag). Default = True
-    
     verbose : boolean
-        Flag that defines how 'loud' output is. Will warn about errors on adding domains.
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding domains.
 
     Returns
     -----------
     None or dict
-        If return_dictionary is set to False (default) then this function has no return
-        value, but the domains are added to the Proteome object passed as the first argument. If
-        return_dictionary is set to True the function returns the parsed domains dictionary without
+        If return_dictionary is set to False (default) then this function 
+        has no return value, but the domains are added to the Proteome object 
+        passed as the first argument. If return_dictionary is set to True 
+        the function returns the parsed domains dictionary without
         adding the newly-read domains to the proteome.
-            
-            
+
     """        
 
     # check first argument is a proteome
@@ -581,10 +589,7 @@ def write_domains(proteome, filename, delimiter='\t', domain_types=None):
 
                 if d.attributes:
                     for k in d.attributes:
-
-                        atrbt = interface_tools.clean_string(d.attribute(k))
-                        atrbt = interface_tools.clean_string(atrbt, ':','-')
-
+                        atrbt = interface_tools.full_clean_string(d.attribute(k))
                         line = line + delimiter + "%s:%s" %(k, atrbt)
                 
                 line = line + "\n"
@@ -645,8 +650,7 @@ def write_domains_from_list(domain_list, filename, delimiter='\t'):
                 for k in d.attributes:
 
                     # 
-                    atrbt = interface_tools.clean_string(d.attribute(k))
-                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+                    atrbt = interface_tools.full_clean_string(d.attribute(k))
 
                     line = line + delimiter + "%s:%s" %(k, atrbt)
 

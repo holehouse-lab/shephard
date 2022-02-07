@@ -42,14 +42,51 @@ def check_proteome(p, function_name):
 
 ## ------------------------------------------------------------------------
 ##
-def clean_string(instring, delimiter='\t', replace_char=' '):
+def full_clean_string(instring):
+    r"""
+    Wrapper function that takes in a string (or a variable that can be
+    cast to a string) and ensure it contains neither tab nor colon characters,
+    both of which would render a attribute or free-form text string in a 
+    SHEPHARD file invalid.
+
+    This function actually calls `clean_string()` twice with parameters to
+    replace, ':' and '\\t' characters.
+
+    Parameters
+    -----------
+    instring : {str, str-castable}
+        String (or string castable) variable to be checked
+
+    Returns
+    ---------
+    str
+        Returns a string which will be essentially identical to the input 
+        string but cleaned up to remove tab and colon characteracs .
+
     """
-    Function that takes in a string that is to be written to a SHEPHARD 
+
+    s = clean_string(instring)
+    s = clean_string(s, ':', '-')
+    return s
+
+
+
+## ------------------------------------------------------------------------
+##
+def clean_string(instring, delimiter='\t', replace_char=' '):
+    r"""
+    Function that takes in a variable  that is to be written to a SHEPHARD 
     complient file and ensures it has no delimiter characters in it. This 
     avoids the scenario where - for example - your protein name has a 
     tab in it which introduces a new field into the SHEPHARD data file.
-    
-    
+
+    In general, we assume instring will be a string (str). However, if it
+    is not this function also casts it to a string, so that does not need
+    to be done prior to a variable being passed in.
+
+    Furthermore, we'd generally recommend any string that will be written
+    out as a user-inputable string to a SHEPHARD file be passed through
+    this
 
     If such delimiter characters are found they're replaced by a replace_char, 
     which by default is just a space    
@@ -57,23 +94,26 @@ def clean_string(instring, delimiter='\t', replace_char=' '):
     Parameters
     ---------------
     instring : str
-        String to be checked
+        String (or string castable) variable to be checked
 
-    delimiter : str
+    delimiter : str, default='\\t'
         Character or string that we do NOT want to find in the string
 
-    replace_char : str
-        Character or string that, if a delimiter is found, will replace the 
-        delimiter
+    replace_char : str, default=' '
+        Character or string that, if a delimiter is found, will 
+        replace the  delimiter
 
     Returns
     ---------
     str
         Returns a string which will be essentially identical to the input 
-        string but cleaned up to remove any bad delimiters if they exist
+        string but cleaned up to remove any bad delimiters if they exist.
         
 
     """
+
+    if type(instring) is not str:
+        instring = str(instring)
 
     return instring.replace(delimiter, replace_char)
 

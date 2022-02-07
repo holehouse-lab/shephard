@@ -490,6 +490,7 @@ def write_all_values_tracks_single_file(proteome,
 
 
     """
+
     return __write_all_tracks_single_file(proteome, outfile, 'values', value_fmt, delimiter)
 
 ## ------------------------------------------------------------------------

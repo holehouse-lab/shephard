@@ -333,8 +333,7 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
 
                 for k in protein.attributes:
 
-                    atrbt = interface_tools.clean_string(protein.attribute(k))
-                    atrbt = interface_tools.clean_string(atrbt, ':','-')
+                    atrbt = interface_tools.full_clean_string(protein.attribute(k))
 
                     line = line + delimiter +  "%s:%s" %(k, atrbt)
 
