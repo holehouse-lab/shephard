@@ -244,31 +244,36 @@ class Proteome:
     ##        
     def add_proteins(self, input_list, force_overwrite=False):
         """
-        Function that allows the user to add a multiple new proteins using either a list
-        of protein dictionaries (described below) or a list of Protein objects.
+        Function that allows the user to add a multiple new proteins using 
+        either a list of protein dictionaries (described below) or a list 
+        of Protein objects.
+        
 
 
-        Protein dictionaries are dictionaries that posses the following key-value pairs:
+        Protein dictionaries are dictionaries that posses the following 
+        key-value pairs:
 
             'sequence'   : amino acid sequence (str)
             'name'       : protein name (str)
-            'unique_ID'  : The unique identification number used for the protein (str)
-            'attributes' : A dictionary of arbitrary key-value pairs to associate with
-                           the protein (dict or None)
+            'unique_ID'  : The unique identification number used for the 
+                           protein (str)
+            'attributes' : A dictionary of arbitrary key-value pairs to 
+                           associate with the protein (dict or None)
         
 
-        Additional keys/value pairs are ignored and ALL four of these must be included. If any are
-        missing for any protein entry this function raises a ProteomeException.
+        Additional keys/value pairs are ignored and ALL four of these must
+        be included. If any are missing for any protein entry this function 
+        raises a ProteomeException.
         
         Parameters
         -----------
         input_list : list
             List of Protein dictionaries
         
-        force_overwrite : bool
+        force_overwrite : bool, default=False
             If set to False and a unique_ID is included that already is found then this function
             will raise an exception. However, if set to True it will automatically overwrite the
-            pre-existing entry. (Default = False).
+            pre-existing entry. 
 
 
         Returns
@@ -338,6 +343,21 @@ class Proteome:
         datatypes associated with that new protein are copied 
 
         TO DO = update text
+
+        Parameters
+        --------------
+        input_list : list of shephard.protein.Protein objects
+            List of Protein objects to be copied into this Proteome
+
+        force_overwrite : bool, default=False
+            Flag which if set to True will mean a Protein in the input_list
+            would overwrite an existing protein with the same unique_ID.
+
+        Returns
+        --------
+        None
+            No return type, but will add the Protein objects in the input_list
+            into this Proteome.
         
         """
         
@@ -404,10 +424,10 @@ class Proteome:
         unique_ID : str
             Unique ID that will be used to retrieve a given protein
 
-        safe : bool
+        safe : bool, default = True
             Flag that if set to True means if a passed unique_ID is missing from the underlying
             proteome object an exception wll be raised (ProteomeException). If False a missing
-            unique_ID is ignored
+            unique_ID is ignored.
 
         Returns
         -----------
