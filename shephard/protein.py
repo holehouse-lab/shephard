@@ -1429,6 +1429,11 @@ class Protein:
 
         """
 
+        # cast input data
+        start = int(start)
+        end = int(end)
+        domain_type = str(domain_type)
+
         # append start and end position to name. 
         full_name = "%s_%i_%i"%(domain_type, start, end)    
         
