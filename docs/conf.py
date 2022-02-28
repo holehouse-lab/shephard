@@ -175,3 +175,5 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
+# added by Alex (2022-02-28) to try and remove 
+add_module_names = False

@@ -93,30 +93,3 @@ Here:
 * :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each protein. The colon ':' character splits two strings, where the first is a key and second a value. These become accessible via the Protein's :code:`attributes` properties. 
 
 
-
-si_sites
-------------
-.. autofunction:: shephard.interfaces.si_sites.add_sites_from_dictionary
-.. autofunction:: shephard.interfaces.si_sites.add_sites_from_file
-
-
-
-si_domains
-------------
-.. autofunction:: shephard.interfaces.si_domains.add_domains_from_dictionary
-.. autofunction:: shephard.interfaces.si_domains.add_domains_from_file
-
-
-
-si_tracks
-------------
-.. autofunction:: shephard.interfaces.si_tracks.add_tracks_from_dictionary
-.. autofunction:: shephard.interfaces.si_tracks.add_tracks_from_file
-
-
-si_protein_attributes
------------------------
-.. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_dictionary
-.. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_file
-
-
