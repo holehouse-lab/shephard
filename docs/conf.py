@@ -174,3 +174,4 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
