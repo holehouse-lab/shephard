@@ -51,6 +51,8 @@ extensions = [
     'sphinx.ext.extlinks',
 ]
 
+autodoc_mock_imports = ['numpy']
+
 autosummary_generate = True
 napoleon_numpy_docstring = True
 napoleon_google_docstring = False

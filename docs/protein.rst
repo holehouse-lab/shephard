@@ -15,7 +15,7 @@ Each of these can be accessed using associated functions.
 .. autoclass:: shephard.protein.Protein
 
 Protein properties
-...........
+....................
 
 .. autofunction:: shephard.proteome.Protein.name
 .. autofunction:: shephard.proteome.Protein.proteome

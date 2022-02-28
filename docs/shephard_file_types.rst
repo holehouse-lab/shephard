@@ -17,7 +17,6 @@ Sites files are tab-separated files where each line represents a different site.
 
 Each line has five or more columns and uses the following format:
 
-
 .. code-block:: 
 		   
    Unique_ID    position    site type    symbol    value    [   key1:value1    key2:value2     ...keyn:valuen   ]
@@ -116,7 +115,7 @@ si_tracks
 
 
 si_protein_attributes
-------------
+-----------------------
 .. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_dictionary
 .. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_file
 

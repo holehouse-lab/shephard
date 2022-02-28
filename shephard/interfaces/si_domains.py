@@ -347,7 +347,7 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
 ## ------------------------------------------------------------------------
 ##               
 def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=True, add_new=True, skip_bad=True, verbose=True):
-    """
+    r"""
     Function that takes a correctly formatted 'domain' files and reads 
     all domain attributes adding them to domains in the passed proteome, 
     if new domains are inclued the add_new flag determins if new domains 
@@ -357,17 +357,15 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
     format:
 
     One domain defined per line (although the same protein can appear 
-    multiple times)
+    multiple times)::
         
-    Unique_ID,  domain_name, key1:value1, key2:value2, ..., keyn:valuen
+       Unique_ID,  domain_name, key1:value1, key2:value2, ..., keyn:valuen
 
     A couple of key points here:
-    - The default delimiter is tabs ('\t') but this can be changed with 
-       the delimiter argument
 
-    - Key value must be separated by a ':', as a result, any delimiter 
-      (other than ':') can be used, but ':' is reserved for this role.
-      
+    * The default delimiter is tabs ('\\t') but this can be changed with the delimiter argument
+
+    * Key value must be separated by a ':', as a result, any delimiter (other than ':') can be used, but ':' is reserved for this role.
 
     Parameters
     ------------
