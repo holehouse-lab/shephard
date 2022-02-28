@@ -9,7 +9,8 @@ Holehouse Lab - Washington University in St. Louis
 """
 import re
 
-            
+## ------------------------------------------------------------------------
+##
 def build_mega_string(object_list, return_as_list=False): 
     
     """
@@ -49,7 +50,8 @@ def build_mega_string(object_list, return_as_list=False):
 
     return megastring
 
-
+## ------------------------------------------------------------------------
+##
 def find_string_positions(A,B):
     """
     Returns list of start positions where stringA is in stringB - including overlaps 

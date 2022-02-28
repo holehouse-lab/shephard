@@ -23,10 +23,11 @@ class _ProteinAttributesInterface:
     """
 
     def __init__(self, filename, delimiter='\t', skip_bad=True):
-        """
+        r"""
         Expect files of the followin format:
 
         Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
+
 
         Parameters
         ----------------
@@ -34,11 +35,14 @@ class _ProteinAttributesInterface:
         filename : str
             Name of the shephard domains file to read
 
-        delimiter : str 
-            String used as a delimiter on the input file. 
-            Default = '\t'
 
-        skip_bad : boolean
+        Other Parameters
+        ----------------
+
+        delimiter : str (default = '\\t')
+            String used as a delimiter on the input file. 
+
+        skip_bad : bool (default = True)
             Flag that means if bad lines (lines that trigger an exception) 
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
@@ -109,7 +113,7 @@ class _ProteinAttributesInterface:
 ## ------------------------------------------------------------------------
 ##
 def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
-    """
+    r"""
     Function that takes a correctly formatted protein_atttribute dictionary
     and will add those attributes to the proteins in the Proteome.
     
@@ -118,6 +122,7 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     the key-value pair reflects the attribute
     
     key-value pairing.
+
 
     Parameters
     ----------
@@ -132,7 +137,11 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
         define key:value pairs that will be associated with the protein 
         of interest.
 
-    safe : boolean 
+
+    Other Parameters
+    ----------------
+
+    safe : boolean (default = True)
         If set to True then any exceptions raised during the process of 
         adding a protein_attribute are further raised. If set to False, 
         exceptions simply mean the protein_attribute in question is skipped.         
@@ -145,12 +154,11 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
         attribute already exists, so this is effectively a flag to define 
         if pre-existing attributes should be overwritten (False) or not 
         (True).
-        Default = True.
     
-    verbose : boolean
+    verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
-        Default = True.
+
 
     Returns
     -----------
@@ -188,8 +196,14 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
 
 ## ------------------------------------------------------------------------
 ##
-def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_dictionary=False, safe=True, skip_bad=True, verbose=True):
-    """
+def add_protein_attributes_from_file(proteome, 
+                                     filename, 
+                                     delimiter='\t', 
+                                     return_dictionary=False, 
+                                     safe=True, 
+                                     skip_bad=True, 
+                                     verbose=True):
+    r"""
     Function that takes a correctly formatted 'protein attributes' file and 
     reads all attributes into the proteins in the passed proteome.
 
@@ -199,15 +213,16 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
     One protein defined per line (although the same protein can appear 
     multiple times)
 
-    Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
+    >>> Unique_ID, key1:value1, key2:value2, ..., keyn:valuen
 
     A couple of key points here:
 
-    - The default delimiter is tabs ('\t') but this can be changed with 
+    - The default delimiter is tabs ('\\t') but this can be changed with 
       the delimiter argument
 
     - Key value must be separated by a ':', as a result any delimiter 
       (other than ':') can be used, but ':' is reserved for this role
+
       
     Parameters
     ----------
@@ -217,18 +232,20 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
     filename : str
         Name of the shephard protein attributes file to read.
 
-    delimiter : str 
-        String used as a delimiter on the input file. 
-        Default = '\t'
 
-    return_dictionary : bool
-        If set to true, this function will return the protein_attributes 
+    Other Parameters
+    ----------------
+
+    delimiter : str (default = '\\t')
+        String used as a delimiter on the input file. 
+
+    return_dictionary : bool (default = False)
+        If set to True, this function will return the protein_attributes 
         dictionary and will NOT add that dictionary to the proteome - 
         i.e. the function basically becomes a parser for SHEPHARD-compliant        
         protein_attributes files. 
-        Default = False
 
-    safe : boolean 
+    safe : bool (default = True)
         If set to True then any exceptions raised during the 
         protein_attribute-adding process are acted on. If set to False, 
         exceptions simply mean the protein_attribute in question is skipped.         
@@ -240,21 +257,18 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
         attribute already exists, so this is effectively a flag to define 
         if pre-existing attributes should be overwritten (False) or not 
         (True).
-        Default = True.
 
-    skip_bad : boolean
+    skip_bad : bool (default = True)
         Flag that means if bad lines (lines that trigger an exception) are 
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
         (regardless of verbose flag). skip_bad exclusively influences the 
         file-reading part of the process.
-        Default = True.
-    
-    verbose : boolean
+        
+    verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
-        Default = True.
 
 
     Returns
@@ -265,8 +279,10 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
         Proteome object passed as the first argument. If return_dictionary
         is set to True the function returns the parsed domains_dictionary 
         without adding the newly-read protein_attributes to the proteome.
-    """        
 
+
+    """
+    
 
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
@@ -276,7 +292,6 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
                                                               delimiter, 
                                                               skip_bad=skip_bad)
 
-    # 
     if return_dictionary:
         return protein_attribute_interface.data
 
@@ -294,7 +309,7 @@ def add_protein_attributes_from_file(proteome, filename, delimiter='\t', return_
 ## ------------------------------------------------------------------------
 ##
 def write_protein_attributes(proteome, filename, delimiter='\t'):
-    """
+    r"""
     Function that writes out protein attributes to file in a standardized 
     format. Note that attributes are converted to a string, which for simple 
     attributes is reasonable but is not really a viable stratergy for 
@@ -310,12 +325,16 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
     filename : str
         Filename that will be used to write the new domains file
 
-    delimiter : str
+
+    Other Parameters
+    ----------------
+
+    delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. 
         Default is '\t', which is recommended to maintain compliance 
-        with default `add_protein_attributes_from_file()` function.
-        Default = '\t'
+        with default `add_protein_attributes_from_file()` function.        
         
+
     Returns
     --------
     None

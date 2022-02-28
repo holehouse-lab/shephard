@@ -4,6 +4,30 @@ Overview
 SHEPHARD (**S**\equence-based **H**\ierarchical and **E**\xtendable **P**\latform for **H**\igh-throughput **A**\nalysis of **R**\egion of **D**\isorder) is a modular framework for performing programmatic analyses of proteins. It does not itself perform any kind of analysis, but instead provides all of the nitty-gritty tools that are necessary but complicated for doing large-scale analysis of protein datasets. By hiding all of the logistical complexity, a user can quickly ask complex questions. The goal here is to make it trivial to ask what might otherwise be computationally complex things to address.
 
 
+
+--------------
+Installation
+--------------
+
+Installation for now should be performed using the current RC (release candidate). This will be file that looks something like :code:`shephard.....tar.gz.`. To install we strongly recommend having a :code:`conda` environment set up (the scope of :code:`conda` setup is beyond that of this documentation) and from within that :code:`conda` environment use :code:`pip` ::
+
+    pip install shephard@git+git://github.com/holehouse-lab/shephard.git
+
+
+This should install without issue, and once installed, SHEPHARD is available for import in any Python code you write when executed from within that :code:`conda` environment.
+
+If installing a package via :code:`pip` is new to you, we recommend spending a moment getting used to the Python programming language and the concept of :code:`conda` environments.
+
+
+
+--------------------
+Demos and examples
+--------------------
+Once installed, SHEPHARD makes it very easy to work with large protein datasets. As an example, we have a collection of basic notebooks showing functionality located at on the `SHEPHARD GitHub supporting data page <https://github.com/holehouse-lab/supportingdata/tree/master/2022/ginell_2022/example_notebooks>`_. 
+
+
+
+
 -------------------------
 SHEPHARD architecture
 -------------------------
@@ -17,20 +41,9 @@ Because SHEPHARD interacts with the 'outside world' (other types of data) via **
 
 In this way, customizable and reproducible analysis becomes extremely easy, and the same code can be used to perform analogous analyses for very different questions. This means you can spend more time analyzing the results and thinking about the questions, and less time on the software development side.
 
---------------
-Installation
---------------
-
-Installation for now should be performed using the current RC (release candidate). This will be file that looks something like :code:`shephard.....tar.gz.`. To install we strongly recommend having a :code:`conda` environment set up (the scope of :code:`conda` setup is beyond that of this documentation) and from within that :code:`conda` environment use :code:`pip` ::
-
-    pip install shephard...tar.gz
-
-This should install without issue, and once installed, SHEPHARD is available for import in any Python code you write when executed from within that :code:`conda` environment.
-
-If installing a package via :code:`pip` is new to you, we recommend spending a moment getting used to the Python programming language and the concept of :code:`conda` environments.
 
 ---------------------------------
-General work flow in SHEPHARD
+General workflow in SHEPHARD
 ---------------------------------
 
 The general work flow we envisage for people using SHEPHARD is as follows:

@@ -19,48 +19,47 @@ from .tools import domain_tools
 # Class that defines a sequence region 
 #
 class Domain:
-    """
-    Domains are defined sub-regions within a protein. 
-    
-    Proteins contain a list of 0 or more domains, and each domain is associated 
-    with the protein it originates from via the linking protein object.
-
-    Domains are indexed using the same indexing as the overall protein sequence (i.e.
-    a protein does not automatically start from 1), and as such the 'native' sequence
-    indexing should be used for working with Proteins. This is a long-winded way of saying
-    position X refers to the same residue regardless of if it's taken from the Protein or Domain
-    or Track object.
-
-    Parameters
-    -------------
-
-    start : int
-        Start position in sequence (recall we index from 1)
-
-    end : int
-        End position in sequence (recall we index from 1)
-
-    protein : Protein
-        Protein object for which this Domain is part of
-
-    domain_type :  str
-        Name of the domain type - can be any free-form string
-
-    domain_name : str
-        The name used as an index by the associated protein to identify this domain.
-        This is ONLY used such that you can re-reference a domain back to the protein
-        if needed.
-
-    attributes  : dict
-        Dictionary where key/value pairs allow a Domain to have
-        arbitrary metadata associated with it.
-        
-    """
 
     ## ------------------------------------------------------------------------
     ##          
     def __init__(self, start, end, protein, domain_type, domain_name, attributes=None):
-        """ 
+        """
+        Domains are defined sub-regions within a protein. 
+    
+        Proteins contain a list of 0 or more domains, and each domain is 
+        associated with the protein it originates from via the linking 
+        protein object.
+        
+        Domains are indexed using the same indexing as the overall protein 
+        sequence (i.e. a protein does not automatically start from 1), and 
+        as such the 'native' sequence indexing should be used for working 
+        with Proteins. This is a long-winded way of saying position X refers 
+        to the same residue regardless of if it's taken from the Protein 
+        or Domain or Track object.
+        
+        Parameters
+        -------------
+
+        start : int
+            Start position in sequence (recall we index from 1)
+
+        end : int
+            End position in sequence (recall we index from 1)
+
+        protein : Protein
+            Protein object for which this Domain is part of
+
+        domain_type :  str
+            Name of the domain type - can be any free-form string
+
+        domain_name : str
+            The name used as an index by the associated protein to identify 
+            this domain. This is ONLY used such that you can re-reference a 
+            domain back to the protein if needed.
+
+        attributes : dict (default = None)
+            Dictionary where key/value pairs allow a Domain to have
+            arbitrary metadata associated with it.        
         """
         
         if start > end:
@@ -89,6 +88,7 @@ class Domain:
         # update unique domain types
         protein.proteome.__update_domain_types(self._domain_type)
 
+
         
     ## ------------------------------------------------------------------------
     ##
@@ -107,6 +107,7 @@ class Domain:
         """
         return list(self._attributes.keys())
     
+
     
     ## ------------------------------------------------------------------------
     ##
@@ -114,26 +115,26 @@ class Domain:
         """
         Function that returns a specific attribute as defined by the name. 
 
-        Recall that attributes are name : value pairs, where the 'value' can be 
-        anything and is user defined. This function will return the value associated 
-        with a given name.
+        Recall that attributes are name : value pairs, where the 'value' 
+        can be anything and is user defined. This function will return 
+        the value associated with a given name.
 
         Parameters
         ----------------
         name : str
-             The attribute name. A list of valid names can be found by calling the
-             ``<domain>.attributes()`` (which returns a list of the valid names)
+             The attribute name. A list of valid names can be found by 
+             calling the ``<domain>.attributes()`` (which returns a list 
+             of the valid names)
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if an attribute with the same
-            name  already exists
+            Flag which if true with throw an exception if an attribute 
+            with the same name already exists.
             
         Returns
         ---------
         Unknown 
-            Will either return whatever was associated with that attribute (which could be anything)
-            or None if that attribute is missing.
-        
+            Will either return whatever was associated with that attribute 
+            (which could be anything) or None if that attribute is missing.
         """
 
         # if name is in the _atributes dictionary the  return
@@ -155,9 +156,9 @@ class Domain:
     ##
     def add_attribute(self, name, val, safe=True):
         """
-        Function that adds an attribute. Note that if safe is true, this function will
-        raise an exception if the attribute is already present. If safe=False, then
-        an exisiting value will be overwritten.
+        Function that adds an attribute. Note that if safe is true, this 
+        function will raise an exception if the attribute is already present. 
+        If safe=False, then an exisiting value will be overwritten.
 
         Parameters
         ----------------
@@ -169,9 +170,9 @@ class Domain:
             An object or primitive we wish to associate with this attribute
 
         safe : bool (default = True)
-            Flag which if True with throw an exception if an attribute with the same
-            name already exists, otherwise the newly introduced attribute will overwrite
-            the previous one.
+            Flag which if True with throw an exception if an attribute with 
+            the same name already exists, otherwise the newly introduced 
+            attribute will overwrite the previous one.
 
         Returns
         ---------
@@ -220,7 +221,8 @@ class Domain:
     @property
     def protein(self):
         """
-        **[Property]**: Returns the Protein that this Domain is associated with
+        **[Property]**: Returns the Protein that this Domain is associated 
+        with
         """
         return self._protein
 
@@ -231,9 +233,11 @@ class Domain:
     @property
     def sequence(self):
         """
-        **[Property]**: Returns the amino acid sequence associated with this domain
+        **[Property]**: Returns the amino acid sequence associated with 
+        this domain
         """
         return self._protein.get_sequence_region(self._start, self._end)
+
 
 
     ## ------------------------------------------------------------------------
@@ -246,6 +250,7 @@ class Domain:
         return self._domain_type
 
 
+
     ## ------------------------------------------------------------------------
     ##      
     @property
@@ -254,6 +259,8 @@ class Domain:
         Returns the domain name as generated when added to the protein
         """
         return self._domain_name
+
+
 
     ## ------------------------------------------------------------------------
     ##      
@@ -310,10 +317,9 @@ class Domain:
     ##      
     def domain_overlap(self, domain2):
         """
-        Function that takes in a second domain and calculates if those two domains
-        overlap at all. This is a binary check and does not compute the extent of 
-        overlap.
-
+        Function that takes in a second domain and calculates if those two 
+        domains overlap at all. This is a binary check and does not compute 
+        the extent of overlap.
 
         Parameters
         ------------
@@ -323,9 +329,9 @@ class Domain:
         Returns
         -----------
         bool
-            Returns True if the domains overlap, False if not. Note this will throw
-            an exception if the domains are from different proteins.
-        
+            Returns True if the domains overlap, False if not. Note this 
+            will throw an exception if the domains are from different 
+            proteins.
 
         """
         return domain_tools.domain_overlap(self, domain2)
@@ -378,10 +384,11 @@ class Domain:
     ##
     def site(self, position):
         """
-        Returns the list of sites that are found at a given position. Note that - in general
-        site() should be used to retrieve sites you know exist while get_sites_by_position()
-        offers a way to more safely get sites at a position. Site will throw an exception 
-        if the position passed does not exist (while get_sites_by_position() will not).
+        Returns the list of sites that are found at a given position. Note 
+        that - in generalsite() should be used to retrieve sites you know 
+        exist while get_sites_by_position() offers a way to more safely get 
+        sites at a position. Site will throw an exception if the position 
+        passed does not exist (while get_sites_by_position() will not).
 
         Parameters
         -------------
@@ -391,12 +398,13 @@ class Domain:
         Returns
         ---------
         list
-            Returns a list with between 1 and n sites. Will raise an exception if 
-            the passed position cannot be found in the codebase.
-
+            Returns a list with between 1 and n sites. Will raise an 
+            exception if the passed position cannot be found in the 
+            codebase.
         """
 
         ipos = int(position)
+
         if sequence_utilities.inside_region(domain.start, domain.end, ipos):
             return self._protein._sites[int(position)]
         else:
@@ -413,7 +421,8 @@ class Domain:
         ------------
 
         site_type : string
-            The site type identifier for which the function will search for matching sites
+            The site type identifier for which the function will search 
+            for matching sites
         
         Returns
         --------
@@ -439,12 +448,12 @@ class Domain:
     ##      
     def get_track_values(self, name, safe=True):
         """
-        Function that returns the region of a protein's values- track associated with
-        this domain.
+        Function that returns the region of a protein's values- track 
+        associated with this domain.        
         
-        If the track name is not found in this protein and safe is True, this will throw 
-        an exception, otherwise (if safe=False) then if the track is missing the function        
-        will return None.
+        If the track name is not found in this protein and safe is True, 
+        this will throw an exception, otherwise (if safe=False) then if 
+        the track is missing the function will return None.
 
         Parameters
         --------------
@@ -452,15 +461,17 @@ class Domain:
         name : str
             Track name
 
-        safe : bool
-            If set to True, missing tracks trigger an exception, else they 
-            just return None
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, else 
+            they just return None
 
         Returns
         ----------
         list
-            Returns a list of floats that corresponds to the set of residues associated
-            with the domain of interest, or None if the track does not exist and safe=False.
+            Returns a list of floats that corresponds to the set of 
+            residues associated with the domain of interest, or None if 
+            the track does not exist and safe=False.
+            
 
         """
         
@@ -476,12 +487,12 @@ class Domain:
     ##      
     def get_track_symbols(self, name, safe=True):
         """
-        Function that returns the region of a protein's symbols track associated with
-        this domain.
-        
-        If the track name is missing and safe is True, this will throw an exception,
-        otherwise (if safe=False) then if the track is missing the function
-        returns None
+        Function that returns the region of a protein's symbols track 
+        associated with this domain.
+                
+        If the track name is missing and safe is True, this will throw 
+        an exception, otherwise (if safe=False) then if the track is 
+        missing the function returns None
         
         Parameters
         --------------
@@ -489,15 +500,15 @@ class Domain:
         name : str
             Track name
 
-        safe : bool
-            If set to True, missing tracks trigger an exception, else they 
-            just return None
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, else 
+            they just return None
 
         Returns
         ----------
         list
-            Returns a list of strings that corresponds to the set of residues 
-            associated with the domain of interest.
+            Returns a list of strings that corresponds to the set of 
+            residues associated with the domain of interest.
 
         """
 

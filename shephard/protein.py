@@ -25,56 +25,61 @@ from .interfaces.si_domains import add_domains_from_dictionary
 # Class that defines a protein entry
 #
 class Protein:
-    """
-    Protein objects are the parent object to all sequence-based information. Protein objects 
-    are explicitly associated with several different types of objects:
-
-    * **tracks** - Vectorial information that maps to each residue and contains some set of information. A protein can have multiple tracks, but there must be a one-to-one mapping for sequence to track.
-
-    * **domains** - Information on a single contiguous region in the protein. A protein can have multiple domains.
-    
-    * **sites** - Information associated with a single amino acid site. A protein can have multiple sites
-   
-    * **attributes** - Protein-specific information associated 
-                     
-    Parameters
-    ------------
-
-    seq : str
-        Amino acid sequence for the protein. No validation is performed. 
-
-    name : str
-        Some sort of name-based identifier for the protein. Can be anything - is not used 
-        internally so no restraints, but could be used by other bits of analysis. 
-
-    unique_ID : str 
-        The unique_ID should be a short unique identifier. When added to a Proteome the 
-        Proteome object ensures the unique_ID is unique with respect to that Proteome. 
-
-        We HIGHLY recommend using the uniprot accession number, as this meets the 
-        requirement of a unique ID as well as allowing effective cross-refering from 
-        other databases.
-
-    attributes : dict (optional)
-        The attributes provides a key-value pairing for arbitrary information.
-        This could include gene names, different types of identifies, protein copy number,
-        a set of protein partners, or anything else one might wish to associated with the
-        protein as a whole. Default = {}
-
-
-    Returns
-    ---------
-    Proteine object (constructor)
-
-
-    Raises
-    ----------
-    shephard.exceptions.ProteinException
-    
-    """
     
     def __init__(self, seq, name, proteome, unique_ID, attributes = None):
+        
         """
+        Protein objects are the parent object to all sequence-based information. 
+        Protein objects are explicitly associated with several different types 
+        of objects:
+                
+        * **tracks** - Vectorial information that maps to each residue and 
+                       contains some set of information. A protein can have 
+                       multiple tracks, but there must be a one-to-one mapping 
+                       for sequence to track.
+        
+        * **domains** - Information on a single contiguous region in the 
+                        protein. A protein can have multiple domains.
+        
+        * **sites** - Information associated with a single amino acid site.  
+                      A protein can have multiple sites.
+        
+        * **attributes** - Protein-specific information associated.
+        
+        Parameters
+        ------------
+        
+        seq : str
+            Amino acid sequence for the protein. No validation is performed. 
+        
+        name : str
+            Some sort of name-based identifier for the protein. Can be 
+            anything - is not used internally so no restraints, but could be 
+            used by other bits of analysis. 
+        
+        unique_ID : str 
+            The unique_ID should be a short unique identifier. When added to 
+            a Proteome the Proteome object ensures the unique_ID is unique with 
+            respect to that Proteome. 
+        
+            We HIGHLY recommend using the uniprot accession number, as this meets 
+            the requirement of a unique ID as well as allowing effective 
+            cross-refering from other databases.
+        
+        attributes : dict (default = None)
+            The attributes provides a key-value pairing for arbitrary information.
+            This could include gene names, different types of identifies, protein 
+            copy number, a set of protein partners, or anything else one might 
+            wish to associated with the protein as a whole. 
+        
+        Returns
+        ---------
+        Proteine object (constructor)
+        
+        Raises
+        ----------
+        shephard.exceptions.ProteinException
+        
         """
         
         # define internal attributes that are then accessed via @properties 
@@ -108,7 +113,6 @@ class Protein:
 
 
 
-
     ## ------------------------------------------------------------------------
     ##
     @property
@@ -123,6 +127,7 @@ class Protein:
 
         """
         return self._unique_ID
+
 
 
     ## ------------------------------------------------------------------------
@@ -141,6 +146,7 @@ class Protein:
         return self._name
 
 
+
     ## ------------------------------------------------------------------------
     ##
     @property
@@ -157,6 +163,8 @@ class Protein:
         return self._proteome
 
 
+
+
     ###################################
     ##                               ##
     ##      SEQUENCE FUNCTIONS       ##
@@ -167,17 +175,18 @@ class Protein:
     ##
     def get_residue(self, position):
         """
-        Function that returns the natural residue found at a given position
+        Function that returns the natural residue found at a given position.
 
         Parameters
         ----------
         position : int
-            Position of interest
+            Position of interest.
 
         Returns
         ----------
         str
-            Returns a single character that corresponds to the string of interest
+            Returns a single character that corresponds to the string of 
+            interest.
 
         """
         
@@ -194,18 +203,18 @@ class Protein:
     @property
     def sequence(self):
         """
-        [Property]: Returns the protein amino acid sequence as a string. Recall 
-        that in strings indexing occurs from 0 and is non-inclusive. For 
-        proteins/biology indexing is from 1 and is inclusive.
-
-        i.e. for sequence 'MAPSTA...' real/biological indexing of region 1-3 would give
-        you 'MAP' while Python's indexing would give you 'AP'.
-
-        As a result BEWARE if using the raw sequence for analysis! The Protein class
-        provides a get_sequence_region(), get_sequence_context() and analogous functions
-        for tracks that allow you to use normal indexing to select ranges or regions
-        around a specific point. We suggest this is a safer way to extract vectorial
-        information.
+        [Property]: Returns the protein amino acid sequence as a string. 
+        Recall that in strings indexing occurs from 0 and is non-inclusive. 
+        For proteins/biology indexing is from 1 and is inclusive.
+                
+        i.e. for sequence 'MAPSTA...' real/biological indexing of region 
+        1-3 would give you 'MAP' while Python's indexing would give you 'AP'.
+        
+        As a result BEWARE if using the raw sequence for analysis! The Protein 
+        class provides a `get_sequence_region()`, `get_sequence_context()` and 
+        analogous functions for tracks that allow you to use normal indexing to 
+        select ranges or regions around a specific point. We suggest this is a 
+        safer way to extract vectorial information.
 
         Returns
         --------
@@ -214,6 +223,7 @@ class Protein:
 
         """
         return self._sequence[1:]
+
 
 
     ## ------------------------------------------------------------------------
@@ -237,6 +247,7 @@ class Protein:
 
         """
 
+        # validate passed range
         self._check_position_is_valid(start, helper_string='Sequence region cannot start below 1 [%i]'%(start))
         self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
             
@@ -244,37 +255,42 @@ class Protein:
         return self._sequence[start:end + 1]
 
 
+
     ## ------------------------------------------------------------------------
     ##
     def get_sequence_context(self, position, offset=5, return_indices=False):
         """
-        Function that allows a local region of the sequence centered on a specific position
-        to be extracted, including +/- an offset border that intelligently truncates if the 
-        offset would extend outside the sequence region.
+        Function that allows a local region of the sequence centered on a 
+        specific position to be extracted, including +/- an offset border 
+        that intelligently truncates if the offset would extend outside the 
+        sequence region.
 
         Parameters
         ---------------
         position : int
             Position for which we'll interrogate the local sequence
 
-        offset : int
-            [**Default = 5**] Plus/Minus offset used to investigate the region around the position. Note that
-            an offset is symmetrical around the position. 
-
-        return_indices : bool
-            [**Default = False**] Flag which, if set to true, means this function returns a TUPLE where position
-            0 is the string corresponding to the region of interest, position 2 is the start index (in normal SHEPHARD
-            indexing, i.e. starting from 1) and position 3 is the end index (in normal SHEPHARD indexing).
+        offset : int (default = 5)
+            Plus/Minus offset used to investigate the region around the 
+            position. Note that an offset is symmetrical around the position. 
+            
+        return_indices : bool (default = False)
+            Flag which, if set to true, means this function returns a TUPLE 
+            where position 0 is the string corresponding to the region of 
+            interest, position 2 is the start index (in normal SHEPHARD            
+            indexing, i.e. starting from 1) and position 3 is the end index 
+            (in normal SHEPHARD indexing).
 
         Returns
         ---------------        
-        str
-            If return_indices is set to False, this just returns a string that corresponds to the region of interest
+        str, (str, int, int)
+            If return_indices is set to False, this just returns a string 
+            that corresponds to the region of interest.
 
-        (str, int, int)
-            If return_indices is set to True, this just returns a string that corresponds to the region of interest, as 
-            well as the start and end positions that are inclusive in the sequence indexing from 1.
-
+            If return_indices is set to True, this just returns a string 
+            that corresponds to the region of interest, as well as the start 
+            and end positions that are inclusive in the sequence indexing 
+            from 1.
         """
         
         # sanity check position input
@@ -291,19 +307,18 @@ class Protein:
 
 
 
-
     ## ------------------------------------------------------------------------
     ##
     def check_sequence_is_valid(self):
         """
-        Function that checks if the current protein sequence is valid (i.e. consists 
-        of only the standard 20 amino acids).
+        Function that checks if the current protein sequence is valid 
+        (i.e. consists of only the standard 20 amino acids).
         
         Returns
         ---------------
         bool
-            Returns True if all residues are in the standard 20 amino acids, and
-            False if not
+            Returns True if all residues are in the standard 20 amino 
+            acids, and False if not.
         
         """
 
@@ -319,8 +334,9 @@ class Protein:
     ##
     def convert_to_valid(self, copy=False, safe=True):
         """
-        Function that converts non-standard amino acid residues to standard ones and
-        applies this version to the Protein's sequence.
+        Function that converts non-standard amino acid residues to  
+        standard ones and applies this version to the Protein's 
+        sequence.
 
         Specifically:
 
@@ -336,30 +352,32 @@ class Protein:
 
         ``- -> <empty string>``
 
-        By default this alters the underlying sequence. If you wish to return a copy
-        of the altered sequence instead set copy=True. Otherwise the underlying sequence
-        is changed. Note that removing the ``*`` and ``-`` characters will change the 
-        sequence length which could cause major issues as none of the internal position-
-        specific references will automatically update. Note that if safe=True such changes
-        will trigger an exception.
+        By default this alters the underlying sequence. If you wish to 
+        return a copy of the altered sequence instead set copy=True. 
+        Otherwise the underlying sequence is changed. Note that removing 
+        the ``*`` and ``-`` characters will change the sequence length which
+        could cause major issues as none of the internal position-specific
+        references will automatically update. Note that if safe=True such 
+        changes will trigger an exception.
 
         Parameters
         ---------------
         copy : bool (default = False)
-            Boolean flag - if set to true a copy of the updated sequence is returned, 
-            if False then the function returns None. In both cases the associated 
-            protein's sequence is  altered.
+            Boolean flag - if set to true a copy of the updated sequence is 
+            returned, if False then the function returns None. In both cases 
+            the associated protein's sequence is altered.            
         
         safe : bool (default = True)
-            Boolean flag that defines how to respond if an update changes the sequence
-            length. If set to true, a change that alters the sequence length will
-            trigger an exception, if False it will continue unannounced.
+            Boolean flag that defines how to respond if an update changes 
+            the sequence length. If set to true, a change that alters the 
+            sequence length will trigger an exception, if False it will 
+            continue unannounced.
 
         Returns
         ---------------
-        Unknown
-            Depends on if copy is set to True or not. If copy=True 
-        
+        None, str
+            If copy = False then no return value is provided. If copy = True 
+            then the function returns a string.
         """
 
         if copy is True:
@@ -396,8 +414,26 @@ class Protein:
     ##
     def _check_position_is_valid(self, position, helper_string=None):
         """
-        Internal function that ensures a passed position falls inside the sequence.
-        The helper-string allows the exception raised to be customized
+        Internal function that tests that a passed position is valid in the
+        given protein.
+
+        The helper-string allows the exception raised to be customized.
+
+        Parameters
+        ---------------
+        position : int 
+            A position in question.
+
+        helper_string : str
+            A customizable string that can be passed should an error be
+            raised.
+
+        Returns
+        -----------
+        None
+            If the position falls within the protein sequence None is 
+            returned, otherwise an exception is raised.
+
         """
 
         # recal we're operating in a 1-indexed space
@@ -423,13 +459,15 @@ class Protein:
     @property
     def attributes(self):
         """
-        **[Property]**: Provides a list of the keys associated with every attribute associated
-        with this protein.
+        **[Property]**: Provides a list of the keys associated with every 
+        attribute associated with this protein.
+        
 
         Returns
         -------
         list
-            returns a list of the attribute keys associated with the protein. 
+            returns a list of the attribute keys associated with the 
+            protein. 
 
 
         """
@@ -444,26 +482,28 @@ class Protein:
         """
         Function that returns a specific attribute as defined by the name. 
 
-        Recall that attributes are name : value pairs, where the 'value' can be 
-        anything and is user defined. This function will return the value associated 
-        with a given name.
-
+        Recall that attributes are name : value pairs, where the 'value' 
+        can be anything and is user defined. This function will return 
+        the value associated with a given name.
+        
         Parameters
         ----------------
         name : str
-             The attribute name. A list of valid names can be found by calling the
-             ``<Protein>.attributes()`` (which returns a list of the valid names)
+             The attribute name. A list of valid names can be found by 
+             calling the ``<Protein>.attributes()`` (which returns a 
+             list of the valid names).
+             
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if an attribute with the same
-            name  already exists
-            
+            Flag which if true with throw an exception if an attribute 
+            with the same name already exists
+                        
         Returns
         ---------
         Unknown 
-            Will either return whatever was associated with that attribute (which could be anything)
-            or None if that attribute is missing.
-        
+            Will either return whatever was associated with that attribute 
+            (which could be anything) or None if that attribute is missing.
+                    
         """
 
         # if name is in the _attributes dictionary the  return
@@ -485,9 +525,9 @@ class Protein:
     ##
     def add_attribute(self, name, val, safe=True):
         """
-        Function that adds an attribute. Note that if safe is true, this function will
-        raise an exception if the attribute is already present. If safe=False, then
-        an existing value will be overwritten.
+        Function that adds an attribute. Note that if safe is true, this 
+        function will raise an exception if the attribute is already 
+        present. If safe=False, then an existing value will be overwritten.
 
         Parameters
         ----------------
@@ -496,13 +536,15 @@ class Protein:
             The parameter name that will be used to identify it
 
         val : <anything>
-            An object or primitive we wish to associate with this attribute
+            An object or primitive we wish to associate with this 
+            attribute.
 
         safe : bool (default = True)
-            Flag which if True with throw an exception if an attribute with the same
-            name already exists, otherwise the newly introduced attribute will overwrite
-            the previous one.
-
+            Flag which if True with throw an exception if an 
+            attribute with the same name already exists, otherwise the 
+            newly introduced attribute will overwrite the previous 
+            one.
+            
         Returns
         ---------
             None - but adds an attribute to the calling object
@@ -569,21 +611,24 @@ class Protein:
     def track(self, name, safe=True):
 
         """
-        Function that returns a specific track as defined by the name. 
+        Function that returns a specific Track as defined by the name. 
 
-        Recall that tracks are defined by a name. If a track by this name exists
-        this function returns the actual ``Track`` object, NOT the **values** or **symbols**
-        associated with the track. If a track by this name does *not* exist then if safe=`True`
-        an exception will be raised, otherwise the function returns None.
+        Recall that Tracks are defined by a name. If a Track by this name 
+        exists this function returns the actual Track object, NOT the 
+        **values** or **symbols** associated with the track. If a Track by 
+        this name does *not* exist then if safe=True an exception will 
+        be raised, otherwise the function returns None.
         
-        For direct access to values and symbols, use the ``<Protein>.get_track_values(<track_name>)`` and 
+        For direct access to values and symbols, use the 
+        ``<Protein>.get_track_values(<track_name>)`` and 
         ``<Protein>.get_track_symbols(<track_name>)``.
 
         Parameters
         ----------------
         name : str
-             The track name. A list of valid names can be found by calling the
-             ``<Protein>.tracks()`` (which returns a list of the valid track names)
+            The track name. A list of valid names can be found by calling 
+            the ``<Protein>.tracks()`` (which returns a list of the valid 
+            track names).
 
         Returns
         ---------
@@ -609,16 +654,18 @@ class Protein:
         Function that returns the values associated with a specific track, as 
         defined by the name.
 
-        Recall that tracks are defined by a name. If a track by this name exists
-        this function returns the values IF these are associated with the track.
-        If no values are associated then the function will throw an exception 
-        unless safe is set to False, in which case it will return None.
+        Recall that tracks are defined by a name. If a track by this name 
+        exists this function returns the values IF these are associated 
+        with the track. If no values are associated then the function will 
+        throw an exception unless safe is set to False, in which case it 
+        will return None.
         
         Parameters
         ----------------
         name : string
-             The track name. A list of valid names can be found by calling the
-             <Protein>.tracks (which returns a list of the valid track names)
+            The track name. A list of valid names can be found by calling 
+            the <Protein>.tracks (which returns a list of the valid track 
+            names).
 
         start : int (default None)
             If provided defines the start position along the track. If not
@@ -629,8 +676,8 @@ class Protein:
             provided defaults to the final residue in the protein.
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if a track that matches
-            the passed name does not already exist.
+            Flag which if true with throw an exception if a track that 
+            matches the passed name does not already exist.
             
         Returns
         ---------
@@ -652,31 +699,33 @@ class Protein:
     ##
     def get_track_symbols(self, name, start=None, end=None, safe=True):
         """
-        Function that returns the symbols associated with a specific track, as 
-        defined by the name.
-
-        Recall that tracks are defined by a name. If a track by this name exists
-        this function returns the symbols IF these are associated with the track.
-        If no symbols are associated then the function will throw an exception 
-        unless safe is set to False, in which case it will return None.
+        Function that returns the symbols associated with a specific track,
+        as defined by the name.
+        
+        Recall that tracks are defined by a name. If a track by this name 
+        exists this function returns the symbols IF these are associated 
+        with the track. If no symbols are associated then the function will 
+        throw an exception unless safe is set to False, in which case it 
+        will return None.
 
         Parameters
         ----------------
         name : string
-             The track name. A list of valid names can be found by calling the
-             <Protein>.tracks (which returns a list of the valid track names)
+            The track name. A list of valid names can be found by calling 
+            the <Protein>.tracks (which returns a list of the valid track 
+            names).
 
-        start : int (default none)
+        start : int (default = None)
             If provided defines the start position along the track. If not
             provided defaults to 1 (first residue in the protein).
 
-        end : int (default none)
+        end : int (default = None)
             If provided defines the end position along the track. If not
             provided defaults to the final residue in the protein.
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if a track that matches
-            the passed name does not already exist.
+            Flag which if true with throw an exception if a track that 
+            matches the passed name does not already exist.
             
         Returns
         ---------
@@ -699,9 +748,9 @@ class Protein:
     ##
     def __build_start_end(self, start, end):
         """
-        Internal function that sanity checks requested start end positions and peforms
-        type conversion
-
+        Internal function that sanity checks requested start end positions 
+        and peforms type conversion
+        
         Parameters
         -----------
         start : str or int or float or None:
@@ -713,7 +762,8 @@ class Protein:
         Returns
         ----------
         tuple
-           Returns a 2-position tuple where the first position is the start po
+           Returns a 2-position tuple where the first position is the 
+           start po
 
         """
 
@@ -737,13 +787,37 @@ class Protein:
 
             
 
-
     ## ------------------------------------------------------------------------
     ##
     def __get_track_info(self, name, safe, start, end, mode):
         """
-        Internal function that follows the exact same logic as the public-facing
-        get_track_symbols or get_track_values
+        Internal function that follows the exact same logic as the 
+        public-facing get_track_symbols or get_track_values.
+        
+
+        Note that the start and end values passed here have already
+        been validated.
+
+        Parameters
+        -----------
+        name : str
+            Track name
+
+        safe : bool 
+            Flag which if true with throw an exception if a track that 
+            matches the passed name does not already exist.
+                    
+        start : int 
+            Start position 
+
+        end : int 
+            End position
+
+        Returns
+        ----------
+        None or list
+            Returns either a list of values or symbols, or None if no
+            Track with the passed name is present and safe is False.
 
         """
         
@@ -778,41 +852,41 @@ class Protein:
     ##
     def add_track(self, name, values=None, symbols=None, safe=True):
         """
-        Function that adds a track to this protein. For more information on
-        Tracks see the relevant documentation. However, some general guidelines
-        are provided below for convenience.
+        Function that adds a track to this protein. For more information 
+        on Tracks see the relevant documentation. However, some general 
+        guidelines are provided below for convenience.
 
-        (1) A values track should be a list/array of numerical values
+        * A **values track** should be a list/array of numerical values
 
-        (2) A symbols track should be a list or string of symbolic characters
-
-        (3) In either case, the iterable should have a 1:1 mapping with the sequence
-
-        (4) Tracks can have both a value and a symbol, although in general it probably
-            makes sense to use multiple tracks. 
+        * A **symbols track** should be a list or string of symbolic characters
         
+        In either case, the iterable should have a 1:1 mapping with the sequence
+        Finally, Tracks can have both a value and a symbol, although in general 
+        it probably makes sense to use multiple tracks. 
+
         Parameters
         ---------------
-
         name : string
-            Name for track. NOTE that this is a unique identifier, and each track within
-            a given protein should must have a unique name. 
-
+            Name for track. NOTE that this is a unique identifier, 
+            and each track within a given protein should must have a 
+            unique name. 
+            
         values : list or np.array (default None)
-            A numerical iterable collection of values, where each value maps to a specific 
-            residue in the sequence. 
-
+            A numerical iterable collection of values, where each value 
+            maps to a specific residue in the sequence. 
+            
         symbols : list or string (default None)
-            A symbolic collection of characters, where each symbol maps to a specific 
-           residue in the sequence. 
-        
+            A symbolic collection of characters, where each symbol maps 
+            to a specific residue in the sequence. 
+                   
         safe : bool (default = True)
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it.
+            If set to True over-writing tracks will raise an exception, 
+            otherwise overwriting a track will simply over-write it.
+            
 
         Returns
         ----------
-
+        None
             Nothing, but adds a track to the calling object.
 
         """
@@ -828,65 +902,82 @@ class Protein:
     ##
     def build_track_values_from_sequence(self, name, trackfunction, input_dictionary=None, safe=True):
         """
-        Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
-        analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
-        arguments in the keywords dictionary) that will take in the protein sequence, generate a new track, and 
-        add that track to the protein.
-
-        build_track_values allows you to define a function that converts amino acid sequence into a numerical list
-        or np.array, which gets written as a values track. If you want a symbols track, use build_track_symbols().
-
-        Specifically, the argument trackfunction must be a user-defined function. This function can be defined anywhere, 
-        but should take either one or two arguments:
-
+        Tracks can be added as pre-loaded values. However, sometimes you 
+        want to build a track based on some analysis of the sequence on 
+        the fly. This function allows you to pass in your own function 
+        (with keyword arguments in the keywords dictionary) that will take 
+        in the protein sequence, generate a new track, and add that track 
+        to the protein.
+        
+        build_track_values allows you to define a function that converts 
+        amino acid sequence into a numerical list or np.array, which gets 
+        written as a values track. If you want a symbols track, use 
+        build_track_symbols().
+        
+        Specifically, the argument trackfunction must be a user-defined 
+        function. This function can be defined anywhere, but should take 
+        either one or two arguments:
+        
         (1) The first/only argument should be an amino acid sequence.
         (2) The second argument a dictionary of key-value pairs.
 
-        When build_track_values_from_sequence is called, the sequence of the protein is passed as the first
-        argument into the trackfunction, and  - if present - the input_dictionary is passed as the second argument.
-
-        In this way a new track is defined internally, with the trackfunction using the proteins sequence and 
-        any/all pass input_dictionary to convert the sequence into some numerical representation.
+        When build_track_values_from_sequence is called, the sequence of 
+        the protein is passed as the first argument into the trackfunction, 
+        and - if present - the input_dictionary is passed as the second 
+        argument.
         
+        In this way a new track is defined internally, with the track 
+        function using the proteins sequence and any/all pass 
+        input_dictionary to convert the sequence into some numerical 
+        representation.
 
         Parameters
         ------------
 
         name : string
-            Name of the track to be used. Should be unique and will always overwrite an existing track with the same
-            name (no safe keyword provided here).
-
+            Name of the track to be used. Should be unique and will always 
+            overwrite an existing track with the same name (no safe keyword 
+            provided here).
+            
         trackfunction : function
             A user define function that has the following properties:
         
             (1) First argument is expected to be amino acid sequence
-            (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
+            (2) Second argument (if provided) should be a dictionary which 
+                is passed (untouched) THROUGH build_track_values 
                 from sequence to the trackfunction at runtime
 
         function_keywords : dictionary
-            This is a dictionary that will be passed to the trackfunction as the second argument IF it is provided.
-            In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
+            This is a dictionary that will be passed to the trackfunction 
+            as the second argument IF it is provided. In this way, the user 
+            can pass an arbitrarily complex set of arguments to the 
+            track function each time 
+            
             the build_track_values_from_sequence is called.
 
         safe : bool (default = True)
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it.
-
+            If set to True over-writing tracks will raise an exception, 
+            otherwise overwriting a track will simply over-write it.
+            
         Example
         --------
         
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-        # define a function that takes in a sequence and converts it into some other numerical
-        # list. Note this is INLINE with the code, or could be elsewhere. This function MUST
-        # take either ONE argument (sequence) or TWO arguments (sequence and input_dictionary).
-        # Also the names of these arguments does not matter, but the order does (i.e. first argument
-        # will always get the sequence).
+        # define a function that takes in a sequence and converts it 
+        # into some other numerical list. Note this is INLINE with the 
+        # code, or could be elsewhere. This function MUST take either 
+        # ONE argument (sequence) or TWO arguments (sequence and 
+        # input_dictionary). Also the names of these arguments does 
+        # not matter, but the order does (i.e. first argument will 
+        # always get the sequence).
 
         def trackbuilder(seq, input_dictionary):
             ''' 
-                This function takes in a sequence (seq) as first argument, and the v1 and v2
-                as additional arguments. See below for what it's doing (pretty simple).
+                This function takes in a sequence (seq) as first argument, 
+                and the v1 and v2 as additional arguments. See below for 
+                what it's doing (pretty simple).
+                
             '''
             newseq=[]  
             
@@ -898,7 +989,8 @@ class Protein:
             # for each residue in the sequence
             for i in seq:
 
-                # is that residue in v1 (append 1) or v2 (append -1)? If neither append 0
+                # is that residue in v1 (append 1) or v2 (append -1)? If 
+                # neither append 0
                 if i in v1:
                     newseq.append(1)
                 elif i in v2:
@@ -908,19 +1000,22 @@ class Protein:
         
             return newseq
         
-        # define the input_dictionary (note again that the variable names here do not matter)
+        # define the input_dictionary (note again that the variable names 
+        # here do not matter)
         input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
 
-        # now assuming ProtOb is a Protein object, this will add a new track
-        ProtOb.build_track_values('charge_vector', trackbuilder, function_dictionary=input_dictionary)
+        # now assuming ProtOb is a Protein object, this will add a new 
+        # track
+        ProtOb.build_track_values('charge_vector', trackbuilder, 
+        function_dictionary=input_dictionary)
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-        In this example we defined a function that converts an amino acid string into a numerical list where
-        positively charged residues = +1 and negatively charged residues = -1. We applied this function to generate
-        a 'charge_vector' track.
-
+        In this example we defined a function that converts an amino acid 
+        string into a numerical list where positively charged residues = +1
+        and negatively charged residues = -1. We applied this function to 
+        generate a 'charge_vector' track.
 
         Note this is analagous to defining our function and then running:
 
@@ -941,7 +1036,8 @@ class Protein:
         Does the name of the custom function matter?
             No!
 
-        Does the custom function have to accepted the amino acid sequence as the first argument?
+        Does the custom function have to accepted the amino acid 
+        sequence as the first argument?
             Yes!
 
         """
@@ -967,65 +1063,77 @@ class Protein:
     ##
     def build_track_symbols_from_sequence(self, name, trackfunction, input_dictionary = None, safe = True):
         """
-        Tracks can be added as pre-loaded values. However, sometimes you want to build a track based on some
-        analysis of the sequence on the fly. This function allows you to pass in your own function (with keyword
-        arguments) that will take in the protein sequence, generate a new track, and add that track to the Protein.
+        Tracks can be added as pre-loaded values. However, sometimes you 
+        want to build a track based on some analysis of the sequence on 
+        the fly. This function allows you to pass in your own function 
+        (with keyword arguments) that will take in the protein sequence, 
+        generate a new track, and add that track to the Protein.
 
-        build_track_symbols allows you to define a function that converts amino acid sequence into a symbolic list
-        or string, which gets written as a symbols track. If you want a values track, use build_track_values().
-
-        Specifically, the argument trackfunction must be a user-defined function. This function can be defined anywhere, 
-        but should take either one or two arguments:
+        build_track_symbols allows you to define a function that converts 
+        amino acid sequence into a symbolic list or string, which gets 
+        written as a symbols track. If you want a values track, use 
+        build_track_values().
+        
+        Specifically, the argument trackfunction must be a user-defined 
+        function. This function can be defined anywhere, but should take 
+        either one or two arguments:        
 
         (1) The first/only argument should be an amino acid sequence.
         (2) The second argument a dictionary of key-value pairs.
 
-        When build_track_symbols_from_sequence is called, the sequence of the protein is passed as the first
-        argument into the trackfunction, and  - if present - the input_dictionary is passed as the second argument.
-
-        In this way a new track is defined internally, with the trackfunction using the proteins sequence and 
-        any/all pass input_dictionary to convert the sequence into some other symbolic representation.
+        When build_track_symbols_from_sequence is called, the sequence of 
+        the protein is passed as the first argument into the trackfunction, 
+        and  - if present - the input_dictionary is passed as the second 
+        argument.
         
+        In this way a new track is defined internally, with the track 
+        function using the proteins sequence and any/all pass 
+        input_dictionary to convert the sequence into some other symbolic 
+        representation.
 
         Parameters
         ------------
 
         name : string
-            Name of the track to be used. Should be unique and will always overwrite an existing track with the same
-            name (no safe keyword provided here).
+            Name of the track to be used. Should be unique and will always 
+            overwrite an existing track with the same name (no safe keyword 
+            provided here).
 
-
-        trackfunction : function
+        trackfunction : funct
             A user define function that has the following properties:
         
             (1) First argument is expected to be amino acid sequence
-            (2) Second argument (if provided) should be a dictionary which is passed (untouched) THROUGH build_track_values 
-                from sequence to the trackfunction at runtime
+            (2) Second argument (if provided) should be a dictionary which is 
+                passed (untouched) THROUGH build_track_values from sequence to 
+                the trackfunction at runtime
 
-        function_keywords : None
-            This is a dictionary that will be passed to the trackfunction as the second argument IF it is provided.
-            In this way, the user can pass an arbitrarily complex set of arguments to the trackfunction each time 
-            the build_track_symbols_from_sequence is called.
+        function_keywords : dict (default None)
+            This is a dictionary that will be passed to the trackfunction as 
+            the second argument IF it is provided. In this way, the user can 
+            pass an arbitrarily complex set of arguments to the trackfunction 
+            each time the build_track_symbols_from_sequence is called.            
 
         safe : bool (default = True)
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it.
-
+            If set to True over-writing tracks will raise an exception, 
+            otherwise overwriting a track will simply over-write it.
 
         Example
         --------        
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-        # define a function that takes in a sequence and converts it into some other symbolic representation
-        # as a string. Note this is INLINE with the code, or could be elsewhere. This function MUST
-        # take either ONE argument (sequence) or TWO arguments (sequence and input_dictionary).
-        # Also the names of these arguments does not matter, but the order does (i.e. first argument
-        # will always get the sequence).
+        # define a function that takes in a sequence and converts it into some 
+        # other symbolic representation as a string. Note this is INLINE with 
+        # the code, or could be elsewhere. This function MUST take either ONE 
+        # argument (sequence) or TWO arguments (sequence and input_dictionary).
+        # 
+        # Also the names of these arguments does not matter, but the order does 
+        # (i.e. first argument will always get the sequence).
 
         def trackbuilder(seq, input_dictionary):
             ''' 
-                This function takes in a sequence (seq) as first argument, and the v1 and v2
-                as additional arguments. See below for what it's doing (pretty simple).
+                This function takes in a sequence (seq) as first argument, 
+                and the v1 and v2 as additional arguments. See below for what 
+                it's doing (pretty simple).                
             '''
             new_string_list=[]  
             
@@ -1037,7 +1145,8 @@ class Protein:
             # for each residue in the sequence
             for i in seq:
 
-                # is that residue in v1 (append 1) or v2 (append -1)? If neither append 0
+                # is that residue in v1 (append 1) or v2 (append -1)? If neither 
+                # append 0
                 if i in v1:
                     new_string_list.append('+')
                 elif i in v2:
@@ -1049,17 +1158,20 @@ class Protein:
             newstring = "".join(new_string_list)
             return newstring
         
-        # define the input_dictionary (note again that the variable names here do not matter)
+        # define the input_dictionary (note again that the variable names  
+        # here do not matter)
         input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
 
         # now assuming ProtOb is a Protein object, this will add a new track
-        ProtOb.build_track_values('charge_string', trackbuilder, function_dictionary=input_dictionary)
+        ProtOb.build_track_values('charge_string', trackbuilder, 
+                                   function_dictionary=input_dictionary)
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-        In this example we defined a function that converts an amino acid string into a coarse-grained string 
-        representation where positive residues are "+", negative are "-" and neutral are "0".
-
+        In this example we defined a function that converts an amino acid 
+        string into a coarse-grained string representation where positive 
+        residues are "+", negative are "-" and neutral are "0".
+        
         Note this is analagous to defining our function and then running:
 
         >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1078,7 +1190,8 @@ class Protein:
         Does the name of the custom function matter?
             No!
 
-        Does the custom function have to accepted the amino acid sequence as the first argument?
+        Does the custom function have to accepted the amino acid sequence 
+        as the first argument?
             Yes!
 
         """
@@ -1104,37 +1217,44 @@ class Protein:
     ##
     def build_track(self, name, input_data, track_definition_function, safe=True):
         """
-        Function that constructs a track using a given track_definition_function and 
-        a user provided input_data object. Very little constraint is set here, other
-        than the fact the name should be a string and track_definition function should
-        return a dictionary with (at least) two key:value pairings: `symbols` and `values`,
-        where the corresponding value for each is bona-fide track input data.
+        Function that constructs a track using a given 
+        track_definition_function and a user provided input_data object. Very 
+        little constraint is set here, other than the fact the name should be a 
+        string and  track_definition function should return a dictionary with 
+        (at least)  two key:value pairings: `symbols` and `values`, where the 
+        corresponding  value for each is bona-fide track input data.
         
         Parameters
         ------------
 
         name : string
-            Name of the track to be used. Should be unique and will always overwrite an existing track with the same
-            name (no safe keyword provided here).
-
+            Name of the track to be used. Should be unique and will always 
+            overwrite an existing track with the same name (no safe keyword 
+            provided here).
+            
         input_data : ?
             Some kind of data that will be passed to the track_definition_function 
         
         track_definition_function : function
-            Function that takes in `input_data` and returns a dictionary with a 'values' and a 'symbols' key and value
-            pairing. The values that map to 'values' and 'symbols' will be added as a single new track defined by name.
+            Function that takes in `input_data` and returns a dictionary 
+            with a 'values' and a 'symbols' key and value pairing. The 
+            values that map to 'values' and 'symbols' will be added as a 
+            single new track defined by name.
 
         safe : bool (default = True)
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it.
+            If set to True over-writing tracks will raise an exception, 
+            otherwise overwriting a track will simply over-write it.
 
+        Returns
+        ------------
+        None
+            No return type, but a new track is added to the Protein.
 
         """
 
         if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
-
 
         track_out = track_definition_function(input_data)
 
@@ -1144,26 +1264,29 @@ class Protein:
         self._tracks[name] = Track(name, self, values=values, symbols=symbols)
 
 
+
     ## ------------------------------------------------------------------------
     ##        
     def remove_track(self, track_object, safe=True):
         """
-        Function that removes a given Track from the Protein based on the passed Track object.
-        If the passed site does not exist or is not associate with the protein then this will
-        trigger an exception unless safe=False
+        Function that removes a given Track from the Protein based on the 
+        passed Track object. If the passed site does not exist or is not 
+        associate with the protein then this will trigger an exception 
+        unless safe=False.
 
         Parameters
         ------------t
         site : Track Object or None
-            Track Object that will be used to retrieve a given protein. Note that remove_track()
-            can tollerate None as the object if Safe=False to enable a single for-loop to iterate
-            over a proteome and remove all tracks of a specific type without worrying as to if the
-            track is present or not
+            Track Object that will be used to retrieve a given protein.
+            Note that remove_track() can tollerate None as the object if 
+            Safe=False to enable a single for-loop to iterate over a 
+            proteome and remove all tracks of a specific type without 
+            worrying as to if the track is present or not.
 
-        safe : bool
-            Flag that if set to True means if a passed track is missing from the underlying
-            protein object an exception wll be raised (ProteinException). If False a missing
-            track is ignored
+        safe : bool (default = True)
+            Flag that if set to True means if a passed track is missing 
+            from the underlying protein object an exception wll be raised 
+            (ProteinException). If False a missing track is ignored.
 
         Returns
         -----------
@@ -1207,8 +1330,8 @@ class Protein:
     @property
     def domains(self):
         """
-        **[Property]**: Returns a list of the Domain objects associated with
-        this protein, sorted by first reside of the domain.
+        **[Property]**: Returns a list of the Domain objects associated 
+        with this protein, sorted by first reside of the domain.
 
         """
     
@@ -1223,8 +1346,8 @@ class Protein:
     @property
     def domain_names(self):
         """
-        **[Property]**: Returns a list of the domain names associated with 
-        this protein
+        **[Property]**: Returns a list of the domain names associated  
+        with this protein
 
         """
         
@@ -1239,8 +1362,9 @@ class Protein:
     @property
     def domain_types(self):
         """
-        **[Property]**: Returns a list of the unique domain types associated 
-        with this protein. There will be no duplicates here.
+        **[Property]**: Returns a list of the unique domain types  
+        associated with this protein. There will be no duplicates 
+        here.
         
         """
 
@@ -1255,34 +1379,35 @@ class Protein:
         return list(domain_types)
 
 
+
     ## ------------------------------------------------------------------------
     ##
     def domain(self, name, safe=True):
 
         """
-        Function that returns a specific domain as defined by the name. Note it is
-        often more useful to request a domain by type rather than by the name, in
-        which case get_domain_by_type(<domain_type>) is the relevant syntax.
-        
-        Note domains can also be requested based on position (get_domain_by_position).
+        Function that returns a specific domain as defined by the name. 
+        Note it is often more useful to request a domain by type rather 
+        than by the name, in which case get_domain_by_type(<domain_type>) 
+        is the relevant syntax. Note domains can also be requested based 
+        on position (get_domain_by_position).
 
         Parameters
         ----------------
         name : string
-             The Domain name. A list of valid names can be found by calling the
-             <Protein>.domains (which returns a list of the valid track names)
-
+            The Domain name. A list of valid names can be found by calling 
+            the <Protein>.domains (which returns a list of the valid track 
+            names).
+             
         safe : bool (default = True)
-            Flag which if true with throw an exception if no domain exists with
-            this name. If false function will return None instead.
+            Flag which if true with throw an exception if no domain exists 
+            with this name. If false function will return None instead.
 
         Returns
         ---------
         Unknown 
-            Will either return the Domain object associated with the name, OR
-            will return None if safe=False and there was no Domain object that
-            matched the name.
-        
+            Will either return the Domain object associated with the name, 
+            OR will return None if safe=False and there was no Domain object 
+            that matched the name.
         """
 
         if name in self._domains:
@@ -1295,57 +1420,62 @@ class Protein:
     ##
     def add_domains(self, list_of_domains, safe=True, autoname=False, verbose=False):
         """
+        Function that takes a list of domain dictionaries and adds those 
+        domains to the protein.
 
-        Function that takes a list of domain dictionaries and adds those domains to the protein.
-
-        Each domain dictionary within the list must have a key-value pair that defines the following info:
+        Each domain dictionary within the list must have a key-value pair 
+        that defines the following info:
                     
-        start : domain start position (in real sequence, not i0 indexing)
-        end   : domain end position (in real sequence, not i0 indexing)
-        domain_type : type of the domain (string)
-        attributes : a dictionary of attributes to associated with the domain (optional)
+        * **start** - domain start position (in real sequence, not i0 indexing)
+        * **end** - domain end position (in real sequence, not i0 indexing)
+        * **domain_type** - type of the domain (string)
+        * **attributes** - a dictionary of attributes to associated with the domain (optional)
         
-        Note that in start, end, and domain_type are the only required key-value pairs required in
-        the dictionary.
-
-        If you wish to add many domains to main proteins, see interfaces.si_domains.add_domains_from_dictionary()
+        Note that in start, end, and domain_type are the only required 
+        key-value pairs required in the dictionary.
+        
+        If you wish to add many domains to main proteins, see 
+        interfaces.si_domains.add_domains_from_dictionary()
 
         Parameters
         -------------
 
-        list of domains : list of domain dictionaries
-            A "domain dictionary" is defined above, but in short is a dictionary with the following
-            key-value pairs:
+        list_of_domains : list 
+            A list of domain dictionaries. A "domain dictionary" is defined above, 
+            but in short is a dictionary with the following key-value pairs:
 
-            REQUIRED:
-            start                : int (domain start position)
-            end                  : int (domain end position)
-            domain_type          : string (domain type)
+            * REQUIRED:
+               * start - int (domain start position)
+               * end - int (domain end position)
+               * domain_type - string (domain type)
 
-            OPTIONAL:
-            attributes           : dictionary of arbitrary key-value pairs 
-                                   that will be associated with the domain
-            
+            * OPTIONAL:
+               * attributes - dictionary of arbitrary key-value pairs that will be associated with the domain
+
         safe : bool (default = True)
-            If set to True over-writing domains will raise an exception. If False, overwriting
-            a domain will silently over-write. Default = True.
-
+            If set to True over-writing domains will raise an exception. 
+            If False, overwriting a domain will silently over-write. 
+            
         autoname : bool (default = False)
-            If autoname is set to true, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfectly overlapping in position
-            and type. This is generally not going to be required and/or make sense, but having
-            this feature in place is useful. In general we want to avoid this as it makes it 
-            easy to include duplicates which by default are prevented when autoname=False.
+            If autoname is set to true, this function ensures each domain 
+            ALWAYS has a unique name - i.e. the allows for multiple domains 
+            to be perfectly overlapping in position and type. This is 
+            generally not going to be required and/or make sense, but having
+            this feature in place is useful. In general we want to avoid this 
+            as it makes it easy to include duplicates which by default are 
+            prevented when autoname=False.
 
         verbose : bool (default = True)
-            Flag that defines how 'loud' output is. Will warn about errors on adding domains.
-
+            Flag that defines how 'loud' output is. Will warn about errors on 
+            adding domains.
 
         Returns
         -------
-
-        No return value, but will add the passed domains to the protein or throw an exception
-        if something goes wrong!
+        None
+            No return value, but will add the passed domains to the protein or 
+            throw an exception if something goes wrong!
+        
+        
 
         """
 
@@ -1403,30 +1533,31 @@ class Protein:
             Position of the start of the domain, inclusive.
 
         end : int 
-            Position of the end of the domain (not inclusive). i.e. if we had a
-            domain that ran from start=10 end=20, it would be 10 residues long
-            and include residues [10, 11, 12, 13, 14, 15, 16, 17, 18, 19].
+            Position of the end of the domain (not inclusive). i.e. if we had 
+            a domain that ran from start=10 end=20, it would be 10 residues 
+            long and include residues [10, 11, 12, 13, 14, 15, 16, 17, 18, 19].
 
-        domain_type : string 
+        domain_type : str 
             None unique string that allows a type identifier to be associated 
             with a domain. 
 
-        attributes : dictionary [optional]
-            Optional dictionary which allows an arbitrary set of attributes to be
-            associated with a domain, in much the same way that they can be associated
-            with a protein. Default = None.
+        attributes : dict (default = None)
+            Optional dictionary which allows an arbitrary set of attributes to 
+            be associated with a domain, in much the same way that they can be 
+            associated with a protein. 
 
-        safe : bool 
-            If set to True over-writing tracks will raise an exception, otherwise overwriting
-            a track will simply over-write it. Default = True.
+        safe : bool (default = True)
+            If set to True over-writing tracks will raise an exception, 
+            otherwise overwriting a track will simply over-write it. 
 
-        autoname : bool
-            If autoname is set to true, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfectly overlapping in position
-            and type. This is generally not going to be required and/or make sense, but having
-            this feature in place is useful. In general we want to avoid this as it makes it 
-            easy to include duplicates which by default are prevented when autoname=False.
-
+        autoname : bool (default = False)
+            If autoname is set to true, this function ensures each domain 
+            ALWAYS has a unique name - i.e. the allows for multiple domains 
+            to be perfectly overlapping in position and type. This is generally 
+            not going to be required and/or make sense, but having this feature 
+            in place is useful. In general we want to avoid this as it makes it 
+            easy to include duplicates which by default are prevented when 
+            autoname=False.
         """
 
         # cast input data
@@ -1464,45 +1595,52 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def build_domain(self, input_data, domain_definition_function,  safe=True, autoname=False):
+    def build_domain(self, input_data, domain_definition_function, safe=True, autoname=False):
         """
-        Function that is somewhat analogous to build_tracks, but allows the user to define a custom function 
-        (domain_definition_function) that takes input_data and returns domain information, and then assigns
+        Function that is somewhat analogous to build_tracks, but allows the
+        user to define a custom function (domain_definition_function) that 
+        takes input_data and returns domain information, and then assigns        
         that domain information to a new domain
 
 
         Parameters
         ----------
         input_data : anything
-            Any input that makes sense when passed to the domain_definition_function
+            Any input that makes sense when passed to the 
+            domain_definition_function().
 
-        domain_definition_function : function that takes a single argument (input_data)
-            Function that takes input_data as it's input argument and returns a list of 0 or more dictionaries. 
-            Each dictionary within the list has a key-value pair that defines the following info:
+        domain_definition_function : function that takes a single argument 
+            (input_data) and returns a list of 0 or more dictionaries. Each 
+            dictionary within the list has a key-value pair that 
+            
+            defines the following info:
                     
-            start : domain start position
-            end   : domain end position
-            domain_type : type of the domain
-            attributesc : a dictionary of attributes to associated with the domain (optional)
+                start : domain start position
+                end   : domain end position
+                domain_type : type of the domain
+                attributes : a dictionary of attributes to associated with 
+                             the domain (optional)
             
-            Note that in principle only start and end are required, although we highly recommend  one/both of domain name and 
-            domain type.
-
-            Some important requirements to consider
-            (1) domain_definition_function must return a list of zero or more dictionaries
+            Note that in principle only start and end are required, although
+            we highly recommend one/both of domain name and domain type.
             
+            Some important requirements to consider:
 
+            (1) domain_definition_function must return a list of zero or more 
+                dictionaries.
+            
         safe : bool (default = True)
-            Flag which if true with throw an exception of a domain with the same name already exists
+            Flag which if true with throw an exception of a domain with the 
+            same name already exists.
 
         autoname : bool
-            If autoname is set to True, this function ensures each domain ALWAYS has a unique
-            name - i.e. the allows for multiple domains to be perfectly overlapping in position
-            and type. This is generally not going to be required and/or make sense, but having
-            this feature in place is useful. In general we want to avoid this as it makes it 
-            easy to include duplicates which by default are prevented when autoname=False.
-
-
+            If autoname is set to True, this function ensures each domain 
+            ALWAYS has a unique name - i.e. the allows for multiple domains 
+            to be perfectly overlapping in position and type. This is generally 
+            not going to be required and/or make sense, but having this feature
+            in place is useful. In general we want to avoid this as it makes it 
+            easy to include duplicates which by default are prevented when 
+            autoname=False.
         """
 
         # build our domain definitions. Should probably add code that ensyres
@@ -1515,23 +1653,26 @@ class Protein:
     ##        
     def remove_domain(self, domain_object, safe=True):
         """
-        Function that removes a given domain from the protein based on the passed domain object.
-        If the passed domain does not exist or is not associate with the protein then this will
-        trigger an exception unless safe=False
+        Function that removes a given domain from the protein based on the 
+        passed domain object. If the passed domain does not exist or is not 
+        associate with the protein then this will trigger an exception unless 
+        safe=False.
 
         Parameters
         ------------
         domain_object : Domain Object
             Domain Object that will be removed from the protein
 
-        safe : bool
-            Flag that if set to True means the function is robust to the type of 
-            domain_object, and if no such domain exist it is silently skipped
+        safe : bool (default = True)
+            Flag that if set to True means the function is robust to the 
+            type of domain_object, and if no such domain exist it is 
+            silently skipped.
 
         Returns
         -----------
         None
-            No return type but will remove an domain from the protein if present
+            No return type but will remove an domain from the protein if 
+            present.
            
         """
         if type(domain_object) != Domain:
@@ -1554,19 +1695,141 @@ class Protein:
                 raise ProteinException(f'Passed Domain [{domain_object}] not found in {self}')
             
 
-    """
-    ## To Do!
+
     ## ------------------------------------------------------------------------
     ##
     def get_domains_by_position(self, position, wiggle = 0):
-        pass
+        """
+        Functions that allows all domains found at a position to be returned.
+
+        Wiggle defines +/- residues that are allowed (default = 0) in the search
+        operation.
+
+        Parameters
+        ----------------
+        
+        position : int
+            Residue position of interest (position in sequence).
+
+        wiggle : int (default = 0)
+            Value +/- the position (i.e. lets you look at sites around a 
+            specific position).
+
+        Returns
+        --------------
+        list
+            Returns a list of Domain objects in the order they appear
+            in the protein.
+
+        """
+
+        return get_domains_by_type(position, position, wiggle=wiggle, mode='overlap')
+
+
 
 
     ## ------------------------------------------------------------------------
     ##
-    def get_domains_by_position_range(self, start, end, wiggle = 0):
-        pass
-    """
+    def get_domains_by_range(self, start, end, wiggle = 0, mode='overlap-strict'):
+
+        """
+        Function that allows all domains in a protein that are found within
+        a given range to be returned. Three possible modes can be used here;
+        'internal', 'overlap-strict' and 'overlap' (default = 
+        'overlap-strict').
+        
+        'internal' means that the range defined by start and end is 100% 
+        within the domains identified. For example, if a domain was 
+        between positions 50 and 100 then a range of 60 to 80 would 
+        identify that domain but a range of (say) 40 to 120 would not.
+        This is the least permissive mode.
+
+        'overlap-strict' means that the range defined by start and end
+        overlaps with the entire domain, but extra residues on at 
+        the start and the end of domain are not penalized. For example,
+        if a domain was between positions 50 and 100 then a range 
+        of 40 to 120 would be identified because the domain fully 
+        overlaps. However a range of 40 to 70 would not. This is the
+        second least permissive mmode, and all domains defined by 
+        'internal' are also identified by overlap-strict.
+
+        'overlap' means that the range can also straddle domain boundaires.
+        for example if a domain was between position 50 and 100 and the
+        range was between 40 and 70 this would count - essentially this
+        means any domains that overlap with the passed range in any
+        way are included. This is the most permissive mode, and all domains
+        identified by 'internal' and 'overlap-strict' are also identified
+        by 'overlap'.
+
+        Parameters
+        ---------------
+        start : int
+            Start of region of interest (position in sequence)
+
+        end : int
+            End of region of interest (position in sequence)
+
+        wiggle : int (default = 0)
+            Value +/- at the edges that are included. 
+
+        mode : str (default = 'overlap-strict')
+            Selector that allows the mode to be used for domain overlap
+            to be defined. Must be one of 'internal', 'overlap-strict',
+            or 'overlap'. Definitions and meaning described above.
+        
+        Returns
+        --------------
+        list
+            Returns a list of Domain objects in the order they appear
+            in the protein.
+
+        """
+
+        # check the mode keyword is valid
+        general_utilities.valid_keyword('mode', mode, ['internal','overlap-strict','overlap'])
+
+        # check the start and end values are valid
+        self._check_position_is_valid(start,  helper_string='Sequence region cannot start below 1 [%i]'%(start))
+        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+
+        # check the wiggle passed is valid
+        if wiggle < 0:
+            raise ProteinException('Passed a wiggle value less than 0')
+
+        return_list = []
+        
+        p1 = max(1, start - wiggle)
+        p2 = min(end + wiggle, self._len)
+
+        # cycle through each domain in the protein and build a list of those domains defined by the range
+        for domain in self.domains:
+
+            valid = False
+
+            # this scenario always means overlap
+            if p1 >= domain.start and p2 <= domain.end:
+                valid = True
+
+            # if we're using overlap strict or overlap then have a second criterion
+            if valid is False and (mode == 'overlap-strict' or mode == 'overlap'):
+                if p1 <= domain.start and p2 >= domain.end:
+                    valid = True
+
+            # if we haven't already found an domain and the mode is overlap
+            if valid is False and mode == 'overlap':
+
+                if p1 <= domain.start and p2 > domain.start:
+                    valid = True
+
+                if p1 <= domain.end and p2 > domain.end:
+                    valid = True
+            
+
+            if valid is True:
+                return_list.append(domain)
+
+        return return_list
+
 
     ## ------------------------------------------------------------------------
     ##
@@ -1578,18 +1841,19 @@ class Protein:
         Parameters
         ------------
         domain_type : string
-            String associated domain_type that you want to search for
+            String associated domain_type that you want to search for.
 
-        perfect_match : bool
-            Flag that identifies if the domain names should be a perfect match (=True) 
-            or if the string passed should just appear somewhere in the domain_type 
-
+        perfect_match : bool (default = True)
+            Flag that identifies if the domain names should be a perfect 
+            match (=True) or if the string passed should just appear 
+            somewhere in the domain_type .
+            
         Returns
         -----------
         list
-            Returns a list of Domain objects that match the requested type. Objects are ordered
-            by starting position in sequence.
-                    
+            Returns a list of Domain objects that match the requested type. 
+            Objects are ordered by starting position in sequence.
+                                
         """
 
         if perfect_match:
@@ -1629,9 +1893,8 @@ class Protein:
     @property
     def sites(self):
         """
-        **[Property]**: Provides a list of the sites associated with every site on 
-        the protein. Sorted N to C terminal.
-
+        **[Property]**: Provides a list of the sites associated with 
+        every site on the protein. Sorted N to C terminal.
         """
 
         # this means we will always
@@ -1648,10 +1911,10 @@ class Protein:
     @property
     def site_positions(self):
         """
-        **[Property]**: Provides a list of the sorted positions where a site is found
-        the protein. Sorted N to C terminal.
-
+        **[Property]**: Provides a list of the sorted positions where 
+        a site is found the protein. Sorted N to C terminal.
         """
+
         site_keys = list(self._sites.keys())
         site_keys.sort()
         return site_keys
@@ -1663,8 +1926,7 @@ class Protein:
     def site_types(self):
         """
         **[Property]**: Returns a list of the unique site types associated 
-        with this protein. There will be no duplicates here.
-        
+        with this protein. There will be no duplicates here.        
         """
 
         # define an empty set
@@ -1682,10 +1944,12 @@ class Protein:
     ##
     def site(self, position, safe=True):
         """
-        Returns the list of sites that are found at a given position. Note that - in general
-        site() should be used to retrieve sites you know exist while `get_sites_by_position()`
-        offers a way to more safely get sites at a position. Site will throw an exception 
-        if the position passed does not exist (while `get_sites_by_position()` will not).
+        Returns the list of sites that are found at a given position. 
+        Note that - in general site() should be used to retrieve sites 
+        you know exist while `get_sites_by_position()` offers a way to more 
+        safely get sites at a position. Site will throw an exception 
+        if the position passed does not exist (while `get_sites_by_position()` 
+        will not).
 
         Parameters
         -------------
@@ -1695,8 +1959,8 @@ class Protein:
         Returns
         ---------
         list
-            Returns a list with between 1 and n sites. Will raise an exception if 
-            the passed position cannot be found in the codebase.
+            Returns a list with between 1 and n sites. Will raise an exception
+            if the passed position cannot be found in the codebase.
 
         """
 
@@ -1711,15 +1975,16 @@ class Protein:
     ##
     def add_site(self, position, site_type, symbol=None, value=None, attributes=None):
         """
-        Function that adds a site to a specific position in the sequence. Sites are
-        indexed by residue position, and multiple sites can co-exist on the same site,
-        so no name is required (unlike Proteins, Tracks or Domains).
+        Function that adds a site to a specific position in the sequence. 
+        Sites are indexed by residue position, and multiple sites can 
+        co-exist  on the same site, so no name is required (unlike Proteins, 
+        Tracks or Domains).
        
-        site_type is a non-unique identifier that allows sites to be specifically
-        identified/selected.
+        site_type is a non-unique identifier that allows sites to be 
+        specifically identified/selected.
 
-        Sites can be associated with a numerical value, a symbol, or both. Sites can
-        also have attributes associated with them.
+        Sites can be associated with a numerical value, a symbol, or both. 
+        Sites can also have attributes associated with them.        
 
         If you wish to add many sites to many proteins, see:
         
@@ -1729,25 +1994,26 @@ class Protein:
         -----------
 
         position : int
-            Position of site (recall we index from 1 - i.e. the first residue in 
-            a protein = 1, not 0. Note that this value is cast to int.
+            Position of site (recall we index from 1 - i.e. the first 
+            residue in  a protein = 1, not 0. Note that this value is cast 
+            to int.
 
         site_type : string 
             Non-unique string that allows a type identifier to be associated 
             with a site.
 
-        symbol : string
-            Symbol associated with a site. Symbols are string-based - will often
-            be a single character but could be multiple characters. Default = None.
+        symbol : string (default = None)
+            Symbol associated with a site. Symbols are string-based - will 
+            often be a single character but could be multiple characters. 
 
-        value : float64 
-            Numerical value associated with a site. Note that the value is cast
-            to a float64. Default = None
+        value : float64 (default = None)
+            Numerical value associated with a site. Note that the value is 
+            cast to a float64. 
 
-        attributes : dictionary 
-            Optional dictionary which allows an arbitrary set of attributes to be
-            associated with a domain, in much the same way that they can be associated
-            with a protein. Default = None.
+        attributes : dict (default = None)
+            Optional dictionary which allows an arbitrary set of attributes 
+            to be associated with a domain, in much the same way that they 
+            can be associated with a protein. 
         
         """
         
@@ -1768,22 +2034,24 @@ class Protein:
     ##        
     def remove_site(self, site_object, safe=True):
         """
-        Function that removes a given site from the protein based on the passed site object.
-        If the passed site does not exist or is not associate with the protein then this will
-        trigger an exception unless safe=False
+        Function that removes a given site from the protein based on the
+        passed site object. If the passed site does not exist or is not 
+        associate with the protein then this will trigger an exception 
+        unless safe=False.
 
         Parameters
         ------------
         site : Site Object
-            Unique ID that will be used to retrieve a given protein. Note that remove_site()
-            can tollerate None as the site_object if Safe=False to enable a single for-loop to iterate
-            over a proteome and remove all sites of a specific type without worrying as to if the
-            site is present or not
+            Unique ID that will be used to retrieve a given protein. Note 
+            that remove_site() can tollerate None as the site_object if 
+            Safe=False to enable a single for-loop to iterate over a 
+            proteome and remove all sites of a specific type without 
+            worrying as to if the site is present or not.
 
         safe : bool
-            Flag that if set to True means if a passed unique_ID is missing from the underlying
-            proteome object an exception wll be raised (ProteomeException). If False a missing
-            unique_ID is ignored
+            Flag that if set to True means if a passed unique_ID is missing
+            from the underlying proteome object an exception wll be raised 
+            (ProteomeException). If False a missing unique_ID is ignored.
 
         Returns
         -----------
@@ -1836,7 +2104,7 @@ class Protein:
         position : int
             Residue position of interest (position in sequence)
 
-        wiggle : int, default = 0
+        wiggle : int (default = 0)
             Value +/- the position (i.e. lets you look at sites around a 
             specific position)
 
@@ -1879,11 +2147,20 @@ class Protein:
             Returns a dictionary where key-value pairs are
 
             * **keys**: positions along the sequence (int)
-            * **value**: list of one or more sites found at that position (list of shephard.site)
+            * **value**: list of one or more sites found at that 
+                         position (list of shephard.site)
 
         """
        
         return_dict = {}
+
+        self._check_position_is_valid(start,  helper_string='Sequence region cannot start below 1 [%i]'%(start))
+        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+
+        # check the wiggle passed is valid
+        if wiggle < 0:
+            raise ProteinException('Passed a wiggle value less than 0')
+
 
         # recal p1 and p2 should be in real-world indices 
         p1 = max(1, start - wiggle)
@@ -1908,16 +2185,16 @@ class Protein:
         ------------------
     
         site_types : string or list of strings
-            One or more possible site_types that may be found in the protein. Either
-            a single string or a list of strings can be passed, allowing for one or
-            more sites to be grouped together
+            One or more possible site_types that may be found in the protein. 
+            Either a single string or a list of strings can be passed, 
+            allowing for one or more sites to be grouped together
 
         Returns 
         ----------
         dict 
-            Returns a dictionary where the key is a position (site) and the value
-            is a list of one or more sites at that position that match the site
-            type of interest. 
+            Returns a dictionary where the key is a position (site) and the 
+            value is a list of one or more sites at that position that match 
+            the site type of interest. 
         
         """
 
@@ -1929,17 +2206,16 @@ class Protein:
     ##
     def get_sites_by_type_and_range(self, site_types, start, end, wiggle=0):
         """
-        Returns a set of sites that match both a type of interest and are found
-        in the range provided. 
-
+        Returns a set of sites that match both a type of interest and are 
+        found in the range provided. 
     
         Parameters
         ------------------
     
         site_types : string or list of strings
-            One or more possible site_types that may be found in the protein. Either
-            a single string or a list of strings can be passed, allowing for one or
-            more sites to be grouped together
+            One or more possible site_types that may be found in the 
+            protein. Either a single string or a list of strings can be 
+            passed, allowing for one or more sites to be grouped together.
 
         start : int
             Start residue that defines start of region to be examined
@@ -1947,16 +2223,16 @@ class Protein:
         end : int
             End reidue that defines end of region to be examined
 
-        wiggle : int
-            Value that adds a bit of slack to the start/end positions. Default
-            = 0.
+        wiggle : int (default = 0)
+            Value that adds slack to the start/end positions symmetrically
+            around the start and end positions.
 
         Returns 
         ----------
         dict 
-            Returns a dictionary where the key is a position (site) and the value
-            is a list of one or more sites at that position that match the site
-            type of interest. 
+            Returns a dictionary where the key is a position (site) and 
+            the value is a list of one or more sites at that position 
+            that match the site type of interest. 
       
         """
 
@@ -1972,23 +2248,24 @@ class Protein:
     ##
     def __site_by_type_internal(self, indict, site_types):
         """
-        Internal function that allows a subset of sites to be selected based 
-        on the passed site_type(s).
+        Internal function that allows a subset of sites to be selected 
+        based  on the passed site_type(s).
 
         Parameters
         ------------------
         site_types : string or list of strings
-            One or more possible site_types that may be found in the protein. Either
-            a single string or a list of strings can be passed, allowing for one or
-            more sites to be grouped together
+            One or more possible site_types that may be found in the 
+            protein. Either a single string or a list of strings can be 
+            passed, allowing for one or more sites to be grouped together.
 
         Returns
         -----------
         dict 
-            Returns a dictionary where the key is a position (site) and the value
-            is a list of one or more sites at that position that match the site
-            type of interest. This is exactly the same structure as the 
-            self._sites dictionary, just filtered for a specific site_type.
+            Returns a dictionary where the key is a position (site) and 
+            the value is a list of one or more sites at that position 
+            that match the site type of interest. This is exactly the 
+            same structure as the  self._sites dictionary, just filtered 
+            for a specific site_type.
 
         """
 

@@ -11,6 +11,7 @@ uniprot
 The uniprot module provides tools for working with uniprot data. Right now, only an automatic uniprot FASTA file parser is in place, but over time we plan to add more generic file I/O for uniprot derived files, given the robustness and broad user-ship.
 
 .. autofunction:: shephard.apis.uniprot.uniprot_fasta_to_proteome
+.. autofunction:: shephard.apis.uniprot.uniprot_proteome_to_fasta
 
 
 

@@ -14,49 +14,50 @@ from . exceptions import TrackException
 # Class that defines a Site in sequence
 #
 class Track:
-    """
-    Tracks define information that maps along a protein sequence.
-
-    A Track is, fundamentally, a vector which is the length of the sequence. 
-    This could be an way to re-code the amino acid sequence, or reflect some 
-    kind of sliding window analysis.
-    
-    Tracks can can either define a set of symbols that convert residues to 
-    symbols (i.e. discrete classifications) or values (i.e. floating number 
-    values associated with each position). Note that Tracks CANNOT define
-    both symbolic and numerical data (i.e. must be one or the other).
-    
-    Parameters
-    ------------
-
-    name : string
-        Defines the name of the track. This can be any value, but should be 
-        something that makes sense. The name can be 
-        used by analysis routines.
-
-    protein : Protein object
-        the protein from which the track is being added to
-
-    values : iterable of numerical values (default is None)
-        This iterable is passed over and convert into a list of floats. Must be 
-        same length as the number of residues in the protein.
-        
-
-    symbols : iterable of strings (default is None)
-        This iterable is directly assigned to the track.symbols variable. 
-        Must be same length as the number of residues in the protein.      
-        
-        
-    attribute_dictionary : dict (optional)
-        The attribute_dictionary provides a key-value pairing for arbitrary 
-        information. This could include different types of identifies, track 
-        generator functions, a set of Track partners, or anything else one might 
-        wish to associated with the track as a whole.
-
-    """
     
     def __init__(self, name, protein, values=None, symbols=None, attribute_dictionary = None):
+
         """
+        Tracks define information that maps along a protein sequence.
+
+        A Track is, fundamentally, a vector which is the length of the 
+        sequence. This could be an way to re-code the amino acid sequence, 
+        or reflect some kind of sliding window analysis.
+        
+        Tracks can can either define a set of symbols that convert residues 
+        to symbols (i.e. discrete classifications) or values (i.e. floating 
+        number values associated with each position). Note that Tracks 
+        CANNOT define both symbolic and numerical data (i.e. must be one or 
+        the other).
+    
+        Parameters
+        ------------
+        
+        name : string
+            Defines the name of the track. This can be any value, but should
+            be something that makes sense. The name can be used by analysis 
+            routines.
+                    
+        protein : Protein object
+            the protein from which the track is being added to
+        
+        values : iterable of numerical values (default = None)
+            This iterable is passed over and convert into a list of floats. 
+            Must be same length as the number of residues in the protein.
+        
+
+        symbols : iterable of strings (default = None)
+            This iterable is directly assigned to the track.symbols         
+            variable. Must be same length as the number of residues in 
+            the protein.      
+                
+        attribute_dictionary : dict (default = None)
+            The attribute_dictionary provides a key-value pairing for 
+            arbitrary information. This could include different types of 
+            identifies, track generator functions, a set of Track partners, 
+            or anything else one might wish to associated with the track 
+            as a whole.
+        
         """
 
         # if values were provided for the track...
@@ -217,21 +218,21 @@ class Track:
     ##
     def symbols_region(self, start, end):
         """
-        Returns a subregion from the symbols track
+        Returns a subregion from the symbols track.
 
         Parameters
         ----------
         start : int
-            Starting position of interest
+            Starting position of interest.
 
         end : int
-            Ending position of interest
+            Ending position of interest.
 
         Returns
         --------
         list
-            Returns a list of values that maps to the residues in the intervening region
-            defined by start and end)
+            Returns a list of values that maps to the residues in the 
+            intervening region defined by start and end).
 
         """
 
@@ -267,8 +268,8 @@ class Track:
     @property
     def attributes(self):
         """
-        **[Property]**: Provides a list of the keys associated with every attribute associated
-        with this Track.
+        **[Property]**: Provides a list of the keys associated with every 
+        attribute associated with this Track.
 
         Returns
         -------
@@ -286,26 +287,27 @@ class Track:
         """
         Function that returns a specific attribute as defined by the name. 
 
-        Recall that attributes are name : value pairs, where the 'value' can be 
-        anything and is user defined. This function will return the value associated 
-        with a given name.
-
+        Recall that attributes are name : value pairs, where the 'value' 
+        can be anything and is user defined. This function will return 
+        the value associated with a given name.
+        
         Parameters
         ----------------
         name : str
-             The attribute name. A list of valid names can be found by calling the
-             ``<Track>.attributes()`` (which returns a list of the valid names)
+            The attribute name. A list of valid names can be found by 
+            calling the  ``<Track>.attributes()`` (which returns a list 
+            of the valid names).
+            
 
         safe : bool (default = True)
-            Flag which if true with throw an exception if an attribute with the same
-            name  already exists
-            
+            Flag which if true with throw an exception if an attribute 
+            with the same name  already exists.
+                        
         Returns
         ---------
         Unknown 
-            Will either return whatever was associated with that attribute (which could be anything)
-            or None if that attribute is missing.
-        
+            Will either return whatever was associated with that attribute 
+            (which could be anything) or None if that attribute is missing.
         """
 
         # if name is in the _atributes dictionary the  return
@@ -327,9 +329,10 @@ class Track:
     ##
     def add_attribute(self, name, val, safe=True):
         """
-        Function that adds an attribute. Note that if safe is true, this function will
-        raise an exception if the attribute is already present. If safe=False, then
-        an existing value will be overwritten.
+        Function that adds an attribute. Note that if safe is true, this 
+        function will raise an exception if the attribute is already 
+        present. If safe=False, then an existing value will be 
+        overwritten.
 
         Parameters
         ----------------
@@ -341,13 +344,13 @@ class Track:
             An object or primitive we wish to associate with this attribute
 
         safe : bool (default = True)
-            Flag which if True with throw an exception if an attribute with the same
-            name already exists, otherwise the newly introduced attribute will overwrite
-            the previous one.
+            Flag which if True with throw an exception if an attribute with 
+            the same name already exists, otherwise the newly introduced 
+            attribute will overwrite the previous one.
 
         Returns
         ---------
-            None - but adds an attribute to the calling object
+            None - but adds an attribute to the calling object.
 
         """
 

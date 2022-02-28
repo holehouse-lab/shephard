@@ -12,10 +12,7 @@ import numpy as np
 import random
 from . import site_tools
 from shephard import general_utilities
-
-
 from shephard import exceptions
-
 
 ## ------------------------------------------------------------------------
 ##
@@ -58,9 +55,8 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
 ##
 def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
     """
-    Given two domains asks what fraction the shorter domain overlaps the longer
-    one with
-
+    Given two domains asks what fraction the shorter domain 
+    overlaps the longer one with.
     Parameters
     -----------
     domain_1 : Domain
@@ -69,7 +65,7 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
     domain_2 : Domain
         The first domain object of interest
 
-    check_origin : boolean
+    check_origin : bool (default = True)
         Flag that if set to True will cause an exception if domain_1 and
         domain_2 are from different proteins. If set to false, no such
         sanity checks are performed.
@@ -77,8 +73,8 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
     Returns
     ----------
     float
-        Returns a float between 0 and 1 that corresponds to what fraction of the
-        shorter domain overlaps with the longer domain
+        Returns a float between 0 and 1 that corresponds to what 
+        fraction of the shorter domain overlaps with the longer domain.
       
     """
 
@@ -123,7 +119,8 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
 ##
 def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, boundary_end2):
     """
-    Given four sets of starting/ending positions, this function asks if their boundaries overlap. 
+    Given four sets of starting/ending positions, this function asks if 
+    their boundaries overlap. 
 
     Parameters
     -----------
@@ -159,7 +156,7 @@ def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, 
 ##
 def build_missing_domains(protein, new_domain_type = 'missing'):
     """
-    Function which takes a protein an builds a set of domains that represent 
+    Function which takes a protein and builds a set of domains that represent 
     the "empty spaces". Domains are returned as a list of domain dictionaries
     which can be added to a protein via the add_domains() function.
 
@@ -179,7 +176,7 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
     protein : Protein object
         Protein object over which sites are identified
 
-    new_domain_type : string (default 'missing')
+    new_domain_type : str (default = 'missing')
         Name to assign to the 'empty' domains.
 
     Returns
@@ -217,6 +214,7 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
     if all_res[0] == 0:
         start = 0
         inside=True
+
     # else set start to -1  and inside to false
     else:
         start = -1
@@ -275,63 +273,107 @@ def build_domains_from_track_values(proteome,
                                     gap_closure = 3, 
                                     minimum_region_size = 20, 
                                     extend_ends = None, 
-                                    print_progress = False,
                                     verbose = True):
 
     
     """
-    Function that constructs domains from a values track. This effectively allows you to 
-    descritizie some continous variable into distinct local domains, which can often 
-    facilitate specific types of analysis.
-    
-    Under the hood, this works by cycling through each protein, extracting the track, 
-    and converting into domains.
-    
-    If a protein is too short or it lacks a given track, the protein is skipped.
+    Function which takes a Proteome and builds a set of domains based on
+    values tracks in each Protein in that Proteome. This effectively 
+    allows you to discretize some continous variable into distinct local 
+    domains, which can often facilitate specific types of analysis. This
+    conversion is done using a custom-passed binerize function which 
+    converts a normal track into a track of 0s and 1s. Residues that
+    are assigned a value of 1 will be included in a domain assuming they
+    fall within a contigous region of sufficient size, as defined by
+    the parameters gap_closure and minimum_region_size, as discussed 
+    below.
 
-    This tool is stateless - i.e. it does not alter the passed protein
-    but instead only generates a numerical list which could be added as 
-    a track.
-
-    This then returns a dictionary where keys are unique_IDs of proteins
-    and values is a list of one or more domains.
+    This function operates on an entire Proteome-level, and is stateless
+    (i.e. does not directly alter the passed proteome). Instead, the 
+    function dictionary where keys are unique_IDs of proteins and values 
+    is a list of one or more Domain dictioinaries (with a start, end,
+    and domain_type key:value pair).
 
     The domains dictionary can be added to a proteome using the 
-    si_domains.add_domains_from_dictionary(). As an example, as possible workflow
-    is
+    si_domains.add_domains_from_dictionary(). As an example, as possible 
+    workflow is as follows:
 
     >>> d = build_domains_from_track_values(proteome, 'cool_track', trackfx)
     >>> si_domains.add_domains_from_dictionary(proteome, d)
     
-
+    Under the hood, the function works by cycling through each protein, 
+    extracting the track, and converting into domains.
+        
+    If a protein is too short or it lacks a given track, the protein is 
+    skipped.
     
     Parameters
     -----------
     proteome : Proteome
-        The proteome which is going to be scanned for each track
+        The Proteome which is going to be scanned for each track. Note that
+        the underlying Proteome is not altered by this function
 
     track_name : string
-        Name of the track to convert. If the track name does not exist the function 
+        Name of the track to convert. If the track name does not exist in
+        a given protein that protein is skipped. In this way, a Proteome
+        where only a subset of Proteins have tracks can be parsed without
+        issue. The track must be a values track - symbols tracks should be
+        converted to a values track first to avoid issue.
 
     binerize_function : function
-        A function which takes a track and converts it to 0 or 1 (biner-ize, as in, make binary).
-        This 
+        A function which takes a track and converts it to 0 or 1 (binerize, 
+        as in, make binary). This enables a complex and continous 
+        track to be converted into a binary classification, which is 
+        practically what a domain-assigment needs (yes/no inside domain).
+        This function must take in a single variable (the track values) 
+        and return a new list or numpy array that is the same length as 
+        the track values but possesses only 0 and 1 in each element.
 
-    new_domain_type : string (default 'missing')
-        Name to assign to the 'empty' domains.
+    domain_type : str
+        String that defines the name of the new domains to create. Can in
+        principle be anything.
+
+    gap_closure : int (default = 3)
+        Defines spacing between 1s or 0s that will be filled in to generate
+        contigous stretches of 0s or 1s. This helps avoid a scenario where
+        breaks in contigous stretches impede the definition of a domain 
+        above a certain size, as defined by minimum_region_size. In general
+        a value of 3 works reasonably well in most scenarios.
+
+    minimum_region_size : int (default = 20)
+        Defines the smallest size for a domain allowed. This can be varied
+        depending on the question or data, and it may make sense to have 
+        corresponding changes in gap_closure if this value becomes 
+        substantially larger than a gap_closure of 3.
+
+    extend_ends : int (default = None)
+        This is a somewhat niche feature which, if set to a number, means 
+        that we check the extend_ends-th value at the N- and C-terminus 
+        of the binarized track, and if 1 set all values from that position
+        to the N and/or C terminus to 1. This is provided because sometimes
+        binerize functions will inherently struggle with the very ends of 
+        sequences, so this provides a way to cast the first and last 
+        extend_ends values to be 1. This is fairly specific and probably
+        only worth using in a scenario where there is a clear issue
+
+    verbose : bool (default = True)
+        This flag enables the function to print statues every 500 proteins.
+        If the binerize function is expensive this can be good to ensure 
+        progress is proceeding.
 
     Returns
     -------------
-    list of domain dictionaries
-
-        Returns a list of domain dictionaries which can be then parsed or
-        added to a protein via the add_domains() function.
+    dict
+        Returns a dictionary of key-value pairs, where each key is a unique
+        ID and each value is a list of 1 or more domain dictionaries. This
+        return dictionary can be directly added to a Proteome using the 
+        Proteome.add_domains_from_dictonary() function.
 
     """
     
     new_domains = {}
 
-    c=0
+    c = 0
     for protein in proteome:
 
         # if our protein is too short do not try and generate a domain
@@ -339,9 +381,9 @@ def build_domains_from_track_values(proteome,
             continue
         
         # this is the counter of proteins we've actually scanned - if
-        # we hid a 500-protein milestone print status if verbose is true
+        # we hit a 500-protein milestone print status if verbose is true
         c = c + 1
-        if print_progress and c % 500 == 0 and verbose:
+        if verbose and c % 500 == 0:
             print('On %i of %i' %(c, len(proteome)))
         
         # safe = false so will return None if no track of that name
@@ -407,9 +449,9 @@ def build_domains_from_track_values(proteome,
         B_string = '-'
         for i in B:
             if i == 1:
-                B_string=B_string+"1"
+                B_string = B_string + "1"
             else:
-                B_string=B_string+"0"
+                B_string = B_string + "0"
 
         B_string=B_string+'-'
         
@@ -439,14 +481,16 @@ def build_domains_from_track_values(proteome,
                 
             # note we don't check length of extend ends initially, so if they're too big for the sequence
             # dynamicaly resize them so they're 1/2 of the sequence length
-            if extend_ends+1 >= len(B):
-                extend_ends = len(B)/2
+            if extend_ends + 1 >= len(B):
+                extend_ends_val = len(B)/2
+            else:
+                extend_ends_val = extend_ends
                 
-            if B[extend_ends+1] == 1:
-                B[0:extend_ends] = [1]*len(B[0:extend_ends])
+            if B[extend_ends_val + 1] == 1:
+                B[0:extend_ends_val] = [1]*len(B[0:extend_ends_val])
 
-            if B[:-(extend_ends+1)] == 1:
-                B[-extend_ends:] = [1]*len(B[0:extend_ends])
+            if B[:-(extend_ends_val + 1)] == 1:
+                B[-extend_ends_val:] = [1]*len(B[0:extend_ends_val])
             
         ## Part 4 - extract domain boundaires
         local_domains=[]
@@ -478,7 +522,9 @@ def build_domains_from_track_values(proteome,
         if inside:
             local_domains.append({'start':start+1,'end':len(B),'domain_type':domain_type})
 
-        new_domains[protein.unique_ID] = local_domains
+        # if we found any local domains...
+        if len(local_domains) > 0:
+            new_domains[protein.unique_ID] = local_domains
 
     return new_domains
 

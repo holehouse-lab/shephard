@@ -17,43 +17,48 @@ from .exceptions import ProteinException, SiteException
 # Class that defines a Site in sequence
 #
 class Site:
-    """
-    Sites are defined sub-positions within a protein that map to a specific residue.
-    
-    Proteins contain a list of 0 or more sites, and each site is associated 
-    with the protein it originates from via the linking protein object.
-
-
-    Parameters
-    -------------
-
-    position : int
-        Position in sequence associated with this site
-
-    site_type :  str
-        Identifier for the site type
-
-    protein : Protein
-        Protein object for which this site is part of
-
-    symbol : str
-        Symbol associated with the site - a string-based representation of something specific
-        to the site. For a mutation that could be the residue the native residue mutates to, 
-        for example. Is not required. Default = None.
-
-    value : float
-        Value associated with the site - a numerical value (cast to a float). Is not required.
-        Default = None.
-
-    attributes : dict (optional)
-        The attributes dictionary provides a key-value pairing for arbitrary information.
-        This could include different types of identifies, track generator functions,
-        a set of Site partners, or anything else one might wish to associated with the
-        track as a whole. Default = None
-    
-    """
     
     def __init__(self, position, site_type, protein, symbol=None, value=None, attributes=None):
+
+        """
+        Sites are defined sub-positions within a protein that map to a 
+        specific residue.
+    
+        Proteins contain a list of 0 or more sites, and each site is 
+        associated with the protein it originates from via the linking 
+        protein object.
+
+
+        Parameters
+        -------------
+
+        position : int
+            Position in sequence associated with this site
+
+        site_type :  str
+            Identifier for the site type
+
+        protein : Protein
+            Protein object for which this site is part of
+        
+        symbol : str (default = None)
+            Symbol associated with the site - a string-based representation 
+            of something specific to the site. For a mutation that could be 
+            the residue the native residue mutates to, for example. 
+
+        value : float (default = None)
+            Value associated with the site - a numerical value (cast to a 
+            float). 
+        
+        attributes : dict (default = None)
+            The attributes dictionary provides a key-value pairing for 
+            arbitrary information. This could include different types of 
+            identifies, track generator functions, a set of Site partners, 
+            or anything else one might wish to associated with the track as 
+            a whole. 
+        
+        """
+
 
         # absolute position in protein associated with the site
         self._position  = int(position)
@@ -208,8 +213,8 @@ class Site:
     @property
     def attributes(self):
         """
-        **[Property]**: Provides a list of the keys associated with every attribute associated
-        with this Site.
+        **[Property]**: Provides a list of the keys associated with every 
+        attribute associated with this Site.        
 
         Returns
         -------
@@ -229,26 +234,29 @@ class Site:
         """
         Function that returns a specific attribute as defined by the name. 
 
-        Recall that attributes are name : value pairs, where the 'value' can be 
-        anything and is user defined. This function will return the value associated 
-        with a given name.
+        Recall that attributes are name : value pairs, where the 'value' 
+        can be anything and is user defined. This function will return 
+        the value associated with a given name.
+        
+        
 
         Parameters
         ----------------
         name : str
-             The attribute name. A list of valid names can be found by calling the
-             ``<Site>.attributes()`` (which returns a list of the valid names)
-
+             The attribute name. A list of valid names can be found by 
+             calling the ``<Site>.attributes()`` (which returns a list 
+             of the valid names)
+             
         safe : bool (default = True)
-            Flag which if true with throw an exception if an attribute with the same
-            name  already exists
-            
+            Flag which if true with throw an exception if an attribute 
+            with the same name already exists.
+                        
         Returns
         ---------
         Unknown 
-            Will either return whatever was associated with that attribute (which could be anything)
-            or None if that attribute is missing.
-        
+            Will either return whatever was associated with that attribute 
+            (which could be anything) or None if that attribute is missing.
+                    
         """
 
         # if name is in the _atributes dictionary the  return
@@ -270,9 +278,9 @@ class Site:
     ##
     def add_attribute(self, name, val, safe=True):
         """
-        Function that adds an attribute. Note that if safe is true, this function will
-        raise an exception if the attribute is already present. If safe=False, then
-        an existing value will be overwritten.
+        Function that adds an attribute. Note that if safe is true, this 
+        function will raise an exception if the attribute is already present. 
+        If safe=False, then an existing value will be overwritten.
 
         Parameters
         ----------------
@@ -284,9 +292,9 @@ class Site:
             An object or primitive we wish to associate with this attribute
 
         safe : bool (default = True)
-            Flag which if True with throw an exception if an attribute with the same
-            name already exists, otherwise the newly introduced attribute will overwrite
-            the previous one.
+            Flag which if True with throw an exception if an attribute with 
+            the same name already exists, otherwise the newly introduced 
+            attribute will overwrite the previous one.
 
         Returns
         ---------
@@ -307,23 +315,24 @@ class Site:
     ##
     def get_local_sequence_context(self, offset = 5):
         """
-        Returns the local amino acid context around a residue +/- the offset provided.
+        Returns the local amino acid context around a residue +/- the offset
+        provided.
         
-        Note that the offset extends to the start/end of sequence and then silently
-        truncates.
-
+        Note that the offset extends to the start/end of sequence and then 
+        silently truncates.
+        
         Parameters
         -----------
         offset : int
-            Defines the +/- region around the position which is used to define
-            the local sequence context.
+            Defines the +/- region around the position which is used to 
+            define the local sequence context.
+            
 
         Returns
         --------
         str
-            Returns an amino acid sequence that corresponds to the local sequence
-            context around the site of interest
-
+            Returns an amino acid sequence that corresponds to the local 
+            sequence context around the site of interest
         """
 
         return self._protein.get_sequence_context(self.position, offset)    
@@ -347,15 +356,12 @@ class Site:
         Parameters
         --------------
 
-        offset : int
+        offset : int (default = 0)
             +/- values around the site from which regions are taken.
-            Default = 0
 
-        safe : bool
+        safe : bool (default = True)
             If set to True, missing tracks trigger an exception, else they 
             just return None.
-            Default = True
-
 
         Returns
         ----------
@@ -393,12 +399,13 @@ class Site:
     ##      
     def get_track_values(self, name, offset=0, safe=True):
         """
-        Function that returns the region of a protein's values- track associated with
-        this site, +/- some offset.
+        Function that returns the region of a protein's values- track 
+        associated with this site, +/- some offset.
         
-        If the track name is missing and safe is True, this will throw an exception,
-        otherwise (if safe=False) then if the track is missing the function
-        returns None
+        If the track name is missing and safe is True, this will throw 
+        an exception, otherwise (if safe=False) then if the track is 
+        missing the function returns None.
+
 
         Parameters
         --------------
@@ -406,20 +413,21 @@ class Site:
         name : str
             Track name
 
-        offset : int
+        offset : int (default = 0)
             +/- values around the site from which regions are taken
 
-        safe : bool
-            If set to True, missing tracks trigger an exception, else they 
-            just return None
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, else 
+            they just return None
 
 
 
         Returns
         ----------
         list
-            Returns a list of floats that corresponds to the set of residues associated
-            with the domain of interest
+            Returns a list of floats that corresponds to the set of 
+            residues associated with the domain of interest
+            
 
         """
         
@@ -440,12 +448,13 @@ class Site:
     ##      
     def get_track_symbols(self, name, offset=0, safe=True):
         """
-        Function that returns the region of a protein's symbols track associated with
-        this domain.
-        
-        If the track name is missing and safe is True, this will throw an exception,
-        otherwise (if safe=False) then if the track is missing the function
-        returns None
+        Function that returns the region of a protein's symbols track 
+        associated with this site.
+                
+        If a Track of this name is not associated with the underlying
+        protein and safe is True, this will throw an exception, 
+        otherwise (if safe=False) then if the track is missing the 
+        function returns None.
 
         Parameters
         --------------
@@ -453,16 +462,15 @@ class Site:
         name : str
             Track name
 
-        safe : bool
-            If set to True, missing tracks trigger an exception, else they 
-            just return None
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, 
+            else they just return None
 
         Returns
         ----------
         list
-            Returns a list of strs that corresponds to the set of residues associated
-            with the domain of interest.
-
+            Returns a list of strs that corresponds to the set of 
+            residues associated with the domain of interest.
         """
 
         (p1, p2) = sequence_utilities.get_bounding_sites(self._position, offset, self._protein._len)

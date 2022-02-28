@@ -29,9 +29,9 @@ def build_site_density_vector(protein, site_types=None, window_size=30, append_l
         Protein object over which sites are identified
 
     site_type : string or list of strings
-        One or more possible site_types that may be found in the protein. Either
-        a single string or a list of strings can be passed, allowing for one or
-        more sites to be grouped together
+        One or more possible site_types that may be found in the protein. 
+        Either a single string or a list of strings can be passed, allowing 
+        for one or more sites to be grouped together
 
     window_size : int
         Size of sliding window over which site density is calculated

@@ -37,10 +37,12 @@ class _SitesInterface:
         filename : str
             Name of the shephard domains file to read
 
-        delimiter : str, default = \t
+        Other Parameters
+        ----------------
+        delimiter : str (default = \t)
             String used as a delimiter on the input file. 
 
-        skip_bad : boolean, default = True 
+        skip_bad : bool (default = True)
             Flag that means if bad lines (lines that trigger an exception) 
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
@@ -139,7 +141,7 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
 
     Other Parameters
     ----------------
-    delimiter : str, default='\\t'
+    delimiter : str (default = '\\t')
         String used as a delimiter on the input file. 
 
     return_dictionary : bool, default=False
@@ -148,7 +150,7 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
         function basically becomes a parser for SHEPHARD-compliant        
         sites files. 
 
-    safe : bool, default=True
+    safe : bool (default = True)
         If set to True then any exceptions raised during the site-adding 
         process (i.e. after file parsing) are acted on. If set to False, 
         exceptions simply mean the site in question is skipped. There are 
@@ -157,14 +159,14 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
         is also printed to screen. It is highly recommend that if you choose 
         to use safe=False you also set verbose=True. Default = True.
         
-    skip_bad : bool, default=True
+    skip_bad : bool (default = True)
         Flag that means if bad lines (lines that trigger an exception) are 
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
         (regardless of verbose flag). 
 
-    verbose : bool, default=True
+    verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors 
         on adding sites.
         
@@ -238,7 +240,7 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
     Other Parameters
     ----------------
 
-    safe : bool, default=True
+    safe : bool (default = True)
         If set to True then any exceptions raised during the site-adding 
         process are acted on. If set to false, exceptions simply mean the 
         site in question is skipped. There are various reasons site addition 
@@ -247,7 +249,7 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
         also printed to screen. It is highly recommend that if you choose to
         use safe=False you also set verbose=True
 
-    verbose : bool, default=False
+    verbose : bool (default = False)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding sites.
 
@@ -303,20 +305,19 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
     
     Parameters
     -----------
-    proteome :  shephard.proteome.Proteome
+    proteome :  Proteome
         Proteome object from which the sites will be extracted from
 
     filename : str
         Filename that will be used to write the new sites file
 
     Other Parameters
-    ----------------
-    
-    site_type : str, default=None
+    ----------------    
+    site_type : str (default = None)
         If provided, this is an identifier that allows you to specificy 
         a specific site type to write out.
 
-    delimiter : str, default='\\t'
+    delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. 
         Default is the tab character ('\\t'), which is recommended to 
         maintain compliance with default SHEPHARD file-reading functions.     
@@ -324,8 +325,9 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
     Returns
     --------
     None
-        No return type, but generates a new file with the complete set of sites
-        from this proteome written to disk.
+        No return type, but generates a new file with the complete set of 
+        sites from this proteome written to disk.
+        
 
     """
 

@@ -23,8 +23,7 @@ import shephard
 # -- Project information -----------------------------------------------------
 
 project = 'shephard'
-copyright = ("2020, Garrett Ginell and Alex Holehouse. Project structure based on the "
-             "Computational Molecular Science Python Cookiecutter version 1.1")
+copyright = ("2019-2022, Garrett Ginell and Alex Holehouse. Developed by the Holehouse lab")
 author = 'Garrett Ginell and Alex Holehouse'
 
 # The short X.Y version
@@ -53,8 +52,9 @@ extensions = [
 ]
 
 autosummary_generate = True
+napoleon_numpy_docstring = True
 napoleon_google_docstring = False
-napoleon_use_param = False
+napoleon_use_param = True
 napoleon_use_ivar = True
 
 # Add any paths that contain templates here, relative to this directory.

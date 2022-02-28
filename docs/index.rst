@@ -11,14 +11,16 @@ Welcome to shephard's documentation!
    :caption: Contents:
 
    overview
-   examples
+   getting_started
    proteome
    protein
    domain
    site
    track
+   shephard_file_types
    interfaces
    apis
+   code_convention
 
 
 

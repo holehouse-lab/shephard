@@ -23,7 +23,7 @@ class _ProteinsInterface:
     """
 
     def __init__(self, filename, delimiter='\t', skip_bad=True):
-        """
+        r"""
         Expect files of the following format:
 
         Unique_ID, name, sequence, key1:value1, key2:value2, ..., keyn:valuen
@@ -36,18 +36,18 @@ class _ProteinsInterface:
         filename : str
             Name of the shephard domains file to read
 
-        delimiter : str 
-            String used as a delimiter on the input file. 
-            Default = '\t'
+        Other Parameters
+        ----------------
 
-        skip_bad : boolean
+        delimiter : str (default = '\\t')
+            String used as a delimiter on the input file. 
+
+        skip_bad : bool (default = True)
             Flag that means if bad lines (lines that trigger an exception) 
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
             printed (regardless of verbose flag). 
-            Default = True
-
 
         """
 
@@ -117,25 +117,17 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
     """
     Function that takes a correctly formatted protein dictionary and will 
     add those proteins to the Proteome.
-    
 
     protein dictionaries are key-value pairs, where the key is a unique 
     ID and the value is itself a dictionary which has the following keys:
     
-
-    'name'       = Protein name (uncontrolled vocabulary, but should be 
-                   a string)
-
-    'sequence'   = Amino acid sequence for the protein (note that no 
-                   sanity checking is done here)
-                   
-
-    'attributes' = dictionary of arbitrary key:value pairings (optional)
-
+    * **name** - Protein name (uncontrolled vocabulary, but should be a string)
+    * **sequence** - Amino acid sequence for the protein (note that no sanity checking is done here)
+    * **attributes** - Dictionary of arbitrary key:value pairings (optional)
 
     Parameters
     ----------
-    proteome : Proteome Object
+    proteome : Proteome
         Proteome object to which attributes will be added
 
     protein_dictionary : dict
@@ -144,25 +136,27 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
         of THOSE sub dictionaries contains key-value pairs are described 
         above.
 
-    safe : boolean 
+
+    Other Parameters
+    ----------------
+
+    safe : bool (default = True)
         If set to True then any exceptions raised during the protein-adding 
         process are acted on. If set to False, exceptions simply mean the 
         protein_attribute in question is skipped. Note if set to False, 
         pre-existing protein_attributes with the same name would be silently 
         overwritten (although this is not consider an error), while overwriting 
         will trigger an exception. 
-        Default=True.
-        
-       
+               
         The only reason protein attribute addition could fail is if the 
         attribute already exists, so this is effectively a flag to define 
         if pre-existing attributes should be overwritten (False) or not (True).
         Default = True.
     
-    verbose : boolean
+    verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
-        Default=True
+
 
     Returns
     -----------
@@ -189,7 +183,6 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
             ats = protein_dictionary[UID]['attributes']
         except:
             ats = None
-
                 
         s = protein_dictionary[UID]['sequence']
 
@@ -213,22 +206,22 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
 ## ------------------------------------------------------------------------
 ##
 def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary = False, safe=True, skip_bad=True, verbose=True):
-    """
+    r"""
     Function that takes a correctly formatted 'protein' file and reads 
     every protein into the passed proteome.
-    
 
     The function expects protein files to have the following format:
 
     >>> Unique_ID name sequence key_1:value_1 key_2:value_2 ... key_n:value_n
 
-    One protein defined per line (with NO duplicates allowed - duplicate entries
-    on the file will trigger an un-rescuable error) where key:values are optional 
-    and can be between 0 and n.
+    One protein defined per line (with NO duplicates allowed - duplicate 
+    entries on the file will trigger an un-rescuable error) where key:values 
+    are optional and can be between 0 and n.
+    
     
     A couple of key points here:
 
-    - The default delimiter is tabs ('\t') but this can be changed with 
+    - The default delimiter is tabs ('\\t') but this can be changed with 
       the delimiter argument
       
     - Key value must be separated by a ':', as a result any delimiter
@@ -239,41 +232,42 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
           
     Parameters
     ----------
-    proteome : Proteome Object
+    proteome : Proteome
         Proteome object to which attributes will be added
 
     filename : str
         Name of the shephard protein attributes file to read
 
-    delimiter : str 
-        String used as a delimiter on the input file. 
-        Default = '\t'
 
-    return_dictionary : bool
+    Other Parameters
+    ----------------
+
+    delimiter : str (default = '\\t')
+        String used as a delimiter on the input file. 
+
+    return_dictionary : bool (default = False)
         If set to true, this function will return the protein dictionary 
         and will NOT add that dictionary to the proteome - i.e. the function 
         basically becomes a parser for SHEPHARD-compliant protein files. 
         Default = False
 
-    safe : boolean 
+    safe : bool (default = True)
         If set to True then any exceptions raised during the protein-adding 
         process are acted on. Specifically this becomes relevant if we wish 
         to overwrite duplicates (or throw an exception on duplicates).
-        Default = True.
 
-    skip_bad : boolean
+    skip_bad : bool (default = True)
         Flag that means if bad lines (lines that trigger an exception) are 
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
         (regardless of verbose flag). skip_bad exclusively influences the 
         file-reading part of the process.
-        Default = True.
     
-    verbose : boolean
+    verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
-        Default = True.
+
 
     Returns
     -----------
@@ -321,16 +315,21 @@ def write_proteins(proteome, filename, delimiter='\t'):
     Parameters
     -----------
 
-    proteome :  Proteome object
+    proteome : Proteome 
         Proteome object from which the domains will be extracted from
 
     filename : str
         Filename that will be used to write the new domains file
 
-    delimiter : str
+
+    Other Parameters
+    ----------------
+
+    delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. 
-        Default is '\t', which is recommended to maintain compliance 
+        Default is '\\t', which is recommended to maintain compliance 
         with default `add_protein_attributes_from_file()` function
+
 
     Returns
     --------
