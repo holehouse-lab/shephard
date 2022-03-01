@@ -139,6 +139,33 @@ class Proteome:
 
 
 
+    ## ------------------------------------------------------------------------
+    ##                
+    def check_unique_ID(self, unique_id):
+        """
+        Function that checks if a given unique ID is found. Note that this 
+        function is not needed for testing if a unique_ID is present if the 
+        goal is to request Protein Objects (or not). Instead, one can use 
+        the .protein(<unique_ID>, safe=False). By setting safe=False if the
+        unique_ID is not found then this function will simply return None.
+
+        Parameters
+        -----------
+        unique_id : string
+            String corresponding to a unique_ID associated with some protein
+
+        Returns
+        ----------
+        bool
+            Returns True if the passed ID is present, or False if not.
+
+        """
+        if unique_id in self._records.keys():
+            return True
+        else:
+            return False
+
+
 
     ## ------------------------------------------------------------------------
     ##
@@ -154,7 +181,7 @@ class Proteome:
         --------
 
         ``list`` of ``str``
-            Returns a list of unique_IDs
+            Returns a list of unique IDs
 
         """
 
@@ -263,13 +290,18 @@ class Proteome:
     ## ------------------------------------------------------------------------
     ##        
     def add_proteins(self, input_list, force_overwrite=False):
-        """
+        r"""
         Function that allows the user to add a multiple new proteins using 
         either a list of protein dictionaries (described below) or a list 
-        of Protein objects.
+        of Protein objects.        
+
+        **Protein dictionaries**
+        
+        One mode of adding multiple proteins is by passing a list of 
+        Protein dictionaries.
 
         Protein dictionaries are dictionaries that posses the following 
-        key-value pairs:
+        key-value pairs ::
 
             'sequence'   : amino acid sequence (str)
             'name'       : protein name (str)
@@ -278,15 +310,23 @@ class Proteome:
             'attributes' : A dictionary of arbitrary key-value pairs to 
                            associate with the protein (dict or None)
         
-
         Additional keys/value pairs are ignored and ALL four of these must
         be included. If any are missing for any protein entry this function 
         raises a ProteomeException.
+
+        **Protein objects**
+        A second mode of adding multiple proteins is by passing a list of
+        Protein objects
+
+        In both cases, the function automatically determines the type of 
+        the passed list, and adds dictionaries accordingly. Note that 
+        in both cases proteins are added by value - i.e. a new Protein
+        object is generated.
         
         Parameters
         -----------
         input_list : list
-            List of Protein dictionaries.
+            List of Protein dictionaries or list of Protein objects
         
         force_overwrite : bool (default = False)
             If set to False and a unique_ID is included that already is 
@@ -476,6 +516,7 @@ class Proteome:
         Function that removes a given protein from the Proteome based on the
         passed unique_ID. If the passed unique_ID does not exist then this 
         will trigger an exception unless safe=False.
+
         
         Parameters
         ------------
@@ -485,14 +526,14 @@ class Proteome:
         safe : bool (default = True)
             Flag that if set to True means if a passed unique_ID is missing 
             from the underlying proteome object an exception wll be raised 
-            (ProteomeException). 
-            
-            If set to False, a missing unique_ID is ignored.
+            (ProteomeException). If set to False, a missing unique_ID is 
+            ignored.
+
 
         Returns
         -----------
         None
-            No return type but will remove an entry from the proteome.
+            No return type but will remove an entry from the Proteome.
            
         """
 
@@ -645,6 +686,14 @@ class Proteome:
         self._attributes[name] = val        
         
 
+
+
+    ###################################
+    ##                               ##
+    ##       DOMAIN FUNCTIONS        ##
+    ##                               ##
+    ###################################
+
     ## ------------------------------------------------------------------------
     ##
     @property
@@ -672,6 +721,39 @@ class Proteome:
         return all_domains
 
 
+        
+    ## ------------------------------------------------------------------------
+    ##                
+    @property
+    def unique_domain_types(self):
+        """
+        Returns the list of unique Domain types associated with this Proteome.
+
+        Return
+        -------
+
+        list of str
+            Each element in the list is a string that corresponds to a Domain 
+            type.
+
+        """
+
+        # Some description of what's going on here is in order. Every time a new domain
+        # is added, the Domain constructor calls the function _Domain__update_domain_types
+        # which checks if the domain_type of the domain being added is already in the
+        # _unique_domain_types list. If yes, fine, if no, it gets added. This means
+        # _unique_domain_types keeps track of a count of the complete number of unique
+        # domains in the Proteome. An analogous setup holds true for the sites and tracks.
+        
+        return list(self._unique_domain_types.keys())
+
+
+
+    ###################################
+    ##                               ##
+    ##        SITES FUNCTIONS        ##
+    ##                               ##
+    ###################################
 
     ## ------------------------------------------------------------------------
     ##                
@@ -698,35 +780,7 @@ class Proteome:
         for prot in self:
             all_sites.extend(prot.sites)
         return all_sites
-                
-
-        
-    ## ------------------------------------------------------------------------
-    ##                
-    @property
-    def unique_domain_types(self):
-        """
-        Returns the list of unique Domain types associated with this Proteome.
-
-        Return
-        -------
-
-        list of strings
-            Each element in the list is a string that corresponds to a Domain 
-            type.
-
-        """
-
-        # Some description of what's going on here is in order. Every time a new domain
-        # is added, the Domain constructor calls the function _Domain__update_domain_types
-        # which checks if the domain_type of the domain being added is already in the
-        # _unique_domain_types list. If yes, fine, if no, it gets added. This means
-        # _unique_domain_types keeps track of a count of the complete number of unique
-        # domains in the Proteome. An analogous setup holds true for the sites and tracks.
-        
-        return list(self._unique_domain_types.keys())
-    
-
+                    
 
     ## ------------------------------------------------------------------------
     ##                
@@ -738,7 +792,7 @@ class Proteome:
         Return
         -------
 
-        list of strings
+        list of str
             Each element in the list is a string that corresponds to a Site type
 
         """
@@ -749,10 +803,16 @@ class Proteome:
         # _unique_site_types list. If yes, fine, if no, it gets added. This means
         # _unique_site_types keeps track of a count of the complete number of unique
         # sites in the Proteome. An analogous setup holds true for domains and tracks.
-        
 
         return list(self._unique_site_types.keys())
     
+
+
+    ###################################
+    ##                               ##
+    ##        TRACK FUNCTIONS        ##
+    ##                               ##
+    ###################################
 
     ## ------------------------------------------------------------------------
     ##                
@@ -798,33 +858,6 @@ class Proteome:
         """
 
         return dict(self._track_name_to_track_type)
-
-
-    ## ------------------------------------------------------------------------
-    ##                
-    def check_unique_ID(self, unique_id):
-        """
-        Function that checks if a given unique ID is found. Note that this 
-        function is not needed for testing if a unique_ID is present if the 
-        goal is to request Protein Objects (or not). Instead, one can use 
-        the .protein(<unique_ID>, safe=False). By setting safe=False if the
-        unique_ID is not found then this function will simply return None.
-
-        Parameters
-        -----------
-        unique_id : string
-            String corresponding to a unique_ID associated with some protein
-
-        Returns
-        ----------
-        bool
-            Returns True if the passed ID is present, or False if not.
-
-        """
-        if unique_id in self._records.keys():
-            return True
-        else:
-            return False
 
 
     ####################################
@@ -881,10 +914,11 @@ class Proteome:
         Allows a Proteome object to act as a generator that yields actual 
         proteins, so the syntax
         
+        .. code-block:: python
 
-        >>> for protein in ProteomeObject:
-        >>>    print(protein.sequence)
-
+           for protein in ProteomeObject:
+               print(protein.sequence)
+        
         is be valid and would iterate through the proteins in the Proteome. 
         
         This makes performing some analysis over all proteins quite easy.
@@ -900,6 +934,12 @@ class Proteome:
         """
         Enables the syntax X in Proteome to be used, where X can be 
         either a unique ID or a Proteome object.
+
+        .. code-block:: python
+
+           if protein.unique_ID in ProteomeObject:
+               print(f'The protein {protein} is in the Proteome!')
+
 
         """
 
@@ -920,7 +960,15 @@ class Proteome:
     def __getitem__(self, key):
         """
         Allows slicing index into Proteome to retrieve subsets of protein
+
+        .. code-block:: python
+
+           first_protein = ProteomeObject[0]
+           print(f'The first protein is {first_protein}')
+
         """
+
+
         if isinstance(key, int) and key >= 0:
             return list(islice([self._records[i] for i in self._records], key, key+1))[0]
 

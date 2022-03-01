@@ -1,8 +1,14 @@
 Code convention
 =================
+SHEPHARD is designed with the goal of open source contribution and additional extensions. In particular, we imagine the core to be (relatively) stable, but the APIs module offers a means for the development of novel tools to enable analysis to be performed on SHEPHARD Proteomes using third-party tools and libraries.
+
+With this in mind, this file contains a set of recommendations for developing, adding, or contributing to SHEPHARD. This page has several subsections which offer guidance on how to write functions, the philosophical goals of the code layout, and finally some specific guidance on writing new APIs.
+
 
 Format for function signatures
-------------------------------
+--------------------------------
+
+First things first - if you want to define a new function, it's important to follow the standard format used for all function docstrings.
 
 The general format for function signatures in SHEPHARD show below.
 
@@ -78,34 +84,34 @@ In general, functions defined in tools modules (shephard.tools) should be statel
 2. Not change input data passed directly, but instead return a type that can be used to update stateful objects (e.g. Proteomes, Proteins etc).
 
 
-Misc.
--------
+Miscellaneous modules
+-----------------------
 In addition to the major module classes outlined above, there are several additional modules that provide generic functionality.
 
 
-``shephard.general_utilities``
+general_utilities (``shephard.general_utilities``)
 .................................
 The general utilities module provides stateless data manipulation functions for doing a variety of non-specific work. This includes data type conversion, simple mathematical operations, and sanity checking functions. Any function that (broadly) carries out a generic Python-associated function can be included here. The functions here could in principle be used by other packages as well, and are in no-way meant to be SHEPHARD specific.
 
 
-``shephard.sequence_utilities``
+sequence_utilities (``shephard.sequence_utilities``)
 .................................
 The sequence utilities module is, analagous to the general utilities module, a place for a set of stateless functions that perform sequence manipulation. These functions are meant to be limited to SHEPHARD, although in principle like those found in general utilities could be useful outside of SHEPHARD. However, they mostly are included to solve SHEPHARD-specific generic sequence-associated problems. For a broader set of sequence manupulation tools, see the ``shephard.tools.sequence_tools`` module.
 
 
-``shephard.tools.sequence_tools`` 
+sequence_tools (``shephard.tools.sequence_tools``)
 ....................................
 The sequence tools module contains a set of sequence manipulation functions (where sequences here are just strings) that may be of general use, both inside and outside SHEPHARD. Just as the ``shephard.domain_tools`` is designed to work in a domain-focusse way, the sequence tools module is meant to work with sequence (`str`) focussed way. 
 
 
-``shephard.exceptions``
+exceptions (``shephard.exceptions``)
 .................................
 The SHEPHARD exceptions class allows customizable exceptions to be defined. In general we are trying to keep these exceptions somewhat limited in number, but they enable more specific error handling in complex pipelines.
 
 
 Contributing to SHEPHARD
 --------------------------
-TO DO
+
 
 
 How to write a new API
