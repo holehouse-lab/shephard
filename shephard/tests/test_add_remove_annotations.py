@@ -40,10 +40,6 @@ def test_remove_track():
         
     assert len(P.unique_track_names) == 0
 
-        
-
-    #assert 1 == 2
-
 
 def test_remove_site():
     test_data_dir = shephard.get_data('test_data')

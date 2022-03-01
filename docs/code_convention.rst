@@ -203,19 +203,19 @@ Once we've created our new file (``test_calculated_domain_lengths.py``) we next 
 	interfaces.si_domains.add_domains_from_file(P, domain_file)
 
 
-    # we manually looked in the TS1_domains.idr.tsv file and found a protein
-    # where the 1st domain length is KNOWN. The test we're going to write is to
-    # to make sure the function can reproduce this 'known' domain length.
-    TEST_ID='O00401'
+        # we manually looked in the TS1_domains.idr.tsv file and found a protein
+        # where the 1st domain length is KNOWN. The test we're going to write is to
+        # to make sure the function can reproduce this 'known' domain length.
+        TEST_ID='O00401'
 
-    # get the 1st domain in the protein defined by the TEST_ID ID - note we're indexing
-    # into the 0th element in this protein to get the 1st domain.
-    domain = P.protein(TEST_ID).domains[0]
+        # get the 1st domain in the protein defined by the TEST_ID ID - note we're indexing
+        # into the 0th element in this protein to get the 1st domain.
+        domain = P.protein(TEST_ID).domains[0]
 
-    # this is where the test actually happens: we want to use the assert statement 
-    # to check that if we run our new function it returns the expected value (20, in 
-    # this case).
-    assert domain_tools.calculate_domain_length(domain) == 20
+        # this is where the test actually happens: we want to use the assert statement 
+        # to check that if we run our new function it returns the expected value (20, in 
+        # this case).
+        assert domain_tools.calculate_domain_length(domain) == 20
 
 The code above takes advantage of the fact that we KNOW the first domain in the protein defined by the ID **O00401** should be 20 residues long. Tests are based on ensuring a function gives an expected outcome, and, as with any expected outcome, you should make sure you know the outcome ahead of time to write a good test! 
 
