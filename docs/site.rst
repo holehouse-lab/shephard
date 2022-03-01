@@ -5,7 +5,7 @@ Site
 .. autoclass:: shephard.site.Site
 
 
-Site Properties
+Site properties
 ................
 .. autofunction:: shephard.site.Site.residue
 .. autofunction:: shephard.site.Site.position
@@ -15,13 +15,13 @@ Site Properties
 .. autofunction:: shephard.site.Site.value
 
 
-Site Functions
-.............
+Site sequence functions
+............................
 .. autofunction:: shephard.site.Site.get_local_sequence_context
 
 
 Site Track Functions
-.............
+.......................
 .. autofunction:: shephard.site.Site.get_track_values
 .. autofunction:: shephard.site.Site.get_track_symbols
 

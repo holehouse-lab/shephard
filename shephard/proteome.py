@@ -72,22 +72,27 @@ class Proteome:
 
     ## ------------------------------------------------------------------------
     ##
-    def __init__(self, input_list, attributes = None, force_overwrite=False):
+    def __init__(self, input_list = None, attributes = None, force_overwrite=False):
         # See the Proteome class documentation for constructor info
         """
         Constructor that generates a new Proteome object. This includes 
-        taking a list of Protein objects (input_list) and, optionally an 
-        attributes dictionary for the proteome itself.
-        
-
+        taking a list of Protein objects or protein dictionaries (input_list) 
+        and, optionally an attributes dictionary for the proteome itself.
+                
         In addition, force_overwrite can be used to deal with duplicate 
         entries in the input_list.
 
-        Parameters
-        -------------
+        There are two types of lists that can be tolerated when passed to
+        the Proteome constructor: a list of protein dictionaries and a 
+        list of Protein objects. Note this simply is using the 
+        .add_proteins() function to add the passed input_list.
+
+        **Protein dictionaries**        
+        One mode of adding multiple proteins is by passing a list of 
+        Protein dictionaries.
 
         Protein dictionaries are dictionaries that posses the following 
-        key-value pairs:
+        key-value pairs ::
 
             'sequence'   : amino acid sequence (str)
             'name'       : protein name (str)
@@ -95,23 +100,31 @@ class Proteome:
                            protein (str)
             'attributes' : A dictionary of arbitrary key-value pairs to 
                            associate with the protein (dict or None)
-                                   
-
-        Additional keys/value pairs are ignored and ALL four of these 
-        must be included. If any are missing for any protein entry this 
-        function raises a ProteomeException.
         
+        Additional keys/value pairs are ignored and ALL four of these must
+        be included. If any are missing for any protein entry this function 
+        raises a ProteomeException.
+
+        **Protein objects**
+        A second mode of adding multiple proteins is by passing a list of
+        Protein objects. This is useful if you're creating a new Proteome
+        based on a subset of proteins from an existing Proteome.
+
+        In both cases, the function automatically determines the type of 
+        the passed list, and adds dictionaries accordingly. Note that 
+        in both cases proteins are added by value - i.e. a new Protein
+        object is generated.
         
         Parameters
         -----------
-        input_list : list
+        input_list : list (default = None)
             List of Protein dictionaries
 
-        attributes : dict
+        attributes : dict (default = None)
             A an arbitrary set of key-value pairs to annotate the proteome 
-            with metadata
+            with metadata.
         
-        force_overwrite : bool
+        force_overwrite : bool (default = False)
             If set to False and there are duplicate unique_IDs in protein 
             dictionaries in the input_list this will trigger an exception. 
             However, if set to True then the 'last' entry overwrites a             
@@ -134,8 +147,12 @@ class Proteome:
         else:
             self._attributes = attributes
 
-        if len(input_list) > 0:
-            self.add_proteins(input_list)
+        # if no/empty input provided then we're done
+        if input_list is None or len(input_list) == 0:
+            return
+
+        # else try and add proteins - probably could be more soph
+        self.add_proteins(input_list)
 
 
 

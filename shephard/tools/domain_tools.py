@@ -529,8 +529,28 @@ def build_domains_from_track_values(proteome,
     return new_domains
 
 
-            
-                    
+   
+# used for test example - kept in case we want to expand or update this in          
+
+# def calculate_domain_length(domain):
+#    """
+#    Function that returns a domain's length
+#    
+#    Parameters
+#    -------------
+#    domain : Domain
+#    Domain object in question
+#
+#    Returns
+#    ------------
+#    int
+#    Returns the length of the domain
+#    """
+#    
+#    return len(domain)
+
+
                 
-                
             
+
+

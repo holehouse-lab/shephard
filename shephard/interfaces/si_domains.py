@@ -446,12 +446,10 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
     
     Domains dictionaries are key-value pairs, where the key is a unique_ID 
     associated  with a given protein, and the value is a list of 
-    dictionaries. Each subdictionary has four key-value pairs::
+    dictionaries. Each subdictionary has four key-value pairs:
 
-    Each subdictionary has four key-value pairs::
-
-       * 'protein'     = the unique_ID of the protein for which to domain is 
-                    associated with
+       * 'protein'  the unique_ID of the protein for which to domain is associated with
+                    
        * 'domain_name' = domain type (string that names the domain)
 
        * 'attributes'  = dictionary of arbitrary key:value pairings (optional)

@@ -32,7 +32,7 @@ Domain properties
 ....................
 
 .. autofunction:: shephard.proteome.Proteome.domains
-.. autofunction:: shephard.proteome.Proteome.unique_domains
+.. autofunction:: shephard.proteome.Proteome.unique_domain_types
 
 
 Site properties

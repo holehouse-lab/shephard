@@ -118,7 +118,7 @@ class Protein:
     @property
     def unique_ID(self):
         """
-        [Property]: Returns the protein's unique_ID
+        Returns the protein's unique_ID
 
         Returns
         ---------------
@@ -135,7 +135,7 @@ class Protein:
     @property
     def name(self):
         """
-        [Property]: Returns the protein name.
+        Returns the protein name.
 
         Returns
         ---------------
@@ -152,7 +152,7 @@ class Protein:
     @property
     def proteome(self):
         """
-        [Property]: Returns the ``Proteome`` object this protein is associated with.
+        Returns the Proteome object this protein is associated with.
 
         Returns
         --------
@@ -203,7 +203,7 @@ class Protein:
     @property
     def sequence(self):
         """
-        [Property]: Returns the protein amino acid sequence as a string. 
+        Returns the protein amino acid sequence as a string. 
         Recall that in strings indexing occurs from 0 and is non-inclusive. 
         For proteins/biology indexing is from 1 and is inclusive.
                 
@@ -211,7 +211,7 @@ class Protein:
         1-3 would give you 'MAP' while Python's indexing would give you 'AP'.
         
         As a result BEWARE if using the raw sequence for analysis! The Protein 
-        class provides a `get_sequence_region()`, `get_sequence_context()` and 
+        class provides a ``get_sequence_region()``, ``get_sequence_context()`` and 
         analogous functions for tracks that allow you to use normal indexing to 
         select ranges or regions around a specific point. We suggest this is a 
         safer way to extract vectorial information.
@@ -459,7 +459,7 @@ class Protein:
     @property
     def attributes(self):
         """
-        **[Property]**: Provides a list of the keys associated with every 
+        Provides a list of the keys associated with every 
         attribute associated with this protein.
         
 
@@ -571,7 +571,7 @@ class Protein:
     @property
     def tracks(self):
         """
-        **[Property]**: Provides a list of Track objects associated with this
+        Provides a list of Track objects associated with this
         protein
         
         Returns
@@ -590,7 +590,7 @@ class Protein:
     @property
     def track_names(self):
         """
-        **[Property]**: Provides a list of the keys associated with each track 
+        Provides a list of the keys associated with each track 
         associated with this protein.
 
         These keys can then be used to extract a specific track, or can be used
@@ -1315,7 +1315,6 @@ class Protein:
         else:
             if safe:
                 raise ProteinException(f'Passed Track [{track_object}] not found in {self}')
-                
 
 
 
@@ -1330,9 +1329,8 @@ class Protein:
     @property
     def domains(self):
         """
-        **[Property]**: Returns a list of the Domain objects associated 
-        with this protein, sorted by first reside of the domain.
-
+        Returns a list of the Domain objects associated with this protein,
+        sorted by first reside of the domain.
         """
     
         domain_list = [self._domains[k] for k in self._domains]
@@ -1346,14 +1344,11 @@ class Protein:
     @property
     def domain_names(self):
         """
-        **[Property]**: Returns a list of the domain names associated  
-        with this protein
-
+        Returns a list of the domain names associated with this protein
         """
         
         domain_list = self.domains
-        
-        
+                
         return [d.domain_name for d in domain_list]
 
 
@@ -1362,9 +1357,8 @@ class Protein:
     @property
     def domain_types(self):
         """
-        **[Property]**: Returns a list of the unique domain types  
-        associated with this protein. There will be no duplicates 
-        here.
+        Returns a list of the unique domain types associated with this protein. 
+        There will be no duplicates here.
         
         """
 
@@ -1893,7 +1887,7 @@ class Protein:
     @property
     def sites(self):
         """
-        **[Property]**: Provides a list of the sites associated with 
+        Provides a list of the sites associated with 
         every site on the protein. Sorted N to C terminal.
         """
 
@@ -1911,7 +1905,7 @@ class Protein:
     @property
     def site_positions(self):
         """
-        **[Property]**: Provides a list of the sorted positions where 
+         Provides a list of the sorted positions where 
         a site is found the protein. Sorted N to C terminal.
         """
 
@@ -1925,7 +1919,7 @@ class Protein:
     @property
     def site_types(self):
         """
-        **[Property]**: Returns a list of the unique site types associated 
+        Returns a list of the unique site types associated 
         with this protein. There will be no duplicates here.        
         """
 
