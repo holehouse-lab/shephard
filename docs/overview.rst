@@ -1,7 +1,18 @@
 Overview
 ===============
 
-SHEPHARD (**S**\equence-based **H**\ierarchical and **E**\xtendable **P**\latform for **H**\igh-throughput **A**\nalysis of **R**\egion of **D**\isorder) is a modular framework for performing programmatic analyses of proteins. It does not itself perform any kind of analysis, but instead provides all of the nitty-gritty tools that are necessary but complicated for doing large-scale analysis of protein datasets. By hiding all of the logistical complexity, a user can quickly ask complex questions. The goal here is to make it trivial to ask what might otherwise be computationally complex things to address.
+SHEPHARD (**S**\equence-based **H**\ierarchical and **E**\xtendable **P**\latform for **H**\igh-throughput **A**\nalysis of **R**\egion of **D**\isorder) is a modular framework for performing programmatic analyses of large proteins datasets. Specifically, SHEPHARD makes it easy to:
+
+* Read in large protein datasets
+* Annotate with pre-defined annotations, or compute and annotate with novel analyses routines
+* Perform large-scale analysis of annotations associated with those protein datasets
+* Share both analyses and annotated data with the broader community in a straightforward way
+
+SHEPHARD was designed to be a simple, efficient, and easy-to-use data management package. It does not offer built in analysis routines, but instead was built to function as the underlying backend for sequence or structure-centric analysis pipelines.
+
+
+
+It does not itself perform any kind of analysis, but instead provides all of the nitty-gritty tools that are necessary but complicated for doing large-scale analysis of protein datasets. By hiding all of the logistical complexity, a user can quickly ask complex questions. The goal here is to make it trivial to ask what might otherwise be computationally complex things to address.
 
 
 
