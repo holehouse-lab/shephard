@@ -405,7 +405,7 @@ class Domain:
 
         ipos = int(position)
 
-        if sequence_utilities.inside_region(domain.start, domain.end, ipos):
+        if sequence_utilities.inside_region(self.start, self.end, ipos):
             return self._protein._sites[int(position)]
         else:
             raise DomainException('Passed position [%i] is outside of the domain boundaries [%i-%i]' %(ipos, domain.start, domain.end))
@@ -415,7 +415,7 @@ class Domain:
     ##
     def get_sites_by_type(self, site_type):
         """
-        Get list of sites inside the domain
+        Get dictionary of list of sites inside the domain
 
         Parameters
         ------------
@@ -477,8 +477,14 @@ class Domain:
         
         t = self._protein.track(name, safe)
 
-        if t is not None:        
-            return t.values_region(self._start, self._end)
+        if t is not None:
+            try:
+                return t.values_region(self._start, self._end)
+            except TypeError:
+                if t.values == None:
+                    raise DomainException('Passed associated track has no values - try get_track_symbols')
+                else:
+                    raise DomainException('Error with passed associated track')
         else:
             return None
 
@@ -514,8 +520,14 @@ class Domain:
 
         t = self._protein.track(name, safe)
         
-        if t is not None:            
-            return t.symbols_region(self._start, self._end)
+        if t is not None:
+            try:
+                return t.symbols_region(self._start, self._end)
+            except TypeError:
+                if t.symbols == None:
+                    raise DomainException('Passed associated track has no symbols - try get_track_values')
+                else:
+                    raise DomainException('Error with passed associated track')
         else:
             return None
         

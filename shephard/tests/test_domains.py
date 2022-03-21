@@ -123,3 +123,118 @@ def test_domain_attributes(TS1_domains2_sites_tracks):
         
 
     
+def test_inside_domain(TS1_domains2_sites_tracks):
+    """
+    This function tests our ability to correctly identify if a 
+    position of site is in a domain 
+    
+    """
+    
+    local_protein = TS1_domains2_sites_tracks.protein('O00629')
+    
+    # get first domain 1-63 
+    local_domain = local_protein.domains[0]
+    
+    # get first site 2
+    local_site_position = local_protein.sites[0].position
+    
+    # this should pass
+    assert local_domain.inside_domain(local_site_position) == True
+    
+    # this should also pass and it is False (!=) 
+    assert local_domain.inside_domain(100) == False
+    
+    ## CURRENTLY NO CHECKS WRITTEN FOR THIS TEST 
+    # passed value is outside the length of the protien
+    # with pytest.raises(ProteinException):
+    #    assert local_domain.inside_domain(4000) == False
+    
+    
+    
+def test_domain_overlap(TS1_domains2):
+    
+    """
+    This function tests our ability to correctly identify if a 
+    two domains overlap in a single protein 
+    """
+    
+    local_protein = TS1_domains2.protein('O00629')
+    
+    # get first domain 1-63 
+    local_domain = local_protein.domains[0]
+    
+    # domain 1 - 10 
+    local_domain_true = local_protein.domains[1]
+    
+    # domain 489-521
+    local_domain_false = local_protein.domains[2]
+    
+    
+    assert local_domain.domain_overlap(local_domain_true) == True
+    assert local_domain.domain_overlap(local_domain_false) == False
+    
+    # check for passage of domains from two different protiens 
+    with pytest.raises(DomainException):
+        assert local_domain.domain_overlap(TS1_domains2.protein('O00716').domains[0])
+        
+        
+def test_domain_track_functions(TS1_domains2_sites_tracks):
+    
+    """
+    This function tests our ability to properly interface with 
+    protien associated tracks from the domain object
+    
+    missing here is the check of a proper get track_symbols 
+    """
+    
+    local_domain = TS1_domains2_sites_tracks.protein('O00629').domains[0]
+    local_track = TS1_domains2_sites_tracks.protein('O00629').tracks[0]
+    local_trackname = local_track.name
+    
+    nonassociated_track = TS1_domains2_sites_tracks.protein('O00716').tracks[0]
+    nonassociated_trackname = 'FAILTRACK'
+   
+    # check that extracted track is correct
+    assert local_domain.get_track_values(local_trackname) == local_track.values[0:63] 
+    
+    # check that error is raise when wrong track type is passed or track has no values 
+    with pytest.raises(DomainException):
+        assert local_domain.get_track_symbols(local_trackname)
+    
+    # check for missed passed track name 
+    with pytest.raises(ProteinException):
+        assert local_domain.get_track_values(nonassociated_trackname)
+        
+    # check for missed passed track name 
+    with pytest.raises(ProteinException):
+        assert local_domain.get_track_values(nonassociated_trackname)
+        
+        
+def test_domain_site_functions(TS1_domains2_sites):
+    
+    """
+    This function tests our ability to properly interface with 
+    protien associated sites from the domain object
+    """
+    
+    local_protein = TS1_domains2_sites_tracks.protein('O00629')
+    local_domain = local_protein.domains[0]
+    true_site_type = 'Phosphoserine' 
+    false_site_type = 'Phosphotyrosine' # this site type is outside the domain 
+    
+    sites_in_region = [s for s in local_protein.sites if local_domain.start <= s.position <= local_domain.end]
+
+    ## basic self contianed functions 
+    assert local_domain.sites == [s for s in local_protein.sites if local_domain.start <= s.position <= local_domain.end]
+    assert local_domain.site_positions == [s.position for s in sites_in_region]
+    
+    ## fuctions that depend on user input 
+    # remember local_domain.site() returns a list cuz there can be multible sites at one posision 
+    assert local_domain.site(2)[0] == local_protein.sites[0]
+    
+    # remember local_domain.get_sites_by_type() returns a dictionary cuz there can be multible sites locations
+    sites_type_in_region = [s for s in sites_in_region if s.site_type == true_site_type]
+    assert local_domain.get_sites_by_type(true_site_type) == {s.position:[s] for s in sites_type_in_region}
+    
+    sites_type_in_region = [s for s in sites_in_region if s.site_type == false_site_type]
+    assert local_domain.get_sites_by_type(false_site_type) == {}
