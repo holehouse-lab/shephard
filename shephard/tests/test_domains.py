@@ -11,6 +11,9 @@ Holehouse Lab - Washington University in St. Louis
 import pytest
 from shephard.exceptions import ProteinException, DomainException
 import numpy as np
+import shephard
+from shephard.apis import uniprot
+from shephard import interfaces
 
 names_list = ['O00401', 'O00470', 'O00472', 'O00499', 'O00629', 'O00712', 'O00716', 'O14786', 'Q9UJX3']
 
@@ -157,14 +160,25 @@ def test_domain_overlap(TS1_domains2):
     This function tests our ability to correctly identify if a 
     two domains overlap in a single protein 
     """
+
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_domains.add_domains_from_file(P, domain_file)
     
-    local_protein = TS1_domains2.protein('O00629')
+    local_protein = P.protein('O00629')
+        
+    # get first domain 1-10
+    local_protein.add_domain(1, 10, 'overlapping_domain')
+    print(local_protein.domains)
+
+    # sub domain 10
+    local_domain = local_protein.domains[1]
     
-    # get first domain 1-63 
-    local_domain = local_protein.domains[0]
-    
-    # domain 1 - 10 
-    local_domain_true = local_protein.domains[1]
+    # domain 1 - 63
+    local_domain_true = local_protein.domains[0]
     
     # domain 489-521
     local_domain_false = local_protein.domains[2]
@@ -217,7 +231,7 @@ def test_domain_site_functions(TS1_domains2_sites):
     protien associated sites from the domain object
     """
     
-    local_protein = TS1_domains2_sites_tracks.protein('O00629')
+    local_protein = TS1_domains2_sites.protein('O00629')
     local_domain = local_protein.domains[0]
     true_site_type = 'Phosphoserine' 
     false_site_type = 'Phosphotyrosine' # this site type is outside the domain 
