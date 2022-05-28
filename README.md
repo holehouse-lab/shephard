@@ -52,7 +52,7 @@ These tools together form the backbone of our informatics infrastructure, and SH
 ## Change log
 As we approach final release and versions of SHEPHARD are available for distribution, a change log is updated and changes that break backwards compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
 
-#### Version 0.1.6 (April 2022)
+#### Version 0.1.7 (April 2022)
 * Improved documentation
 * Added domain_to_track() function in tools.track_tools
 
