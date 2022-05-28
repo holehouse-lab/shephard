@@ -8,7 +8,7 @@ Contact: (alex.holehouse@wustl.edu, g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 
-
+import numpy as np
 from shephard import general_utilities
 
 ## ------------------------------------------------------------------------
@@ -61,3 +61,66 @@ def binerize(input_vector, threshold, mode='above'):
                         
     return return_list
 
+
+
+## ------------------------------------------------------------------------
+##
+def build_track_from_domains(proteome, domain_type=None):
+
+    """
+    Function that builds a dictionary of unique IDs to binary symbol tracks
+    that map the domains in the protein 1s or 0s.
+
+    Note this function returns a dictionary which can then be used to update 
+    the underlying Proteome object, but does not itself alter the Proteome
+    object.
+
+
+    Parameters
+    ----------------
+    proteome : Proteome
+        The Proteome which is going to be scanned for each track. Note that
+        the underlying Proteome is not altered by this function.
+
+    domain_type : str
+        The domain type to be used. If none provided then all domains are
+        used. Default = None.
+
+
+    Returns
+    ---------------
+    dict
+        Returns a dictionary where keys are unique IDs for every protein in 
+        the passed proteome and the values is a list of str where positions are
+        1 (if in a domain) or 0 (if not in a domain).
+
+
+    """
+    
+    tracks = {}
+
+    # for each protein  in the proteome
+    for protein in proteome:
+
+        # construct an empty track
+        raw = np.zeros((len(protein)), dtype=int)
+
+        # for each domain in the protein
+        for d in protein.domains:
+
+
+            if domain_type is None:
+                print(domain_type)
+                # assign the domain positions to 1
+                raw[d.start-1:d.end] = 1
+
+            elif domain_type == d.domain_type:
+                raw[d.start-1:d.end] = 1
+
+        # finally convert to a list of strings to create a symbols track
+        tracks[protein.unique_ID] = [str(i) for i in raw]
+
+        
+    return tracks
+                             
+    
