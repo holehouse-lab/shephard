@@ -835,7 +835,7 @@ class Protein:
         if mode == 'values':
             v = t.values_region(start, end)
         elif mode == 'symbols':
-            v = t.symbols_regions(start, end)
+            v = t.symbols_region(start, end)
 
         # if v is a value or safe is False just return v (will either be values
         # or None)
