@@ -32,6 +32,9 @@ This installs the current bleeding-edge version directly from GitHub.
 ## Documentation
 Documentation: [https://shephard.readthedocs.io/en/latest/](https://shephard.readthedocs.io/en/latest/)
 
+## Tutorial Examples
+Useage examples and Google-Colab Tutorials: https://github.com/holehouse-lab/shephard-colab
+
 ## Status
 As of April 2022 the full release of SHEPHARD is available on PyPI. We are still adding some tweaks and tests but this will be the final version in the SHEPHARD paper.
 
