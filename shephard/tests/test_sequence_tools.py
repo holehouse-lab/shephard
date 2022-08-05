@@ -36,10 +36,10 @@ def test_find_string_positions():
     s3 = 'Z'
     
     # test multible positions 
-    assert sequence_tools.find_string_positions(s1, s0) == [0,1,3,8,10,12]
+    assert sequence_tools.find_string_positions(s1, s0) == [1,2,4,9,11,13]
     
     # test multible characters 
-    assert sequence_tools.find_string_positions(s2, s0) == [2,9]
+    assert sequence_tools.find_string_positions(s2, s0) == [3,10]
     
     # test nothing 
     assert sequence_tools.find_string_positions(s3, s0) == []

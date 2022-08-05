@@ -19,8 +19,6 @@ from .import general_utilities
 from .interfaces.si_domains import add_domains_from_dictionary
 
 
-
-
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # Class that defines a protein entry
 #
@@ -1717,8 +1715,51 @@ class Protein:
 
         """
 
-        return get_domains_by_type(position, position, wiggle=wiggle, mode='overlap')
+        return self.get_domains_by_range(position, position, wiggle=wiggle, mode='overlap')
 
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def get_domains_by_position_and_type(self, position, domain_type, wiggle = 0):
+        """
+        Functions that allows all domains found at a position and of a specific
+        type to be returned.
+
+        Wiggle defines +/- residues that are allowed (default = 0) in the search
+        operation.
+
+        Parameters
+        ----------------
+        
+        position : int
+            Residue position of interest (position in sequence).
+
+        domain_type : str
+            String used to match the against the domain types
+
+        wiggle : int (default = 0)
+            Value +/- the position (i.e. lets you look at sites around a 
+            specific position).
+
+        Returns
+        --------------
+        list
+            Returns a list of Domain objects in the order they appear
+            in the protein.
+
+        """
+
+        # get all domains at the position
+        local_domains =  self.get_domains_by_range(position, position, wiggle=wiggle, mode='overlap')
+
+
+        return_domains = []
+        for d in local_domains:
+            if d.domain_type == domain_type:
+                return_domains.append(d)
+
+        return return_domains
 
 
 

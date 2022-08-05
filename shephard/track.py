@@ -189,9 +189,10 @@ class Track:
 
     ## ------------------------------------------------------------------------
     ##
-    def values_region(self, start, end):
+    def values_region(self, start, end=None):
         """
-        Returns a subregion from the values track
+        Returns a single value or a subregion of values, depending on if
+        a start and end position are provided or just a start position
 
         Parameters
         ----------
@@ -199,7 +200,8 @@ class Track:
             Starting position of interest
 
         end : int
-            Ending position of interest
+            Ending position of interest. If not provided
+            then only the 
 
         Returns
         --------
@@ -210,15 +212,22 @@ class Track:
         """
 
         # this list comprehension checks start and end are valid options
-        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
-
-        return self._values[start:end+1]
+        if end is not None:
+            [self._protein._check_position_is_valid(i, helper_string=f'Invalid position [{start}] passed to track {str(self)}') for i in [start,end]]
+            return self._values[start:end+1]
+        else:
+            self._protein._check_position_is_valid(start, helper_string = f'Invalid position [{start}] passed to track {str(self)}')
+            return self._values[start:start+1][0]
+            
+        
+        
 
     ## ------------------------------------------------------------------------
     ##
-    def symbols_region(self, start, end):
+    def symbols_region(self, start, end=None):
         """
-        Returns a subregion from the symbols track.
+        Returns a single symbol or a subregion of symbols, depending on if
+        a start and end position are provided or just a start position.
 
         Parameters
         ----------
@@ -236,12 +245,14 @@ class Track:
 
         """
 
+
         # this list comprehension checks start and end are valid options
-        [self._protein._check_position_is_valid(i, helper_string='Invalid position [%i] passed to track %s'%(i,str(self))) for i in [start, end]]
-
-        # note we need +1 
-        return self._symbols[start:end+1]
-
+        if end is not None:
+            [self._protein._check_position_is_valid(i, helper_string=f'Invalid position [{start}] passed to track {str(self)}') for i in [start,end]]
+            return self._symbols[start:end+1]
+        else:
+            self._protein._check_position_is_valid(start, helper_string = f'Invalid position [{start}] passed to track {str(self)}')
+            return self._symbols[start:start+1][0]
 
       
     ## ------------------------------------------------------------------------

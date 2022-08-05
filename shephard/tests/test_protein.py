@@ -196,6 +196,8 @@ def test_getter_properies():
     #assert prot.get_track_values('TEST', safe=False) is None
     #assert prot.get_track_symbols('TEST', safe=False) is None
 
+    assert prot.get_domain_by_position(1) == 1
+
     
 
 

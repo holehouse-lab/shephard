@@ -110,7 +110,7 @@ def build_track_from_domains(proteome, domain_type=None):
 
 
             if domain_type is None:
-                print(domain_type)
+
                 # assign the domain positions to 1
                 raw[d.start-1:d.end] = 1
 
