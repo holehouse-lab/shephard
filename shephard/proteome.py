@@ -765,6 +765,37 @@ class Proteome:
         return list(self._unique_domain_types.keys())
 
 
+    ## ------------------------------------------------------------------------
+    ##
+    def get_domains_by_type(self, domain_type, perfect_match=True):
+        """
+        Function that returns a list of domains from all proteins that matched against
+        a specific domain type name. 
+        
+        Parameters
+        ------------
+        domain_type : string
+            String associated domain_type that you want to search for.
+
+        perfect_match : bool (default = True)
+            Flag that identifies if the domain names should be a perfect 
+            match (=True) or if the string passed should just appear 
+            somewhere in the domain_type string
+            
+        Returns
+        -----------
+        list
+            Returns a list of Domain objects that match the requested type. 
+            Objects are ordered by starting position in sequence.
+                                
+        """
+        return_list = []
+        for p in self:
+            return_list.extend(p.get_domains_by_type(domain_type, perfect_match))
+
+        return return_list
+
+
 
     ###################################
     ##                               ##
@@ -823,6 +854,36 @@ class Proteome:
 
         return list(self._unique_site_types.keys())
     
+
+    ## ------------------------------------------------------------------------
+    ##
+    def get_sites_by_type(self, site_types):
+        """
+        Function that returns a list of sites from all proteins that matched against
+        a specific site type name or set of site type names.
+        
+        Parameters
+        ------------
+
+        site_types : string or list of strings
+            One or more possible site_types that may be found in the protein. 
+            Either a single string or a list of strings can be passed, 
+            allowing for one or more sites to be grouped together
+
+            
+        Returns
+        -----------
+        list
+            Returns a list of Domain objects that match the requested type. 
+            Objects are ordered by starting position in sequence.
+                                
+        """
+        return_list = []
+        for p in self:
+            return_list.extend(p.get_sites_by_type(site_type, return_list=True))
+
+        return return_list
+
 
 
     ###################################

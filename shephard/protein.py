@@ -1870,7 +1870,7 @@ class Protein:
     ##
     def get_domains_by_type(self, domain_type, perfect_match=True):
         """
-        Function that returns a dictionary list domains as matched against
+        Function that returns a list of domains as matched against
         a specific domain type name.
         
         Parameters
@@ -2212,7 +2212,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sites_by_type(self, site_types):
+    def get_sites_by_type(self, site_types, return_list=False):
         """
         Get a set of sites that match a specified site-type.
 
@@ -2224,16 +2224,33 @@ class Protein:
             Either a single string or a list of strings can be passed, 
             allowing for one or more sites to be grouped together
 
+        return_list : bool
+            By default, the flag returns a dictionary, which is conveninet as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites/
+
         Returns 
         ----------
         dict 
             Returns a dictionary where the key is a position (site) and the 
             value is a list of one or more sites at that position that match 
-            the site type of interest. 
+            the site type of interest.
+
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
         
         """
 
-        return self.__site_by_type_internal(self._sites, site_types)
+        return_dict = self.__site_by_type_internal(self._sites, site_types)
+
+        if return_list is True:
+            return list(return_dict.values())
+        else:
+            return return_dict
         
         
 

@@ -142,12 +142,28 @@ def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, 
         Returns true if the two domains overlap, else returns false
     """
 
-    if boundary_start2 >= boundary_start1 and boundary_start2 <= boundary_end1:
-        return True
-    elif boundary_end2 >= boundary_start1 and boundary_end2 <= boundary_end1:
-        return True 
-    else:
-        return False
+
+    for x in [[boundary_start1, boundary_end1, boundary_start2, boundary_end2], [boundary_start2, boundary_end2,boundary_start1, boundary_end1]]:
+        
+        a_start = x[0]
+        a_end   = x[1]
+        b_start = x[2]
+        b_end   = x[3]
+
+
+        # scenario 1
+        # AAAAAAAA
+        #     BBBBBBBBB
+        if a_start <= b_start and a_end >= b_start:
+            return True
+
+        # scenario 2
+        #           AAAAAAAA
+        #     BBBBBBBBB
+        if a_start >= b_start and a_start <= b_end:
+            return True
+
+    return False
     
 
 

@@ -421,7 +421,6 @@ class Site:
             they just return None
 
 
-
         Returns
         ----------
         list
@@ -435,13 +434,46 @@ class Site:
         
 
         # because calling values_region only makes sense IF the track exists, we have to split
-        # this into two operations
+        # this into two operations. Note this throws an exception if safe=True and the track
+        # does not exist
         t = self._protein.track(name, safe)
 
         if t is not None:
             return t.values_region(p1, p2)
         else:
             return None
+
+
+    ## ------------------------------------------------------------------------
+    ##      
+    def get_track_value(self, name, safe=True):
+        """
+        Function that returns the value associated with the track at
+        the residue position associated with this site.
+
+        If the track name is missing and safe is True, this will throw 
+        an exception, otherwise (if safe=False) then if the track is 
+        missing the function returns None.
+
+
+        Parameters
+        --------------
+        
+        name : str
+            Track name
+
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, else 
+            they just return None
+
+        Returns
+        ----------
+        float or int
+            Returns the value associated with the track of interest
+            at this site.
+
+        """
+        return self.get_track_values(name, offset=0, safe=safe)[0]
 
 
     ## ------------------------------------------------------------------------
@@ -462,9 +494,13 @@ class Site:
         name : str
             Track name
 
+        offset : int (default = 0)
+            +/- values around the site from which regions are taken
+
         safe : bool (default = True)
             If set to True, missing tracks trigger an exception, 
             else they just return None
+
 
         Returns
         ----------
@@ -476,7 +512,8 @@ class Site:
         (p1, p2) = sequence_utilities.get_bounding_sites(self._position, offset, self._protein._len)
 
         # because calling symbols_region only makes sense IF the track exists, we have to split
-        # this into two operations
+        # this into two operations. Note this throws an exception if safe=True and the
+        # track does not exist
         t = self._protein.track(name, safe)
 
         if t is not None:
@@ -484,6 +521,37 @@ class Site:
         else:
             return None
 
+
+    ## ------------------------------------------------------------------------
+    ##      
+    def get_track_symbol(self, name, safe=True):
+        """
+        Function that returns the symbol associated with the track at
+        the residue position associated with this site.
+                
+        If a Track of this name is not associated with the underlying
+        protein and safe is True, this will throw an exception, 
+        otherwise (if safe=False) then if the track is missing the 
+        function returns None.
+
+        Parameters
+        --------------
+        
+        name : str
+            Track name
+
+        safe : bool (default = True)
+            If set to True, missing tracks trigger an exception, 
+            else they just return None
+
+        Returns
+        ----------
+        str
+            Returns the string associated with the symbol at this site
+
+        """
+
+        return self.get_track_symbols(name, offset=0, safe=safe)[0]
 
 
     ## ------------------------------------------------------------------------

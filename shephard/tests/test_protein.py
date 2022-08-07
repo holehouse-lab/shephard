@@ -196,7 +196,32 @@ def test_getter_properies():
     #assert prot.get_track_values('TEST', safe=False) is None
     #assert prot.get_track_symbols('TEST', safe=False) is None
 
-    assert prot.get_domain_by_position(1) == 1
+    
+
+    
+def test_add_domain(TS1_domains2_sites_tracks):  
+
+    #assert prot.get_domains_by_position(1) == 1
+    p = TS1_domains2_sites_tracks.protein('O00401')
+
+    assert len(p.get_domains_by_position(1)) == 1
+
+    assert len(TS1_domains2_sites_tracks.unique_domain_types) == 2
+
+    # check we can add a domain
+    p.add_domain(1,50,'added_domain')
+    assert len(p.get_domains_by_position(1)) == 2
+
+    assert len(TS1_domains2_sites_tracks.unique_domain_types) == 3
+
+    # check we can selectively remove a domain
+    for i in p.domains:
+        if i.domain_type == 'added_domain':
+            p.remove_domain(i)
+
+    assert len(p.get_domains_by_position(1)) == 1
+
+    assert len(TS1_domains2_sites_tracks.unique_domain_types) == 2
 
     
 

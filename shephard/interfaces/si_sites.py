@@ -335,7 +335,9 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
         for protein in proteome:
             for s in protein.sites:
 
-                if site_type is not None:
+                # if the passed parameter site_types is being
+                # used
+                if site_types is not None:
                     if s.site_type not in site_types:
                         continue
 
