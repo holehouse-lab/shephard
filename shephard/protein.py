@@ -2248,7 +2248,9 @@ class Protein:
         return_dict = self.__site_by_type_internal(self._sites, site_types)
 
         if return_list is True:
-            return list(return_dict.values())
+
+            # the list comprehension here flattens the returned list
+            return [i for sublist in list(return_dict.values()) for i in sublist]
         else:
             return return_dict
         
