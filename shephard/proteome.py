@@ -880,7 +880,7 @@ class Proteome:
         """
         return_list = []
         for p in self:
-            return_list.extend(p.get_sites_by_type(site_type, return_list=True))
+            return_list.extend(p.get_sites_by_type(site_types, return_list=True))
 
         return return_list
 
