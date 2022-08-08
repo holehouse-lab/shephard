@@ -23,15 +23,13 @@ def test_domain_overlap():
     Note if any of these succeed the test suite will fail because it incrases
     """
 
-    
+    # read in a proteome
     test_data_dir = shephard.get_data('test_data')
     fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
-
-    
-    P.add_protein('A'*100,'test','test')
-    
+    # add a synthetic protein and extract it
+    P.add_protein('A'*100,'test','test')    
     prot = P.protein('test')
 
     
@@ -78,5 +76,17 @@ def test_domain_overlap():
     assert domain_tools.domain_overlap(d5, d0) is True
     assert domain_tools.domain_overlap(d5, d1) is True
 
+def test_domain_overlap_fraction():    
+    """
+
+    """
+
     
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    
+
+    # TODO write a series of tests that test the domain_overlap_fraction
+    # functionality
     

@@ -703,16 +703,17 @@ def write_domains_from_list(domain_list, filename, delimiter='\t'):
             end = d.end
             line = line + str(end) + delimiter
 
-            domain_type = d.domain_type                
-            line = line + str(domain_type)
+            domain_type = d.domain_type    
+
+            # note last required element has no trailing delimiter
+            line = line + str(domain_type) 
 
             if d.attributes:
                 for k in d.attributes:
 
                     # 
                     atrbt = interface_tools.full_clean_string(d.attribute(k))
-
-                    line = line + delimiter + "%s:%s" %(k, atrbt)
+                    line = line + delimiter + f"{k}:{atrbt}" 
 
             line = line + "\n"
             

@@ -142,7 +142,8 @@ def domain_overlap_by_position(boundary_start1, boundary_end1, boundary_start2, 
         Returns true if the two domains overlap, else returns false
     """
 
-
+    # note we do this swapping around which of the two domains passed as boundaries is 'a' and 'b' in 
+    # the visual schematic below
     for x in [[boundary_start1, boundary_end1, boundary_start2, boundary_end2], [boundary_start2, boundary_end2,boundary_start1, boundary_end1]]:
         
         a_start = x[0]

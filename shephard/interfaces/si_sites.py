@@ -80,7 +80,7 @@ class _SitesInterface:
                 value = float(sline[4].strip())
                 attributes = {}
             except Exception as e:
-                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
+                msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
 
                 # should update this to also display the actual error...
                 if skip_bad:
@@ -347,12 +347,14 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
                 line = line + str(s.position) + delimiter
                 line = line + str(s.site_type) + delimiter                
                 line = line + str(s.symbol) + delimiter
-                line = line + str(s.value) + delimiter
+
+                # note last required element has no trailing delimiter
+                line = line + str(s.value) 
                 
                 if s.attributes:
                     for k in s.attributes:
                         atrbt = interface_tools.full_clean_string(s.attribute(k))
-                        line = line + delimiter + "%s:%s" % (k, atrbt)
+                        line = line + delimiter + f"{k}:{atrbt}"
 
                 line = line + "\n"
 
