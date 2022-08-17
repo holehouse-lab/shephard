@@ -1,6 +1,6 @@
 SHEPHARD
 ==============================
-####Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
+#### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
 ### Current major version: 0.1.5 (April 2022)
