@@ -34,7 +34,7 @@ If installing a package via :code:`pip` is new to you, we recommend spending a m
 --------------------
 Demos and examples
 --------------------
-Once installed, SHEPHARD makes it very easy to work with large protein datasets. As an example, we have a collection of basic notebooks showing functionality located at on the `SHEPHARD GitHub supporting data page <https://github.com/holehouse-lab/supportingdata/tree/master/2022/ginell_2022/example_notebooks>`_. 
+Once installed, SHEPHARD makes it very easy to work with large protein datasets. As an example, we have a collection of basic notebooks showing functionality located at on the `SHEPHARD GitHub supporting data page <https://github.com/holehouse-lab/shephard-colab>`_. 
 
 
 
