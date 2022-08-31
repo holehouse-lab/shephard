@@ -37,8 +37,6 @@ class _SitesInterface:
         filename : str
             Name of the shephard domains file to read
 
-        Other Parameters
-        ----------------
         delimiter : str (default = \t)
             String used as a delimiter on the input file. 
 
@@ -139,8 +137,6 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
     filename : str
         Name of the shephard site file to be read
 
-    Other Parameters
-    ----------------
     delimiter : str (default = '\\t')
         String used as a delimiter on the input file. 
 
@@ -237,9 +233,6 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
 
         Extra key-value paris in each sub-dictionary are ignored
 
-    Other Parameters
-    ----------------
-
     safe : bool (default = True)
         If set to True then any exceptions raised during the site-adding 
         process are acted on. If set to false, exceptions simply mean the 
@@ -311,8 +304,6 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
     filename : str
         Filename that will be used to write the new sites file
 
-    Other Parameters
-    ----------------    
     site_type : str (default = None)
         If provided, this is an identifier that allows you to specificy 
         a specific site type to write out.

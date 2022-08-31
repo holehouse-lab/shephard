@@ -201,7 +201,7 @@ class Protein:
     @property
     def sequence(self):
         """
-        Returns the protein amino acid sequence as a string. 
+        Returns the protein amino acid sequence as a Python string (str). 
         Recall that in strings indexing occurs from 0 and is non-inclusive. 
         For proteins/biology indexing is from 1 and is inclusive.
                 
@@ -554,6 +554,42 @@ class Protein:
                 raise ProteinException("Trying to add attribute [%s=%s] to protein [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
                 
         self._attributes[name] = val
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def remove_attribute(self, name, safe=True):
+        """
+        Function that removes a given attribute from the Protein based on the 
+        passed attribute name. If the passed attribute does not exist or is not 
+        associate with the Protein then this will trigger an exception 
+        unless safe=False.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identify it
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an 
+            attribute this name does not exists. If set to
+            False then if an attribute is not found it is simply
+            ignored
+            
+        Returns
+        ---------
+        None
+            No return type but will remove an attribute from the 
+            protein if present.
+            
+        """
+
+        if name not in self._attributes:
+            if safe:
+                raise ProteinException(f'Passed attribute [{name}] not found in {self}')
+        else:
+            del self._attributes[name]
 
 
 
@@ -958,85 +994,72 @@ class Protein:
             otherwise overwriting a track will simply over-write it.
             
         Example
-        --------
-        
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        ----------
 
-        # define a function that takes in a sequence and converts it 
-        # into some other numerical list. Note this is INLINE with the 
-        # code, or could be elsewhere. This function MUST take either 
-        # ONE argument (sequence) or TWO arguments (sequence and 
-        # input_dictionary). Also the names of these arguments does 
-        # not matter, but the order does (i.e. first argument will 
-        # always get the sequence).
+        Below we offer an example for how one might defined a custom track-building function::
 
-        def trackbuilder(seq, input_dictionary):
-            ''' 
-                This function takes in a sequence (seq) as first argument, 
-                and the v1 and v2 as additional arguments. See below for 
-                what it's doing (pretty simple).
+            # define a function that takes in a sequence and converts it 
+            # into some other numerical list. Note this is INLINE with the 
+            # code, or could be elsewhere. This function MUST take either 
+            # ONE argument (sequence) or TWO arguments (sequence and 
+            # input_dictionary). Also the names of these arguments does 
+            # not matter, but the order does (i.e. first argument will 
+            # always get the sequence).
+
+            def trackbuilder(seq, input_dictionary):
+                ''' 
+                    This function takes in a sequence (seq) as first argument, 
+                    and the v1 and v2 as additional arguments. See below for 
+                    what it's doing (pretty simple).
+                     
+                '''
+                newseq=[]  
                 
-            '''
-            newseq=[]  
+                # we are extracting out the 'values' from the input dictionary
+                # for the sake of code clarity
+                v1 = input_dictionary['v1']
+                v2 = input_dictionary['v2']
+    
+                # for each residue in the sequence
+                for i in seq:
+    
+                    # is that residue in v1 (append 1) or v2 (append -1)? If 
+                    # neither append 0
+                    if i in v1:
+                        newseq.append(1)
+                    elif i in v2:
+                        newseq.append(-1)
+                    else:
+                        newseq.append(0)
             
-            # we are extracting out the 'values' from the input dictionary
-            # for the sake of code clarity
-            v1 = input_dictionary['v1']
-            v2 = input_dictionary['v2']
-
-            # for each residue in the sequence
-            for i in seq:
-
-                # is that residue in v1 (append 1) or v2 (append -1)? If 
-                # neither append 0
-                if i in v1:
-                    newseq.append(1)
-                elif i in v2:
-                    newseq.append(-1)
-                else:
-                    newseq.append(0)
-        
-            return newseq
-        
-        # define the input_dictionary (note again that the variable names 
-        # here do not matter)
-        input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
-
-        # now assuming ProtOb is a Protein object, this will add a new 
-        # track
-        ProtOb.build_track_values('charge_vector', trackbuilder, 
-        function_dictionary=input_dictionary)
-
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
+                return newseq
+            
+            # define the input_dictionary (note again that the variable names 
+            # here do not matter)
+            input_dictionary = {'v1':['K','R'], 'v2':['E','D']}  
+    
+            # now assuming ProtOb is a Protein object, this will add a new 
+            # track
+            ProtOb.build_track_values('charge_vector', trackbuilder, 
+            function_dictionary=input_dictionary)
+ 
         In this example we defined a function that converts an amino acid 
         string into a numerical list where positively charged residues = +1
         and negatively charged residues = -1. We applied this function to 
         generate a 'charge_vector' track.
 
-        Note this is analagous to defining our function and then running:
+        Note this is analagous to defining our function and then running::
 
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        s = ProtOb.sequence
-        newtrack = trackbuilder(s, ['K','R'], ['E',D'])
-        ProbOb.add_track('charge_vector', values=newtrack)
-
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            s = ProtOb.sequence
+            newtrack = trackbuilder(s, ['K','R'], ['E',D'])
+            ProbOb.add_track('charge_vector', values=newtrack)
 
 
-        Some FAQs:
+        **Some FAQs:**
 
-        Do I need to pass an input_dictionary to the custom function?
-            No!
-
-        Does the name of the custom function matter?
-            No!
-
-        Does the custom function have to accepted the amino acid 
-        sequence as the first argument?
-            Yes!
+        * Do I need to pass an input_dictionary to the custom function? No!
+        * Does the name of the custom function matter? No!
+        * Does the custom function have to accepted the amino acid sequence as the first argument? Yes!
 
         """
 
@@ -1117,80 +1140,69 @@ class Protein:
 
         Example
         --------        
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        
+        Below we offer an example for how one might defined a custom track-building function::
 
-        # define a function that takes in a sequence and converts it into some 
-        # other symbolic representation as a string. Note this is INLINE with 
-        # the code, or could be elsewhere. This function MUST take either ONE 
-        # argument (sequence) or TWO arguments (sequence and input_dictionary).
-        # 
-        # Also the names of these arguments does not matter, but the order does 
-        # (i.e. first argument will always get the sequence).
+            # define a function that takes in a sequence and converts it into some 
+            # other symbolic representation as a string. Note this is INLINE with 
+            # the code, or could be elsewhere. This function MUST take either ONE 
+            # argument (sequence) or TWO arguments (sequence and input_dictionary).
+            # 
+            # Also the names of these arguments does not matter, but the order does 
+            # (i.e. first argument will always get the sequence).
 
-        def trackbuilder(seq, input_dictionary):
-            ''' 
-                This function takes in a sequence (seq) as first argument, 
-                and the v1 and v2 as additional arguments. See below for what 
-                it's doing (pretty simple).                
-            '''
-            new_string_list=[]  
+            def trackbuilder(seq, input_dictionary):
+                ''' 
+                    This function takes in a sequence (seq) as first argument, 
+                    and the v1 and v2 as additional arguments. See below for what 
+                    it's doing (pretty simple).                
+                '''
+                new_string_list=[]  
+                
+                # we are extracting out the 'values' from the input dictionary
+                # for the sake of code clarity
+                v1 = input_dictionary['v1']
+                v2 = input_dictionary['v2']
+
+                # for each residue in the sequence
+                for i in seq:
+    
+                    # is that residue in v1 (append 1) or v2 (append -1)? If neither 
+                    # append 0
+                    if i in v1:
+                        new_string_list.append('+')
+                    elif i in v2:
+                        new_string_list.append('-')
+                    else:
+                        new_string_list.append('0')
             
-            # we are extracting out the 'values' from the input dictionary
-            # for the sake of code clarity
-            v1 = input_dictionary['v1']
-            v2 = input_dictionary['v2']
+                # convert the list into a string
+                newstring = "".join(new_string_list)
+                return newstring
+            
+            # define the input_dictionary (note again that the variable names  
+            # here do not matter)
+            input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
 
-            # for each residue in the sequence
-            for i in seq:
-
-                # is that residue in v1 (append 1) or v2 (append -1)? If neither 
-                # append 0
-                if i in v1:
-                    new_string_list.append('+')
-                elif i in v2:
-                    new_string_list.append('-')
-                else:
-                    new_string_list.append('0')
+            # now assuming ProtOb is a Protein object, this will add a new track
+            ProtOb.build_track_values('charge_string', trackbuilder, 
+                                       function_dictionary=input_dictionary)
         
-            # convert the list into a string
-            newstring = "".join(new_string_list)
-            return newstring
-        
-        # define the input_dictionary (note again that the variable names  
-        # here do not matter)
-        input_dictionary = {'v1':['K','R'], 'v2':['E','D']}
-
-        # now assuming ProtOb is a Protein object, this will add a new track
-        ProtOb.build_track_values('charge_string', trackbuilder, 
-                                   function_dictionary=input_dictionary)
-
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
         In this example we defined a function that converts an amino acid 
         string into a coarse-grained string representation where positive 
         residues are "+", negative are "-" and neutral are "0".
         
-        Note this is analagous to defining our function and then running:
+        Note this is analagous to defining our function and then running::
 
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            s = ProtOb.sequence
+            newtrack = trackbuilder(s, ['K','R'], ['E',D'])
+            ProbOb.add_track('charge_vector', values=newtrack)
 
-        s = ProtOb.sequence
-        newtrack = trackbuilder(s, ['K','R'], ['E',D'])
-        ProbOb.add_track('charge_vector', values=newtrack)
+        **FAQs:**
 
-        >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        Some FAQs:
-
-        Do I need to pass an input_dictionary to the custom function?
-            No!
-
-        Does the name of the custom function matter?
-            No!
-
-        Does the custom function have to accepted the amino acid sequence 
-        as the first argument?
-            Yes!
+        * Do I need to pass an input_dictionary to the custom function? No        
+        * Does the name of the custom function matter? No!
+        * Does the custom function have to accepted the amino acid sequence as the first argument? Yes!
 
         """
 
@@ -1268,13 +1280,13 @@ class Protein:
     def remove_track(self, track_object, safe=True):
         """
         Function that removes a given Track from the Protein based on the 
-        passed Track object. If the passed site does not exist or is not 
+        passed Track object. If the passed Track does not exist or is not 
         associate with the protein then this will trigger an exception 
         unless safe=False.
 
         Parameters
-        ------------t
-        site : Track Object or None
+        ------------
+        track_object : shephard.track.Track Object or None
             Track Object that will be used to retrieve a given protein.
             Note that remove_track() can tollerate None as the object if 
             Safe=False to enable a single for-loop to iterate over a 
@@ -1467,42 +1479,11 @@ class Protein:
             No return value, but will add the passed domains to the protein or 
             throw an exception if something goes wrong!
         
-        
-
         """
 
         # create the input dictionary
         in_dict = {self.unique_ID:list_of_domains}
         add_domains_from_dictionary(self.proteome, in_dict, autoname=autoname, safe=safe, verbose=verbose)
-
-        ## old manual code, now we leverage interfaces code
-        """
-        
-        # for each domain definition check we can extract the relevant info 
-        for new_domain in list_of_domains:
-
-            try:
-                # note we split these operations into two blocks to aid with
-                # debugging if someone makes an invalid domain dictionary
-                start = new_domain['start']
-                end = new_domain['end']
-                domain_type = new_domain['domain_type']
-                
-                # cast to integers
-                start=int(start)
-                end = int(end)
-
-            except Exception:
-                raise ProteinException("When trying to add domains with the add_domains function one or more dictionaries in the return list lacked a 'start', 'end', or 'domain_type' key, and/or the start/end values could not be correctly coverted to integers")
-                
-            if 'attributes' in new_domain:
-                ad = new_domain['attributes']
-            else:
-                ad = {}
-
-            self.add_domain(start, end, domain_type, ad, safe, autoname)
-
-        """
 
 
         
@@ -1663,7 +1644,7 @@ class Protein:
         Returns
         -----------
         None
-            No return type but will remove an domain from the protein if 
+            No return type but will remove a domain from the protein if 
             present.
            
         """
@@ -1671,7 +1652,7 @@ class Protein:
             if safe is False:
                 return 
             else:
-                raise ProteinException(f'domain_object was not a Domain, but safe=True.')
+                raise ProteinException(f'{domain_object} was not a Domain, but safe=True.')
 
         # if the passed object is found at the excised position
         if domain_object.domain_name in self._domains:
@@ -1994,15 +1975,20 @@ class Protein:
         Returns
         ---------
         list
-            Returns a list with between 1 and n sites. Will raise an exception
-            if the passed position cannot be found in the codebase.
+            Returns a list with between 0 and n sites. Will raise an exception
+            if the passed position cannot be found in the codebase unless safe=False,
+            in which case an empty list is returned.
 
         """
 
         if int(position) in self._sites:
             return self._sites[int(position)]
-        elif safe:
+
+
+        if safe:
             raise exceptions.ProteinException('No sites at position %i in protein %s\n\nAvailable sites are: %s' % (position, self.unique_ID, str(self.site_positions)))
+        else:
+            return []
             
 
 

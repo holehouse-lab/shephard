@@ -119,10 +119,7 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     
     protein attribute dictionaries are key-value pairs, where the key is a 
     unique ID and the value is a list of dictionaries. For each sub-dictionary, 
-    the key-value pair reflects the attribute
-    
-    key-value pairing.
-
+    the key-value pair reflects the attribute key-value pairing.
 
     Parameters
     ----------
@@ -136,10 +133,6 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
         THOSE sub-dictionaries has one (or more) key:value pairs that 
         define key:value pairs that will be associated with the protein 
         of interest.
-
-
-    Other Parameters
-    ----------------
 
     safe : boolean (default = True)
         If set to True then any exceptions raised during the process of 
@@ -158,7 +151,6 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
-
 
     Returns
     -----------
@@ -222,7 +214,6 @@ def add_protein_attributes_from_file(proteome,
 
     - Key value must be separated by a ':', as a result any delimiter 
       (other than ':') can be used, but ':' is reserved for this role
-
       
     Parameters
     ----------
@@ -231,10 +222,6 @@ def add_protein_attributes_from_file(proteome,
 
     filename : str
         Name of the shephard protein attributes file to read.
-
-
-    Other Parameters
-    ----------------
 
     delimiter : str (default = '\\t')
         String used as a delimiter on the input file. 
@@ -270,7 +257,6 @@ def add_protein_attributes_from_file(proteome,
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
 
-
     Returns
     ----------- 
     None or dict
@@ -280,9 +266,7 @@ def add_protein_attributes_from_file(proteome,
         is set to True the function returns the parsed domains_dictionary 
         without adding the newly-read protein_attributes to the proteome.
 
-
     """
-    
 
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
@@ -304,8 +288,6 @@ def add_protein_attributes_from_file(proteome,
 
 
 
-                
-
 ## ------------------------------------------------------------------------
 ##
 def write_protein_attributes(proteome, filename, delimiter='\t'):
@@ -314,34 +296,26 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
     format. Note that attributes are converted to a string, which for simple 
     attributes is reasonable but is not really a viable stratergy for 
     complex objects, although this will not yeild and error.
-
     
     Parameters
     -----------
-
     proteome :  Proteome object
         Proteome object from which the domains will be extracted from
 
     filename : str
         Filename that will be used to write the new domains file
 
-
-    Other Parameters
-    ----------------
-
     delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. 
         Default is '\t', which is recommended to maintain compliance 
         with default `add_protein_attributes_from_file()` function.        
         
-
     Returns
     --------
     None
         No return type, but generates a new file with the complete set 
         of protein attributes from this proteome written to disk.
         
-
     """
 
     with open(filename, 'w') as fh:

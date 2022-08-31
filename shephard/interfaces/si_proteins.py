@@ -32,12 +32,9 @@ class _ProteinsInterface:
 
         Parameters
         ----------------
-        
+                
         filename : str
             Name of the shephard domains file to read
-
-        Other Parameters
-        ----------------
 
         delimiter : str (default = '\\t')
             String used as a delimiter on the input file. 
@@ -136,10 +133,6 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
         of THOSE sub dictionaries contains key-value pairs are described 
         above.
 
-
-    Other Parameters
-    ----------------
-
     safe : bool (default = True)
         If set to True then any exceptions raised during the protein-adding 
         process are acted on. If set to False, exceptions simply mean the 
@@ -217,18 +210,12 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
     One protein defined per line (with NO duplicates allowed - duplicate 
     entries on the file will trigger an un-rescuable error) where key:values 
     are optional and can be between 0 and n.
-    
-    
-    A couple of key points here:
+        
+    **A couple of key points here**:
 
-    - The default delimiter is tabs ('\\t') but this can be changed with 
-      the delimiter argument
-      
-    - Key value must be separated by a ':', as a result any delimiter
-      (other than ':') can be used, but ':' is reserved for this role.
-            
-    - If a protein with the UID from the file exists in the passed proteome 
-      then this will throw an exception unless safe=False 
+    * The default delimiter is tabs ('\\t') but this can be changed with the delimiter argument
+    * Key value must be separated by a ':', as a result any delimiter (other than ':') can be used, but ':' is reserved for this role.
+    * If a protein with the UID from the file exists in the passed proteome then this will throw an exception unless safe=False 
           
     Parameters
     ----------
@@ -237,7 +224,6 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
 
     filename : str
         Name of the shephard protein attributes file to read
-
 
     Other Parameters
     ----------------

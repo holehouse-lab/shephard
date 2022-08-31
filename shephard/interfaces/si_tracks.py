@@ -231,10 +231,6 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
         A selector that defines the type of track file to be read. 
         Must be either 'symbols' or 'values'.
 
-
-    Other Parameters
-    -------------------
-
     delimiter : str (default = '\\t')
         String used as a delimiter on the input file. 
 
@@ -265,7 +261,6 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding tracks.
-
 
     Returns
     -----------
@@ -328,10 +323,6 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         A selector that defines the type of track file to be read. 
         Must be either 'symbols' or 'values'.
 
-       
-    Other Parameters
-    ------------------
-
     safe : bool (default = True)
         If set to True then any exceptions raised during the track-adding 
         process are acted on. If set to False, exceptions simply mean the 
@@ -348,7 +339,6 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding tracks.
         
-
     Returns
     -----------
     None
@@ -426,10 +416,6 @@ def write_all_tracks_separate_files(proteome,
     proteome :  Proteome object
         Proteome object from which the Domains will be extracted from
 
-
-    Other Parameters
-    ----------------
-
     outdirectory : str (default = '.')
         String that defines the output directory. By default sets to the 
         present working directory.
@@ -442,14 +428,11 @@ def write_all_tracks_separate_files(proteome,
         Default is '\t' Which is recommended to maintain compliance with 
         default `add_tracks_from_files()` function.
     
-
     Returns
     --------
     None
         No return type, but generates a new file with the complete set of 
         Domains from this Proteome written to disk.
-        
-
 
     """
 
@@ -470,8 +453,7 @@ def write_all_values_tracks_single_file(proteome,
     a subset of tracks are requested, for which write_track() would be good, 
     or alternatively you want all tracks in seperate files, in which case
     write_all_tracks_separate_files() would be the way to go.
-    
-    
+        
     Parameters
     -----------
 
@@ -481,10 +463,6 @@ def write_all_values_tracks_single_file(proteome,
     outfile : str
         String that defines the name of the output file.
 
-
-    Other Parameters
-    ----------------
-
     value_fmt : str (default = "%.3f")
         Format string that will be used for values. Default = "%.3f"
         
@@ -493,7 +471,6 @@ def write_all_values_tracks_single_file(proteome,
         is '\t' Which is recommended to maintain compliance with default 
         `add_tracks_from_files()` function.
     
-
     Returns
     --------
     None
@@ -517,8 +494,7 @@ def write_all_symbols_tracks_single_file(proteome,
     a subset of tracks are requested, for which write_track() would be good, 
     or alternatively you want all tracks in seperate files, in which case
     write_all_tracks_separate_files() would be the way to go.
-    
-    
+        
     Parameters
     -----------
 
@@ -528,10 +504,6 @@ def write_all_symbols_tracks_single_file(proteome,
     outfile : str
         String that defines the name of the output file.
 
-
-    Other Parameters
-    ----------------
-
     value_fmt : str (default = "%.3f")
         Format string that will be used for values.
             
@@ -540,7 +512,6 @@ def write_all_symbols_tracks_single_file(proteome,
         is '\t' Which is recommended to maintain compliance with default 
         `add_tracks_from_files()` function.
     
-
     Returns
     --------
     None
@@ -576,10 +547,6 @@ def write_track(proteome, filename, track_name, value_fmt = "%.3f", delimiter='\
 
     track_name : str
         Name of the track to be written out.
-
-
-    Other Parameters
-    ----------------
 
     value_fmt : str (default = "%.3f")
         Format string that will be used for values. Default = "%.3f". Note 

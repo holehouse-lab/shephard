@@ -27,8 +27,8 @@ def test_si_site_add_from_file():
     with pytest.raises(ProteinException) as e_info:
         O00470.site(2)
 
-    # get site at position 2 that doesn't exsit
-    assert O00470.site(2, safe=False) == None
+    # get site at position 2 that doesn't exist
+    assert O00470.site(2, safe=False) == []
 
 
 def test_si_site_add_from_file_test_robustness():

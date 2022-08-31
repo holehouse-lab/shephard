@@ -19,6 +19,7 @@ Welcome to shephard's documentation!
    track
    shephard_file_types
    interfaces
+   tools
    apis
    code_convention
 

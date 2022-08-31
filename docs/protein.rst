@@ -69,6 +69,8 @@ Protein properties
 Sequence functions
 ---------------------
 
+.. autofunction:: shephard.protein.Protein.sequence
+.. autofunction:: shephard.protein.Protein.get_residue
 .. autofunction:: shephard.protein.Protein.get_sequence_region
 .. autofunction:: shephard.protein.Protein.get_sequence_context
 .. autofunction:: shephard.protein.Protein.check_sequence_is_valid
@@ -81,6 +83,7 @@ Attribute functions
 .. autofunction:: shephard.protein.Protein.attributes
 .. autofunction:: shephard.protein.Protein.attribute
 .. autofunction:: shephard.protein.Protein.add_attribute
+.. autofunction:: shephard.protein.Protein.remove_attribute
 
 Domain functions
 ---------------------
@@ -88,10 +91,13 @@ Domain functions
 .. autofunction:: shephard.protein.Protein.domains
 .. autofunction:: shephard.protein.Protein.domain
 .. autofunction:: shephard.protein.Protein.domain_types
-.. autofunction:: shephard.protein.Protein.get_domains_by_type
 .. autofunction:: shephard.protein.Protein.add_domain
 .. autofunction:: shephard.protein.Protein.add_domains
 .. autofunction:: shephard.protein.Protein.build_domains
+.. autofunction:: shephard.protein.Protein.get_domains_by_type
+.. autofunction:: shephard.protein.Protein.get_domains_by_position
+.. autofunction:: shephard.protein.Protein.get_domains_by_position_and_type
+.. autofunction:: shephard.protein.Protein.get_domains_by_range
 
 
 Track functions
@@ -99,12 +105,14 @@ Track functions
 
 .. autofunction:: shephard.protein.Protein.tracks
 .. autofunction:: shephard.protein.Protein.track
+.. autofunction:: shephard.protein.Protein.track_names
 .. autofunction:: shephard.protein.Protein.get_track_values
 .. autofunction:: shephard.protein.Protein.get_track_symbols
 .. autofunction:: shephard.protein.Protein.add_track
+.. autofunction:: shephard.protein.Protein.remove_track
 .. autofunction:: shephard.protein.Protein.build_track
-.. autofunction:: shephard.protein.Protein.buld_track_values_from_sequence
-.. autofunction:: shephard.protein.Protein.buld_track_symbols_from_sequence
+.. autofunction:: shephard.protein.Protein.build_track_values_from_sequence
+.. autofunction:: shephard.protein.Protein.build_track_symbols_from_sequence
 
 
 
@@ -113,9 +121,10 @@ Site functions
 
 .. autofunction:: shephard.protein.Protein.sites
 .. autofunction:: shephard.protein.Protein.site
+.. autofunction:: shephard.protein.Protein.site_types
 .. autofunction:: shephard.protein.Protein.site_positions
 .. autofunction:: shephard.protein.Protein.add_site
-.. autofunction:: shephard.protein.Protein.add_sites_by_position
+.. autofunction:: shephard.protein.Protein.remove_site
 .. autofunction:: shephard.protein.Protein.get_sites_by_position
 .. autofunction:: shephard.protein.Protein.get_sites_by_range
 .. autofunction:: shephard.protein.Protein.get_sites_by_type

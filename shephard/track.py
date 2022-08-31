@@ -301,6 +301,10 @@ class Track:
         Recall that attributes are name : value pairs, where the 'value' 
         can be anything and is user defined. This function will return 
         the value associated with a given name.
+
+        NOTE: Track attributes cannot be loaded or saved to file when
+        Tracks are read/written via interfaces.si_track.
+
         
         Parameters
         ----------------
@@ -345,6 +349,9 @@ class Track:
         present. If safe=False, then an existing value will be 
         overwritten.
 
+        NOTE: Track attributes cannot be loaded or saved to file when
+        Tracks are read/written via interfaces.si_track.
+
         Parameters
         ----------------
 
@@ -370,3 +377,39 @@ class Track:
                 raise TrackException("Trying to add attribute [%s=%s] to Track [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
                 
         self._attributes[name] = val
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def remove_attribute(self, name, safe=True):
+        """
+        Function that removes a given attribute from the Track based on the 
+        passed attribute name. If the passed attribute does not exist or is not 
+        associate with the Track then this will trigger an exception 
+        unless safe=False.
+
+        Parameters
+        ----------------
+
+        name : str
+            The parameter name that will be used to identify it
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an 
+            attribute this name does not exists. If set to
+            False then if an attribute is not found it is simply
+            ignored
+            
+        Returns
+        ---------
+        None
+            No return type but will remove an attribute from the 
+            protein if present.
+            
+        """
+
+        if name not in self._attributes:
+            if safe:
+                raise TrackException(f'Passed attribute [{name}] not found in {self}')
+        else:
+            del self._attributes[name]

@@ -226,7 +226,73 @@ def test_add_domain(TS1_domains2_sites_tracks):
     
 
 
-def test_add_site():
+def test_add_site(TS1_domains2_sites_tracks):
+
+    p = TS1_domains2_sites_tracks.protein('O00401')
+
+    assert(len(p.sites)) == 31
+    p.add_site(1, 'test_site', symbol='X')
+    assert(len(p.sites)) == 32
+    p.add_site(1, 'test_site2', value=10)
+    assert(len(p.sites)) == 33
+    x = p.site(1)
+    print(x)
+    p.remove_site(x[0])
+    assert(len(p.sites)) == 32
+    p.remove_site(x[0])
+    assert(len(p.sites)) == 31
+
+    with pytest.raises(ProteinException):
+        p.remove_site('')
+
+    with pytest.raises(ProteinException):
+        p.add_site(0, 'test_site2', value=10)
+
+    # can we add a site with a value and a symbol and 
+    # retrievie it
+    p.add_site(20, 'test_site2', value=10, symbol='as')
+    assert p.site(20)[0].value == 10
+    assert p.site(20)[0].symbol == 'as'
+    assert(len(p.sites)) == 32
+
+    for i in range(0,100):
+        p.add_site(20, 'test_site2', value=10, symbol='as')
+        
+    assert len(p.sites) == 132
+    assert len(p.site(20)) == 101
+
+    # remove all sites at position 20
+
+    while len(p.site(20, safe=False)) > 0:
+        
+        p.remove_site(p.site(20)[0])
+
+    assert(len(p.sites)) == 31
+    
+        
+def test_add_attribute(TS1_domains2_sites_tracks):
 
     # build new proteome
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    p = TS1_domains2_sites_tracks.protein('O00401')
+    assert len(p.attributes)==0
+    p.add_attribute('test_att', 'yeah')
+    assert len(p.attributes)==1
+    assert p.attribute('test_att') == 'yeah'
+    
+    with pytest.raises(ProteinException):
+        p.add_attribute('test_att', 'ok')
+
+    p.add_attribute('test_att', 'ok', safe=False)
+    assert p.attribute('test_att') == 'ok'
+
+    p.remove_attribute('test_att')
+    assert len(p.attributes)==0
+
+    with pytest.raises(ProteinException):
+        p.attribute('test_att') 
+
+
+    
+
+    
+    

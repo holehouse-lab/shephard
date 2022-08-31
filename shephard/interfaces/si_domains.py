@@ -49,16 +49,11 @@ class _DomainsInterface:
             attributes           : dictionary of arbitrary key-value pairs 
                                    that will be associated with the domain
 
-
         Parameters
         ----------------
         
         filename : str
             Name of the shephard domains file to read
-
-
-        Other Parameters
-        ----------------
 
         delimiter : str (default = '\\t')
             String used as a delimiter on the input file. 
@@ -154,7 +149,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, re
           As a result any column delimiter (other than ``:``) can be used, 
           but ``:`` is reserved for this role
           
-
     Parameters
     ----------
     proteome : shephard.proteome.Proteome
@@ -163,9 +157,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, re
     filename : str
         Name of the shephard domains file to read
 
-
-    Other Parameters
-    ----------------
     delimiter : str (default = '\\t')
         String used as a delimiter on the input file.
 
@@ -207,7 +198,6 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, re
     verbose : bool (default  = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding domains.
-
 
     Returns
     -----------
@@ -263,7 +253,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     In this way, each domain that maps to a give unique_ID will be added. 
     Note the attribute is optional.
     
-
     Parameters
     ----------
     proteome : Proteome object
@@ -273,9 +262,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         Dictionary that maps unique_IDs to a list of one or more domain 
         dictionaries
 
-
-    Other Parameters
-    ----------------
     autoname : bool (default = False)
         If autoname is set to true, this function ensures each domain 
         ALWAYS has a unique name - i.e. the allows for multiple domains 
@@ -301,7 +287,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding domains.
 
-
     Returns
     -----------
     None
@@ -312,7 +297,6 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     # Note - the safe keyword is actually dealt with in this function in conjunction with the Verbose
     # keyword, so we pass safe=False to the add_domain function and then catch the exception in this
     # function.
-
 
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_domains (si_domains)')
@@ -375,9 +359,6 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
     filename : str
         Name of the shephard protein attributes file to read
 
-
-    Other Parameters
-    -----------------
     delimiter : str (default = '\t')
         String used as a delimiter on the input file. 
 
@@ -414,7 +395,6 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
         Flag that defines how 'loud' output is. Will warn about errors on 
         adding attributes.
 
-
     Returns
     ----------- 
     None or dict
@@ -423,6 +403,7 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
         Proteome object passed as the first argument. If return_dictionary 
         is set to True the function returns the parsed domains_dictionary 
         without adding the newly-read protein_attributes to the proteome.
+    
     """        
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
@@ -464,7 +445,6 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
     In this way, each domain that maps to a give unique_ID will be added. Note 
     the attribute is optional.
 
-
     Parameters
     ----------
     proteome : Proteome object
@@ -474,9 +454,6 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
         Dictionary that maps unique_IDs to a list of one or more domain 
         dictionaries.
 
-
-    Other Parameters
-    ----------------
     add_new : boolean (default = True)
         If set to True then any new found domains are added to their 
         associated protein. If False any unfound domains are not added 
@@ -499,7 +476,6 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors 
         on adding domains.
-
 
     Returns
     -----------
@@ -586,7 +562,6 @@ def write_domains(proteome, filename, delimiter='\t', domain_types=None):
     reasonable but is not really a viable stratergy for complex objects, 
     although this will not yeild and error.
             
-
     Parameters
     -----------
 
@@ -595,10 +570,6 @@ def write_domains(proteome, filename, delimiter='\t', domain_types=None):
 
     filename : str
         Filename that will be used to write the new domains file
-
-
-    Other Parameters
-    ----------------
 
     delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. 
@@ -661,8 +632,7 @@ def write_domains_from_list(domain_list, filename, delimiter='\t'):
     Note that attributes are converted to a string, which for simple 
     attributes is reasonable but is not really a viable stratergy for 
     complex objects, although this will not yeild and error.
-    
-        
+            
     Parameters
     -----------
 
@@ -672,16 +642,11 @@ def write_domains_from_list(domain_list, filename, delimiter='\t'):
     filename : str
         Filename that will be used to write the new domains file
 
-
-    Other Parameters
-    ----------------
-
     delimiter : str (default = '\\t')
         Character (or characters) used to separate between fields. Default is 
         '\\t' which is recommended to maintain compliance with default 
         `add_domains_from_file()` function
        
-
     Returns
     --------
     None

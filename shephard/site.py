@@ -220,9 +220,8 @@ class Site:
         -------
         list
             returns a list of the attribute keys associated with the protein. 
-
-
         """
+
         return list(self._attributes.keys())
 
 
@@ -308,6 +307,41 @@ class Site:
                 
         self._attributes[name] = val
 
+
+    ## ------------------------------------------------------------------------
+    ##
+    def remove_attribute(self, name, safe=True):
+        """
+        Function that removes a given attribute from the Site based on the 
+        passed attribute name. If the passed attribute does not exist or is not 
+        associate with the Site then this will trigger an exception 
+        unless safe=False.
+
+        Parameters
+        ----------------
+
+        name : str
+            The attribute name that will be used to identify it
+
+        safe : bool (default = True)
+            Flag which if True with throw an exception if an 
+            attribute this name does not exists. If set to
+            False then if an attribute is not found it is simply
+            ignored
+            
+        Returns
+        ---------
+        None
+            No return type but will remove an attribute from the 
+            protein if present.
+            
+        """
+
+        if name not in self._attributes:
+            if safe:
+                raise ProteinException(f'Passed attribute [{name}] not found in {self}')
+        else:
+            del self._attributes[name]
         
         
 

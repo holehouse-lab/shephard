@@ -20,6 +20,14 @@ Site sequence functions
 .. autofunction:: shephard.site.Site.get_local_sequence_context
 
 
+Domain Attribute Functions
+...........................
+.. autofunction:: shephard.site.Site.attributes
+.. autofunction:: shephard.site.Site.attribute
+.. autofunction:: shephard.site.Site.add_attribute
+.. autofunction:: shephard.site.Site.remove_attribute
+
+
 Site Track Functions
 .......................
 .. autofunction:: shephard.site.Site.get_track_values

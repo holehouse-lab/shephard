@@ -11,10 +11,12 @@ Proteome functions
 .. autofunction:: shephard.proteome.Proteome.attributes
 .. autofunction:: shephard.proteome.Proteome.attribute
 .. autofunction:: shephard.proteome.Proteome.add_attribute
+.. autofunction:: shephard.proteome.Proteome.remove_attribute
 .. autofunction:: shephard.proteome.Proteome.__iter__
 .. autofunction:: shephard.proteome.Proteome.__contains__
 .. autofunction:: shephard.proteome.Proteome.__getitem__
 .. autofunction:: shephard.proteome.Proteome.__len__
+
 
 
 Protein functions
@@ -33,6 +35,7 @@ Domain properties
 
 .. autofunction:: shephard.proteome.Proteome.domains
 .. autofunction:: shephard.proteome.Proteome.unique_domain_types
+.. autofunction:: shephard.proteome.Proteome.get_domains_by_type
 
 
 Site properties
@@ -40,6 +43,7 @@ Site properties
 
 .. autofunction:: shephard.proteome.Proteome.sites
 .. autofunction:: shephard.proteome.Proteome.unique_site_types
+.. autofunction:: shephard.proteome.Proteome.get_sites_by_type
 
 
 Track properties

@@ -22,6 +22,7 @@ Domain Attribute Functions
 .. autofunction:: shephard.domain.Domain.attributes
 .. autofunction:: shephard.domain.Domain.attribute
 .. autofunction:: shephard.domain.Domain.add_attribute
+.. autofunction:: shephard.domain.Domain.remove_attribute
 
 
 Domain Site Functions
