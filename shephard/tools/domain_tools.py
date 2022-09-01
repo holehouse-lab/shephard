@@ -91,23 +91,26 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
         d_long = domain_1
 
     
-    # ......OOOOOOOOOOOOOOOOOOOOOOO............
-    #...XXXXXXXXXXXX????? 
+    # ......OOOOOOOOOOOOOOOOOOOOOOO............       long
+    #...XXXXXXXXXXXX?????                             short
     #
     if d_short.start < d_long.start:
         if d_short.end < d_long.start:
             return 0.0
         else:
-            return (d_long.start - d_short.end)/len(d_short)
+            return ((d_short.end - d_long.start)+1)/len(d_short)
 
-    # ......OOOOOOOOOOOOOOOOOOOOOOO.............
-    #.                   ?????XXXXXXXXXXXX......
+    # ......OOOOOOOOOOOOOOOOOOOOOOO.............     end
+    #.                   ?????XXXXXXXXXXXX......     short
     #
     if d_short.end > d_long.end:
         if d_short.start > d_long.end:
             return 0.0
         else:
-            return (d_short.start - d_long.end)/len(d_short)
+
+            # note - the +1 accounts for the fact we're using 
+            # an inclusive counting 
+            return ((d_long.end - d_short.start)+1)/len(d_short)
 
     # if we get here d_short.start equal to or larger than d_long start
     # and d_short end equal to or smaller than d_long end, so 100% overlap

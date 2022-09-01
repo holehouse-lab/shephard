@@ -1,10 +1,8 @@
 """
 SHEPHARD: 
 Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
-
 Authors: Garrett M. Ginell & Alex S. Holehouse
 Contact: (g.ginell@wustl.edu)
-
 Holehouse Lab - Washington University in St. Louis
 """
 
@@ -78,7 +76,6 @@ def test_domain_overlap():
 
 def test_domain_overlap_fraction():    
     """
-
     """
 
     
@@ -89,4 +86,173 @@ def test_domain_overlap_fraction():
 
     # TODO write a series of tests that test the domain_overlap_fraction
     # functionality
+
+    P.add_protein('A'*1000,'test','test')    
+    prot = P.protein('test')
+
+    ## TEST 1
+    prot.add_domain(1,100,'test1')
+    prot.add_domain(1,100,'test2')
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
     
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 1.0
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+    ## TEST 2
+    prot.add_domain(1,100,'test1')
+    prot.add_domain(50,100,'test2')
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 1.0
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+
+    ## TEST 3
+    prot.add_domain(1,100,'test1')
+    prot.add_domain(101,120,'test2')
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.0
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+
+    ## TEST 3.1 (switched order of addition    
+    prot.add_domain(101,120,'test2')
+    prot.add_domain(1,100,'test1')
+
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.0
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+    ## TEST 4
+    prot.add_domain(1,100,'test1')
+    prot.add_domain(81,120,'test2')
+    
+
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+    print(len(d1))
+    print(len(d2))
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.5
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+    ## TEST 5
+    # here only 1 residue overlaps for test2 (residue 100)
+    # and the domain is 100-109 (i..e 10 residues) SOOOO 
+    # the fraction overlap should be 0.1
+    prot.add_domain(1,100,'test1')
+    prot.add_domain(100,109,'test2')
+    
+
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.1
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+
+    ## TEST 5.1
+    # here only 1 residue overlaps for test2 (residue 100)
+    # and the domain is 100-109 (i..e 10 residues) SOOOO 
+    # the fraction overlap should be 0.1
+    # same as above but change order of addition
+    
+    prot.add_domain(100,109,'test1')
+    prot.add_domain(1,100,'test2')
+
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.1
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+
+
+    ## TEST 6
+    # here only 1 residue overlaps for test2 (residue 109)
+    # and the domain is 100-109 (i..e 10 residues) SOOOO 
+    # the fraction overlap should be 0.1
+    prot.add_domain(109,200,'test1')
+    prot.add_domain(100,109,'test2')
+    
+
+
+    d1 = prot.domains[0]
+    d2 = prot.domains[1]
+    
+    assert domain_tools.domain_overlap_fraction(d1,d2) == 0.1
+    prot.remove_domain(d1)
+    prot.remove_domain(d2)
+    assert len(prot.domains) == 0
+    
+    ## Test 7.x - cyle over all possible x/10 overlaps
+    for i in range(109,99,-1):
+        
+        prot.add_domain(i,200,'test1')
+        prot.add_domain(100,109,'test2')
+
+        prediction = (110-i)/10
+
+        d1 = prot.domains[0]
+        d2 = prot.domains[1]
+    
+        assert domain_tools.domain_overlap_fraction(d1,d2) == prediction
+        prot.remove_domain(d1)
+        prot.remove_domain(d2)
+        assert len(prot.domains) == 0
+
+
+    ## Test 8.x - cyle over all possible x/10 overlaps
+    for i in range(100,109,1):
+        
+        prot.add_domain(1,i,'test1')
+        prot.add_domain(100,109,'test2')
+
+        prediction = (1+(i-100))/10
+
+        d1 = prot.domains[0]
+        d2 = prot.domains[1]
+    
+        assert domain_tools.domain_overlap_fraction(d1,d2) == prediction
+        prot.remove_domain(d1)
+        prot.remove_domain(d2)
+        assert len(prot.domains) == 0
+
+
