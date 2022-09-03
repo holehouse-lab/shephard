@@ -254,6 +254,71 @@ class Track:
             self._protein._check_position_is_valid(start, helper_string = f'Invalid position [{start}] passed to track {str(self)}')
             return self._symbols[start:start+1][0]
 
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def value(self, position, safe=True):
+        """
+        Returns a single value from the passed position.
+
+        Parameters
+        ----------
+        position : int
+            Starting position of interest.
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if a
+            value is requested from a symbol track.
+
+        Returns
+        --------
+        float
+            Returns a value associated with the passed position
+
+        """
+        if self.values is None:
+            if safe is True:
+                raise TrackException('Requesting value from a symbols track')
+            else:
+                return None
+
+        # this list comprehension checks start and end are valid options
+        self._protein._check_position_is_valid(position, helper_string = f'Invalid position [{position}] passed to track {str(self)}')
+        return self._values[position]
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def symbol(self, position, safe=True):
+        """
+        Returns a single symbol from the passed position
+        Parameters
+        ----------
+        position : int
+            Starting position of interest.
+
+        safe : bool (default = True)
+            Flag which if true with throw an exception if a
+            symbol is requested from a symbol track.
+
+        Returns
+        --------
+        str
+            Returns a symbol associated with the passed position
+
+        """
+        if self.symbols is None:
+            if safe is True:
+                raise TrackException('Requesting symbol from a values track')
+            else:
+                return None
+
+        # this list comprehension checks start and end are valid options
+        self._protein._check_position_is_valid(position, helper_string = f'Invalid position [{position}] passed to track {str(self)}')
+        return self._symbols[position]
+
+
       
     ## ------------------------------------------------------------------------
     ##      

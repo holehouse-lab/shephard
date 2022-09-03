@@ -14,6 +14,8 @@ Track Properties
 
 Track Functions
 ...............
+.. autofunction:: shephard.track.Track.symbol
+.. autofunction:: shephard.track.Track.value
 .. autofunction:: shephard.track.Track.symbols_region
 .. autofunction:: shephard.track.Track.values_region
 

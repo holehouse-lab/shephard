@@ -1195,7 +1195,7 @@ class Proteome:
         else:
             self._unique_track_names[track_name] = self._unique_track_names[track_name] + 1
             if self._track_name_to_track_type[track_name] != track_type:
-                raise ProteomeException("Tried to assigned track name [{track_name}] as a [{track_type}] track, but this track was already assigned as a [{self._track_name_to_track_type[track_name]}] track. Cannot have two tracks with the same name but different types")
+                raise ProteomeException(f"Tried to assigned track name [{track_name}] as a [{track_type}] track, but this track was already assigned as a [{self._track_name_to_track_type[track_name]}] track. Cannot have two tracks with the same name but different types")
             
 
     ## ------------------------------------------------------------------------

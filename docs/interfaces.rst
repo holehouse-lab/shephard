@@ -33,6 +33,7 @@ Functions associated with the ``si_sites`` module enable the reading and writing
 .. autofunction:: shephard.interfaces.si_sites.add_sites_from_file
 .. autofunction:: shephard.interfaces.si_sites.add_sites_from_dictionary
 .. autofunction:: shephard.interfaces.si_sites.write_sites
+.. autofunction:: shephard.interfaces.si_sites.write_sites_from_list
 
 
 si_domains
@@ -57,7 +58,8 @@ Functions associated with the ``si_tracks`` module enable the reading and writin
 .. autofunction:: shephard.interfaces.si_tracks.write_all_tracks_separate_files
 .. autofunction:: shephard.interfaces.si_tracks.write_all_values_tracks_single_file
 .. autofunction:: shephard.interfaces.si_tracks.write_all_symbols_tracks_single_file
-.. autofunction:: shephard.interfaces.si_tracks.write_track
+.. autofunction:: shephard.interfaces.si_tracks.write_tracks
+.. autofunction:: shephard.interfaces.si_tracks.write_tracks_from_list
 
 
 si_protein_attributes

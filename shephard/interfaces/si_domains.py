@@ -600,28 +600,9 @@ def write_domains(proteome, filename, delimiter='\t', domain_types=None):
                     if d.domain_type not in domain_types:
                         continue
 
-                # systematically construct each line in the file 
-                line = ''
-                line = line + str(protein.unique_ID) + delimiter
-
-                start = d.start
-                line = line + str(start) + delimiter
-
-                end = d.end
-                line = line + str(end) + delimiter
-
-                domain_type = d.domain_type                
-                line = line + str(domain_type)
-
-                if d.attributes:
-                    for k in d.attributes:
-                        atrbt = interface_tools.full_clean_string(d.attribute(k))
-                        line = line + delimiter + "%s:%s" %(k, atrbt)
+                line = __build_domain_line(d, delimiter)
                 
-                line = line + "\n"
-
-                fh.write('%s'%(line))
-
+                fh.write(line)
 
 ## ------------------------------------------------------------------------
 ##
@@ -655,31 +636,66 @@ def write_domains_from_list(domain_list, filename, delimiter='\t'):
 
     """
 
+    # first check if items in the list are Domain objects
+    for d in domain_list:
+        interface_tools.check_domain(d, 'write_domains_from_list')
+
+
     with open(filename, 'w') as fh:
         for d in domain_list:
 
-            # systematically construct each line in the file 
-            line = ''
-            line = line + str(d.protein.unique_ID) + delimiter
+            line = __build_domain_line(d, delimiter)
 
-            start = d.start
-            line = line + str(start) + delimiter
+            fh.write(line)
 
-            end = d.end
-            line = line + str(end) + delimiter
 
-            domain_type = d.domain_type    
+## ------------------------------------------------------------------------
+##
+def __build_domain_line(d, delimiter):
+    """
+    Internal function that takes a Domain object and returns a line that can
+    be written to a Domains file. This is called internally by functions that
+    write Domains.
 
-            # note last required element has no trailing delimiter
-            line = line + str(domain_type) 
+    Parameters
+    ----------------------
+    d : shephard.Domain
+        Domain object being converted to a string
 
-            if d.attributes:
-                for k in d.attributes:
+    delimiter : str (default = '\\t')
+        Character (or characters) used to separate between fields. 
+        Default is the tab character ('\\t'), which is recommended to 
+        maintain compliance with default SHEPHARD file-reading functions.     
 
-                    # 
-                    atrbt = interface_tools.full_clean_string(d.attribute(k))
-                    line = line + delimiter + f"{k}:{atrbt}" 
+    Returns
+    --------------
+    str
+        Returns a string that is ready to be written to file
 
-            line = line + "\n"
+    """
+
+    # systematically construct each line in the file 
+    line = ''
+    line = line + str(d.protein.unique_ID) + delimiter
+
+    start = d.start
+    line = line + str(start) + delimiter
+
+    end = d.end
+    line = line + str(end) + delimiter
+
+    domain_type = d.domain_type    
             
-            fh.write('%s'%(line))
+    # note last required element has no trailing delimiter
+    line = line + str(domain_type) 
+
+    if d.attributes:
+        for k in d.attributes:
+
+            # 
+            atrbt = interface_tools.full_clean_string(d.attribute(k))
+            line = line + delimiter + f"{k}:{atrbt}" 
+
+    line = line + "\n"
+
+    return line

@@ -10,7 +10,6 @@ Holehouse Lab - Washington University in St. Louis
 
 from shephard.exceptions import InterfaceException
 
-
 ## ------------------------------------------------------------------------
 ##
 def check_proteome(p, function_name):
@@ -41,8 +40,106 @@ def check_proteome(p, function_name):
     if "<class 'shephard.proteome.Proteome'>" == str(p.__class__):
         return None
     else:
-        raise InterfaceException('First argument passed to function [%s] was not a proteome' %(function_name))
+        raise InterfaceException(f'First argument passed to function {function_name} was not a Proteome object')
 
+## ------------------------------------------------------------------------
+##
+def check_domain(d, function_name):
+    """
+    Function that takes takes in some object and tests if its a Domain
+    object (or not). If yes returns None, but if no raise an exception with 
+    an error message that includes the name of the parent function that is 
+    calling this validation function
+
+    Parameters
+    --------------
+    d : Domain object 
+        Unknown object that will be tested to see if it's a Domain object
+        or not
+
+    function_name : string
+        Passed string that makes it easy for the user to debug which function 
+        has failed
+
+    Returns
+    ---------
+    None
+        No returns but the function will raise an exception if the passed object 
+        is not a Domain object
+    
+
+    """
+    if "<class 'shephard.domain.Domain'>" == str(p.__class__):
+        return None
+    else:
+        raise InterfaceException(f'First argument passed to function {function_name} was not a Domain object')
+
+
+## ------------------------------------------------------------------------
+##
+def check_track(p, function_name):
+    """
+    Function that takes takes in some object and tests if its a Track
+    object (or not). If yes returns None, but if no raise an exception with 
+    an error message that includes the name of the parent function that is 
+    calling this validation function
+
+    Parameters
+    --------------
+    p : Track object 
+        Unknown object that will be tested to see if it's a Track object
+        or not
+
+    function_name : string
+        Passed string that makes it easy for the user to debug which function 
+        has failed
+
+    Returns
+    ---------
+    None
+        No returns but the function will raise an exception if the passed object 
+        is not a Track object
+    
+
+    """
+    if "<class 'shephard.track.Track'>" == str(p.__class__):
+        return None
+    else:
+        raise InterfaceException(f'First argument passed to function {function_name} was not a track object')
+
+
+## ------------------------------------------------------------------------
+##
+def check_site(p, function_name):
+    """
+    Function that takes takes in some object and tests if its a Site
+    object (or not). If yes returns None, but if no raise an exception with 
+    an error message that includes the name of the parent function that is 
+    calling this validation function
+
+    Parameters
+    --------------
+    p : Site object 
+        Unknown object that will be tested to see if it's a Site object
+        or not
+
+    function_name : string
+        Passed string that makes it easy for the user to debug which function 
+        has failed
+
+    Returns
+    ---------
+    None
+        No returns but the function will raise an exception if the passed object 
+        is not a Site object
+    
+
+    """
+    if "<class 'shephard.site.Site'>" == str(p.__class__):
+        return None
+    else:
+        raise InterfaceException(f'First argument passed to function {function_name} was not a site object')
+    
 
 
 ## ------------------------------------------------------------------------

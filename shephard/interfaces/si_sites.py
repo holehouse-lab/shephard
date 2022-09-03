@@ -326,28 +326,116 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
         for protein in proteome:
             for s in protein.sites:
 
-                # if the passed parameter site_types is being
-                # used
+                # if we're using site_types and the current sites 
                 if site_types is not None:
                     if s.site_type not in site_types:
                         continue
 
-                # systematically construct each line in the file 
-                line = ''
-                line = line + str(protein.unique_ID) + delimiter
-                line = line + str(s.position) + delimiter
-                line = line + str(s.site_type) + delimiter                
-                line = line + str(s.symbol) + delimiter
+                # build a line 
+                # if the passed parameter site_types is being
+                # used
+                line = __build_site_line(s, site_types, delimiter)
 
-                # note last required element has no trailing delimiter
-                line = line + str(s.value) 
-                
-                if s.attributes:
-                    for k in s.attributes:
-                        atrbt = interface_tools.full_clean_string(s.attribute(k))
-                        line = line + delimiter + f"{k}:{atrbt}"
+                fh.write(f"{line}")
 
-                line = line + "\n"
 
-                fh.write('%s'%(line))
 
+## ------------------------------------------------------------------------
+##
+def write_sites_from_list(site_list, filename, delimiter='\t'):
+    r"""
+    Function that writes out sites to a SHEPHARD sites file from a list
+    of Site objects. 
+    Note that attributes are converted to a string, which for simple 
+    attributes is reasonable but is not really a viable stratergy for 
+    complex objects, although this will not yeild and error.
+            
+    Parameters
+    -----------
+
+    site_list : List of Site objects
+        List of site objects which will be written
+
+    filename : str
+        Filename that will be used to write the new sites file
+
+    delimiter : str (default = '\\t')
+        Character (or characters) used to separate between fields. Default is 
+        '\\t' which is recommended to maintain compliance with default 
+        `add_sites_from_file()` function
+       
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set of 
+        sites from this proteome written to disk.
+
+    """
+
+    # first check if items in the list are site objects
+    for s in site_list:
+        interface_tools.check_site(t, 'write_sites_from_list')
+
+    with open(filename, 'w') as fh:
+
+        # for each site in the list
+        for s in site_list:
+
+            # if we're using site_types and the current site_type
+            # is not 
+            if site_types is not None:
+                if s.site_type not in site_types:
+                    continue
+
+            # build a line 
+            # if the passed parameter site_types is being
+            # used
+            line = __build_site_line(s, site_types, delimiter)
+
+            fh.write(f"{line}")
+
+
+
+## ------------------------------------------------------------------------
+##
+def __build_site_line(s, delimiter):
+    """
+    Internal function that takes a Site object and returns a line that can
+    be written to a Sites file. This is called internally by functions that
+    write Sites.
+
+    Parameters
+    ----------------------
+    s : shephard.Site
+        Site object being converted to a string
+
+    delimiter : str (default = '\\t')
+        Character (or characters) used to separate between fields. 
+        Default is the tab character ('\\t'), which is recommended to 
+        maintain compliance with default SHEPHARD file-reading functions.     
+
+    Returns
+    --------------
+    str
+        Returns a string that is ready to be written to file
+
+    """
+
+    # systematically construct each line in the file 
+    line = ''
+    line = line + str(s.protein.unique_ID) + delimiter
+    line = line + str(s.position) + delimiter
+    line = line + str(s.site_type) + delimiter                
+    line = line + str(s.symbol) + delimiter
+
+    # note last required element has no trailing delimiter
+    line = line + str(s.value) 
+    
+    if s.attributes:
+        for k in s.attributes:
+            atrbt = interface_tools.full_clean_string(s.attribute(k))
+            line = line + delimiter + f"{k}:{atrbt}"
+
+    line = line + "\n"
+
+    return line

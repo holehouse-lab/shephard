@@ -4,8 +4,9 @@ import shephard
 from shephard.apis import uniprot  
 from shephard import interfaces
 import numpy as np
-from shephard.exceptions import ProteinException 
+from shephard.exceptions import ProteinException, InterfaceException
 import os
+import random
 
 
 
@@ -127,7 +128,7 @@ def test_write_track_part1():
     interfaces.si_tracks.add_tracks_from_file(P, track_file, mode='values')
 
     fn = 'output_test/out_tracks.tsv'
-    interfaces.si_tracks.write_track(P, fn, 'pscore')
+    interfaces.si_tracks.write_tracks(P, fn, 'pscore')
 
     b = os.path.getsize(fn)
     assert b == 32531 # file size in bytes if correctly written
@@ -162,7 +163,7 @@ def test_write_track_part2():
 
     track_dict = {special_ID: [{'track_name':track_name, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
-    interfaces.si_tracks.write_track(P, outname,track_name)
+    interfaces.si_tracks.write_tracks(P, outname,track_name)
 
     b = os.path.getsize(outname)
     assert b == 3050 # file size in bytes if correctly written
@@ -198,7 +199,7 @@ def test_write_track_part3():
 
     track_dict = {special_ID: [{'track_name':track_name_rv, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
-    interfaces.si_tracks.write_track(P, outname_rv, track_name_rv)
+    interfaces.si_tracks.write_tracks(P, outname_rv, track_name_rv)
 
 
     track_name = 'phospho_track'
@@ -216,7 +217,7 @@ def test_write_track_part3():
 
     track_dict = {special_ID: [{'track_name':track_name, 'track_data':newstring}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')    
-    interfaces.si_tracks.write_track(P, outname, track_name)
+    interfaces.si_tracks.write_tracks(P, outname, track_name)
 
     b = os.path.getsize(outname)
     assert b == 1032 # file size in bytes if correctly written
@@ -300,12 +301,11 @@ def test_write_tracks_separate_files():
 
         
 def test_write_tracks_single_file_symbols():
+
     test_data_dir = shephard.get_data('test_data')
     fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    print(P.proteins)
 
     # build phosphostring
     newstring = ''
@@ -349,7 +349,190 @@ def test_write_tracks_single_file_symbols():
 
 
 def test_write_tracks_single_file_values():
-    pass
-    # TO DO!!!
+
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+
+    # build phosphostring
+
+    r1 = random.randint(1,20)
+    r2 = random.random()
+    for protein in P:
+
+        new_vals = []
+        for i in protein.sequence:
+
+            if i in ['S','T','Y']:
+                new_vals.append(r1)
+            else:
+                new_vals.append(r2)
+
+        protein.add_track('test_track', values=new_vals)
+
+    # write all the tracks out
+    interfaces.si_tracks.write_all_values_tracks_single_file(P, 'output_test/all_values_test.tsv')
+    
+    # read the tracks into a new proteome
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/all_values_test.tsv', mode='values')
+
+    # check everything worked ok
+    for protein in P2:
+        print(protein)
+        for i in range(1,len(protein)+1):
+
+            if protein.get_residue(i) in ['S','T','Y']:
+                assert protein.track('test_track').value(i) == r1
+            else:
+                assert protein.track('test_track').value(i) == np.round(r2,3)
 
 
+
+def test_write_values_tracks_from_list():
+
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+
+    # build phosphostring
+
+    r1 = random.randint(1,20)
+    r2 = random.random()
+    for protein in P:
+
+        new_vals = []
+        for i in protein.sequence:
+
+            if i in ['S','T','Y']:
+                new_vals.append(r1)
+            else:
+                new_vals.append(r2)
+
+        protein.add_track('test_track', values=new_vals)
+
+    track_list = []
+    for protein in P:
+        track_list.append(protein.track('test_track'))
+
+    # write all the tracks out
+    interfaces.si_tracks.write_tracks_from_list(track_list, 'output_test/all_values_test_from_list.tsv')
+
+    # read the tracks into a new proteome
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/all_values_test_from_list.tsv', mode='values')
+
+    # check everything worked ok
+    for protein in P2:
+        print(protein)
+        for i in range(1,len(protein)+1):
+
+            if protein.get_residue(i) in ['S','T','Y']:
+                assert protein.track('test_track').value(i) == r1
+            else:
+                assert protein.track('test_track').value(i) == np.round(r2,3)
+
+
+
+def test_write_symbols_tracks_from_list():
+
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+
+    # build phosphostring
+
+    r1 = random.randint(1,20)
+    r2 = random.random()
+    for protein in P:
+
+        new_symbols =''
+        for i in protein.sequence:
+
+            if i in ['S','T','Y']:
+                new_symbols = new_symbols + "P"
+            else:
+                new_symbols = new_symbols + "-"
+
+        protein.add_track('test_track', symbols=new_symbols)
+
+    track_list = []
+    for protein in P:
+        track_list.append(protein.track('test_track'))
+
+    # write all the tracks out
+    interfaces.si_tracks.write_tracks_from_list(track_list, 'output_test/all_values_test_from_list.tsv')
+
+    # read the tracks into a new proteome
+    P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
+    interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/all_values_test_from_list.tsv', mode='symbols')
+
+    # check everything worked ok
+    for protein in P2:
+        print(protein)
+        for i in range(1,len(protein)+1):
+
+            if protein.get_residue(i) in ['S','T','Y']:
+                assert protein.track('test_track').symbol(i) == 'P'
+            else:
+                assert protein.track('test_track').symbol(i) == '-'
+
+
+
+def test_write_symbols_tracks_from_list():
+
+    test_data_dir = shephard.get_data('test_data')
+    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    
+    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
+
+    # build phosphostring
+
+    r1 = random.randint(1,20)
+    r2 = random.random()
+    for protein in P:
+
+
+
+        # add symbol
+        if random.random() < 0.5:            
+            new_symbols =''
+            for i in protein.sequence:
+
+                if i in ['S','T','Y']:
+                    new_symbols = new_symbols + "P"
+                else:
+                    new_symbols = new_symbols + "-"
+
+            protein.add_track('test_track_1', symbols=new_symbols)
+
+        # add value
+        else:
+            new_vals = []
+            for i in protein.sequence:
+
+                if i in ['S','T','Y']:
+                    new_vals.append(r1)
+                else:
+                    new_vals.append(r2)
+
+            protein.add_track('test_track_2', values=new_vals)
+    
+    track_list = []
+    for protein in P:
+        track_list.append(protein.track('test_track_1', safe=False))
+        track_list.append(protein.track('test_track_2', safe=False))
+
+    with pytest.raises(InterfaceException):
+        interfaces.si_tracks.write_tracks_from_list(track_list, 'output_test/should_never_be_written.tsv')
+
+
+def test_write_tracks_sanity_checks():
+
+    with pytest.raises(InterfaceException):
+        interfaces.si_tracks.write_tracks_from_list([1,None,2], 'output_test/should_never_be_written.tsv')
+
+    
