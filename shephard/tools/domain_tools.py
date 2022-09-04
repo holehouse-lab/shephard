@@ -25,13 +25,13 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
 
     Parameters
     -----------
-    domain_1 : Domain
+    domain_1 : shephard.domain.Domain
         The first domain object of interest
 
-    domain_2 : Domain
+    domain_2 : shephard.domain.Domain
         The first domain object of interest
 
-    check_origin : boolean
+    check_origin : bool
         Flag that if set to True will cause an exception if domain_1 and
         domain_2 are from different proteins. If set to false, no such
         sanity checks are performed.
@@ -59,10 +59,10 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
     overlaps the longer one with.
     Parameters
     -----------
-    domain_1 : Domain
+    domain_1 : shephard.domain.Domain
         The first domain object of interest
 
-    domain_2 : Domain
+    domain_2 : shephard.domain.Domain
         The first domain object of interest
 
     check_origin : bool (default = True)
@@ -193,7 +193,7 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
 
     Parameters
     -----------
-    protein : Protein object
+    protein : shephard.protein.Protein object
         Protein object over which sites are identified
 
     new_domain_type : str (default = 'missing')
@@ -329,7 +329,7 @@ def build_domains_from_track_values(proteome,
     
     Parameters
     -----------
-    proteome : Proteome
+    proteome : shephard.proteome.Proteome
         The Proteome which is going to be scanned for each track. Note that
         the underlying Proteome is not altered by this function
 

@@ -25,10 +25,10 @@ def build_site_density_vector(protein, site_types=None, window_size=30, append_l
     Parameters
     ----------------
 
-    protein : Protein object
+    protein : shephard.protein.Protein object
         Protein object over which sites are identified
 
-    site_type : string or list of strings
+    site_type : str or list of strings
         One or more possible site_types that may be found in the protein. 
         Either a single string or a list of strings can be passed, allowing 
         for one or more sites to be grouped together

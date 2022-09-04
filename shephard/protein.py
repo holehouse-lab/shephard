@@ -2116,7 +2116,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sites_by_position(self, position, wiggle = 0):
+    def get_sites_by_position(self, position, wiggle = 0, return_list=False):
         """
         Get all sites at a specific position
 
@@ -2129,23 +2129,32 @@ class Protein:
             Value +/- the position (i.e. lets you look at sites around a 
             specific position)
 
+        return_list : bool
+            By default, the flag returns a dictionary, which is conveninet as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites.
+
         Returns
         -----------
-        dict
+        dict 
+            Returns a dictionary where the key is a position (location) and the 
+            value is a list of one or more sites at that position.
 
-            Returns a dictionary where key-value pairs are
-
-            * **keys**: positions along the sequence (int)
-            * **value**: list of one or more sites found at that position (list of shephard.site)
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
 
         """
 
-        return self.get_sites_by_range(position, position, wiggle)
+        return self.get_sites_by_range(position, position, wiggle, return_list)
 
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sites_by_range(self, start, end, wiggle = 0): 
+    def get_sites_by_range(self, start, end, wiggle = 0, return_list=False):
         """
         Get all sites within a certain range.
 
@@ -2160,16 +2169,24 @@ class Protein:
         wiggle : int (default = 0)
             Value +/- at the edges that are included. 
 
+        return_list : bool
+            By default, the flag returns a dictionary, which is conveninet as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites.
 
         Returns
         -----------
-        dict
 
-            Returns a dictionary where key-value pairs are
+        dict 
+            Returns a dictionary where the key is a position (location) and the 
+            value is a list of one or more sites at that position.
 
-            * **keys**: positions along the sequence (int)
-            * **value**: list of one or more sites found at that 
-                         position (list of shephard.site)
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
 
         """
        
@@ -2192,8 +2209,13 @@ class Protein:
         for j in range(p1, p2+1):
             if j in self._sites:
                 return_dict[j] = self._sites[j]
-            
-        return return_dict
+
+
+        if return_list is True:
+            # the list comprehension here flattens the returned list
+            return [i for sublist in list(return_dict.values()) for i in sublist]
+        else:
+            return return_dict
 
 
     ## ------------------------------------------------------------------------
@@ -2216,12 +2238,12 @@ class Protein:
             position in the sequence. However, you may instead want a list 
             of sites, in which case setting return_list will have the function
             simply return a list of sites. As of right now we do not guarentee
-            the order of these returned sites/
+            the order of these returned sites.
 
         Returns 
         ----------
         dict 
-            Returns a dictionary where the key is a position (site) and the 
+            Returns a dictionary where the key is a position (location) and the 
             value is a list of one or more sites at that position that match 
             the site type of interest.
 
@@ -2244,7 +2266,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sites_by_type_and_range(self, site_types, start, end, wiggle=0):
+    def get_sites_by_type_and_range(self, site_types, start, end, wiggle=0, return_list=False):
         """
         Returns a set of sites that match both a type of interest and are 
         found in the range provided. 
@@ -2267,12 +2289,25 @@ class Protein:
             Value that adds slack to the start/end positions symmetrically
             around the start and end positions.
 
+        return_list : bool
+            By default, the flag returns a dictionary, which is conveninet as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites.
+
+
         Returns 
         ----------
         dict 
-            Returns a dictionary where the key is a position (site) and 
-            the value is a list of one or more sites at that position 
-            that match the site type of interest. 
+            Returns a dictionary where the key is a position (location) and the 
+            value is a list of one or more sites at that position that match 
+            the site type of interest.
+
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
       
         """
 
@@ -2280,13 +2315,13 @@ class Protein:
         initial_dict = self.get_sites_by_range(start, end, wiggle)
         
         # and then subselect sites of the right type
-        return self.__site_by_type_internal(initial_dict, site_types)
+        return self.__site_by_type_internal(initial_dict, site_types, return_list=return_list)
 
 
 
     ## ------------------------------------------------------------------------
     ##
-    def __site_by_type_internal(self, indict, site_types):
+    def __site_by_type_internal(self, indict, site_types, return_list=False):
         """
         Internal function that allows a subset of sites to be selected 
         based  on the passed site_type(s).
@@ -2298,14 +2333,27 @@ class Protein:
             protein. Either a single string or a list of strings can be 
             passed, allowing for one or more sites to be grouped together.
 
+        return_list : bool
+            By default, the flag returns a dictionary, which is conveninet as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites.
+
+
         Returns
         -----------
         dict 
-            Returns a dictionary where the key is a position (site) and 
+            Returns a dictionary where the key is a position (location) and 
             the value is a list of one or more sites at that position 
             that match the site type of interest. This is exactly the 
             same structure as the  self._sites dictionary, just filtered 
             for a specific site_type.
+
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
 
         """
 
@@ -2333,8 +2381,13 @@ class Protein:
                         else:
                             return_dict[i] = [site_object]
 
-        return return_dict
 
+        if return_list is True:
+
+            # the list comprehension here flattens the returned list
+            return [i for sublist in list(return_dict.values()) for i in sublist]
+        else:
+            return return_dict
         
 
     ## ------------------------------------------------------------------------

@@ -448,7 +448,7 @@ class Domain:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_sites_by_type(self, site_type):
+    def get_sites_by_type(self, site_type, return_list=False):
         """
         Get dictionary of list of sites inside the domain
 
@@ -458,6 +458,15 @@ class Domain:
         site_type : string
             The site type identifier for which the function will search 
             for matching sites
+
+        return_list : bool
+            By default, the flag returns a dictionary, which is convenient as 
+            it makes it easy to index into one or more sites at a specific 
+            position in the sequence. However, you may instead want a list 
+            of sites, in which case setting return_list will have the function
+            simply return a list of sites. As of right now we do not guarentee
+            the order of these returned sites.
+
         
         Returns
         --------
