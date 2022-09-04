@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.1.12 (Septermber 2022)
+### Current major version: 0.1.15 (September 2022)
 
 [//]: # (Badges)
 [![Travis Build Status](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard.svg?branch=master)](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard)
@@ -61,7 +61,7 @@ These tools together form the backbone of our informatics infrastructure, and SH
 As we approach final release and versions of SHEPHARD are available for distribution, a change log is updated and changes that break backwards compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
 
 
-#### Version 0.1.14 (September 2022)
+#### Version 0.1.15 (September 2022)
 * Update for [PyPI update](https://pypi.org/project/shephard/)
 
 #### Version 0.1.10 (September 2022)
