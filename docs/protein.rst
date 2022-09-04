@@ -46,7 +46,7 @@ As an example:
 
     # using get_residue to excise a specific residue; the second
     # residue should be an A
-    print(P.protein('test1').get_residue(2))
+    print(P.protein('test1').residue(2))
     >>> A
 
     
@@ -69,8 +69,7 @@ Protein properties
 Sequence functions
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.sequence
-.. autofunction:: shephard.protein.Protein.get_residue
+.. autofunction:: shephard.protein.Protein.residue
 .. autofunction:: shephard.protein.Protein.get_sequence_region
 .. autofunction:: shephard.protein.Protein.get_sequence_context
 .. autofunction:: shephard.protein.Protein.check_sequence_is_valid
