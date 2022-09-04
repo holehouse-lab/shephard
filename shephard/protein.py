@@ -1391,9 +1391,9 @@ class Protein:
         """
         Function that returns a specific domain as defined by the name. 
         Note it is often more useful to request a domain by type rather 
-        than by the name, in which case get_domain_by_type(<domain_type>) 
+        than by the name, in which case get_domains_by_type(<domain_type>) 
         is the relevant syntax. Note domains can also be requested based 
-        on position (get_domain_by_position).
+        on position (get_domains_by_position).
 
         Parameters
         ----------------

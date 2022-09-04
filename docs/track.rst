@@ -1,6 +1,14 @@
 Track
 =================
 
+Tracks represent annotations associated with the full length of the protein (i.e. per-residue sequence annotations). Tracks are added to proteins using the ``Protein.add_track()`` function, or using functions in the ``shephard.interfaces.si_tracks`` module.
+
+Tracks must have a ``track name``, as well as either a per-residue symbol annotation or per-residue value annotation, meaning Tracks can be either symbol tracks of value tracks. 
+
+Tracks for a given protein can be called using the ``protein.track(<track name>)`` function.
+
+Tracks can be removed from proteins using ``Protein.remove_track()`` function.
+
 .. autoclass:: shephard.track.Track
 
 

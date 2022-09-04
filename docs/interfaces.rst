@@ -22,8 +22,7 @@ By way of a simple example, here we use the Domains interface package.
 	# in the file `DNA_binding_domains.tsv`
 	interfaces.si_domains.add_domains_from_file(small_proteom, 'DNA_binding_domains.tsv')
 	
-By using interfaces we ensure that, as long as you can write your data in a format that complies with a Track, Site, Domain, or Protein_attribute file, you can be sure it will be correctly read into SHEPHARD and is then accessible within the larger framework. 
-
+By using interfaces, we ensure that, as long as you can write your data in a format that complies with a Track, Site, Domain, or Protein_attribute file, you can be sure it will be correctly read into SHEPHARD and is then accessible within the larger framework. 
 
 
 si_sites
@@ -73,7 +72,7 @@ Functions associated with the ``si_protein_attributes`` module enable the readin
 
 si_proteins
 ----------------------
-Functions associated with the ``si_protein_attributes`` module enable the reading and writing of SHEPHARD Protein files.
+Functions associated with the ``si_protein_attributes`` module enable the reading and writing of SHEPHARD Protein files. While we include this for completeness, our general recommendation is to use FASTA files for protein information, and then write protein attributes out as separate protein attributes files. The reason for this is that this ensures easy readability of both protein sequence information and protein annotation information.
 
 .. autofunction:: shephard.interfaces.si_proteins.add_proteins_from_dictionary
 .. autofunction:: shephard.interfaces.si_proteins.add_proteins_from_file

@@ -1,6 +1,14 @@
 Domain
 =================
 
+Domains represent annotations associated with subregions along the sequence. Domains are added to proteins using the ``Protein.add_domain()`` function, or using functions in the ``shephard.interfaces.si_domains`` module.
+
+Domains must have a ``domain type``, and a ``domain type`` as well as a start and end position. Each domain generally should have a unique domain name, although this is not strictly enforced. In contrast, many domains can and will be of common domain types. Domains also know the position in the sequence they come from, the underlying residue, and can extract Site and Track information associated with the domain.
+
+Domains for a given protein can be called using the ``protein.domain(domain_name)`` function. However, in general it's more useful to either request all domains using ``protein.domains`` (which returns a list of all domains in protein) or to request specific domains based on their position, location, type, or some combinatin of the two. Explicit functions for these types of requests are included in the ``Protein`` object. Finally, all domains (or all domains of a specific type) can be requested from an entire proteome using ``Proteome`` object functions.
+
+Domains can be removed from proteins using ``Protein.remove_domain()`` function.
+
 .. autoclass:: shephard.domain.Domain
 
 

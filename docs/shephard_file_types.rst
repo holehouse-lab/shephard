@@ -1,11 +1,11 @@
 SHEPHARD files
 =================
 
-SHEPHARD defines a set of well-defined files 
+SHEPHARD defines a set of well-defined files for reading in or writing out data into SHEPHARD objects.
 
 The interfaces package is a sub-package within SHEPHARD that deals with reading in **SHEPHARD** formatted input files. These are files with a specific format that were developed for SHEPHARD. The interfaces mean that, as long as you can write your data in a format that complies with a track, site, domain, or protein_attribute file, you can be sure it will be correctly read into SHEPHARD and is then accessible within the larger framework. 
 
-In all cases, each line in an input file corresponds to a single bit of information that maps to a specific protein, but multiple lines can map to the same protein. 
+Each line in an input file corresponds to a single piece of information that maps to a specific protein, but multiple lines can map to the same protein. 
 
 The interfaces modules (:code:`si_sites`, :code:`si_domains`, :code:`si_tracks`, :code:`si_protein_attributes` ) contain two user-facing functions; one that lets the user read in data from a file, and another than lets a user read in data from an input dictionary. This means that sites, domains, tracks and attributes can be loaded from disk or in real-time as other pipelines are run.
 
@@ -46,17 +46,17 @@ Each line has four or more columns and uses the following format:
 
 Here:
 
-* :code:`Unique_ID` is a unique identifier for a protein that will be used to cross reference this domain to a specific protein in the Proteome. We recommend uniprot IDs for naturally occuring proteins.
+* :code:`Unique_ID` is a unique identifier for a protein that will be used to cross reference this domain to a specific protein in the Proteome. We recommend uniprot IDs for naturally occurring proteins.
 * :code:`start` is the start position in the protein where the domain is found (noting that the first position in a protein is position 1)
 * :code:`end` is the end position in the protein where the domain is found (noting that the first position in a protein is position 1)
 * :code:`domain_type` is a free-form string that describes the type of the domain. This can be anything, and is used for domain selection in SHEPHARD
-* :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each domain. The colon ':' character splits two strings, where the first is a key and second a value. These become accessible via the domain's :code:`attributes` properties. key:value attributes are OPTIONAL
+* :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each domain. The colon ':' character splits two strings, where the first is a key and the second a value. These become accessible via the domain's :code:`attributes` properties. key:value attributes are OPTIONAL
 
 
 Track files
 ------------
 
-Track files are tab-separated files where each line represents a distinct track. Tracks are vectorial information that map on a per-residue basis to a protein's sequence. Each track has a variable number of columns, that corresponds to 2 + the number of residues in the protein. Tracks are useful where some type of analysis reveals a continuous output that can be projected along the sequence. If, on the other hand, your analysis reveals discrete regions or positions, domains or sites might be more appropriate, respectively.
+Track files are tab-separated files where each line represents a distinct track. Tracks represent vectorial information that maps a specific number or symbol to a protein sequence on a per-residue basis. Each track has a variable number of columns, that corresponds to 2 + the number of residues in the protein. Tracks are useful where some type of analysis reveals a continuous output that can be projected along the sequence. If, on the other hand, your analysis reveals discrete regions or positions, Domains or Sites might be more appropriate, respectively.
 
 The format of a track file is as follows: 
 
@@ -70,7 +70,7 @@ Here:
 * :code:`track_name` is a free-form string that describes the type of the track. This can be anything, and is used for track selection in SHEPHARD
 
 
-The remainder of the file (:code:`v1`, :code:`v2`, :code:`vn`) are values or symbols that should map to each residue, such that each residue has a value or symbol in the track file. When reading in a track file, if the number of symbols/values does not match the protein length an error will occur.
+The remainder of the file (:code:`v1`, :code:`v2`, :code:`vn`) are values or symbols that should map to each residue, such that each residue has a value or symbol in the track file. When reading in a track file, an error will occur if the number of symbols/values does not match the protein length.
 
 Tracks must be EITHER all numerical or all symbolic, and when read in the user has to specify which they are. This reflects the fact that Track objects are either symbolic- or value-based. 
 
