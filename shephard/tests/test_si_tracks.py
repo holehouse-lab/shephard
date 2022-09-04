@@ -383,7 +383,7 @@ def test_write_tracks_single_file_values():
         print(protein)
         for i in range(1,len(protein)+1):
 
-            if protein.get_residue(i) in ['S','T','Y']:
+            if protein.residue(i) in ['S','T','Y']:
                 assert protein.track('test_track').value(i) == r1
             else:
                 assert protein.track('test_track').value(i) == np.round(r2,3)
@@ -429,7 +429,7 @@ def test_write_values_tracks_from_list():
         print(protein)
         for i in range(1,len(protein)+1):
 
-            if protein.get_residue(i) in ['S','T','Y']:
+            if protein.residue(i) in ['S','T','Y']:
                 assert protein.track('test_track').value(i) == r1
             else:
                 assert protein.track('test_track').value(i) == np.round(r2,3)
@@ -475,7 +475,7 @@ def test_write_symbols_tracks_from_list():
         print(protein)
         for i in range(1,len(protein)+1):
 
-            if protein.get_residue(i) in ['S','T','Y']:
+            if protein.residue(i) in ['S','T','Y']:
                 assert protein.track('test_track').symbol(i) == 'P'
             else:
                 assert protein.track('test_track').symbol(i) == '-'

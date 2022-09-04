@@ -95,7 +95,7 @@ class Site:
         Returns the amino acid residue associated with the site position as
         a string.
         """
-        return self._protein.get_residue(self._position)
+        return self._protein.residue(self._position)
 
 
     ## ------------------------------------------------------------------------

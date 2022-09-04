@@ -171,7 +171,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def get_residue(self, position):
+    def residue(self, position):
         """
         Function that returns the natural residue found at a given position.
 

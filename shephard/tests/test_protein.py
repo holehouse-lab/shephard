@@ -158,12 +158,12 @@ def test_getter_properies():
     assert prot.name == "sp|O00470|MEIS1_HUMAN Homeobox protein Meis1 OS=Homo sapiens OX=9606 GN=MEIS1 PE=1 SV=1"
     assert str(prot.proteome) == "[Proteome]: Sequence dataset with 9 protein records"
     assert prot.unique_ID == 'O00470'
-    assert prot.get_residue(1) == 'M'
-    assert prot.get_residue(2) == 'A'
-    assert prot.get_residue(390) == 'M'
+    assert prot.residue(1) == 'M'
+    assert prot.residue(2) == 'A'
+    assert prot.residue(390) == 'M'
     
     with pytest.raises(ProteinException):
-        assert prot.get_residue(0) == 'M'
+        assert prot.residue(0) == 'M'
         
     #assert protein.get_sequence = '
     assert prot.sequence == 'MAQRYDDLPHYGGMDGVGIPSTMYGDPHAARSMQPVHHLNHGPPLHSHQYPHTAHTNAMAPSMGSSVNDALKRDKDAIYGHPLFPLLALIFEKCELATCTPREPGVAGGDVCSSESFNEDIAVFAKQIRAEKPLFSSNPELDNLMIQAIQVLRFHLLELEKVHELCDNFCHRYISCLKGKMPIDLVIDDREGGSKSDSEDITRSANLTDQPSWNRDHDDTASTRSGGTPGPSSGGHTSHSGDNSSEQGDGLDNSVASPSTGDDDDPDKDKKRHKKRGIFPKVATNIMRAWLFQHLTHPYPSEEQKKQLAQDTGLTILQVNNWFINARRRIVQPMIDQSNRAVSQGTPYNPDGQPMGGFVMDGQQHMGIRAPGPMSGMGMNMGMEGQWHYM'

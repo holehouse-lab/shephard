@@ -2,51 +2,52 @@ import pytest
 
 import shephard
 from shephard.apis import uniprot  
-from shephard import interfaces
+from shephard.interfaces import si_domains
 import numpy as np
 from shephard.exceptions import ProteinException, DomainException
+import random
 
 
-
+test_data_dir = shephard.get_data('test_data')
 
 # ....................................................................................................
 #
 #
 def test_add_domains_file():
 
-    test_data_dir = shephard.get_data('test_data')
+
     fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
     domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file)
+    si_domains.add_domains_from_file(P, domain_file)
     
     # this should fail because already added
     with pytest.raises(ProteinException):
-        interfaces.si_domains.add_domains_from_file(P, domain_file)
+        si_domains.add_domains_from_file(P, domain_file)
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file, autoname=True)
+    si_domains.add_domains_from_file(P, domain_file, autoname=True)
 
     print('')
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file, autoname=False)
+    si_domains.add_domains_from_file(P, domain_file, autoname=False)
 
     # autoname allows 2 apparetly identical domain files to be added
-    interfaces.si_domains.add_domains_from_file(P, domain_file, autoname=True)
+    si_domains.add_domains_from_file(P, domain_file, autoname=True)
 
     # autoname allows 2 apparetly identical domain files to be added
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file, autoname=False, skip_bad=True)
+    si_domains.add_domains_from_file(P, domain_file, autoname=False, skip_bad=True)
 
 def test_add_domain_attribute():
 
-    test_data_dir = shephard.get_data('test_data')
+
     fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
     domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file)
+    si_domains.add_domains_from_file(P, domain_file)
     prot = P.protein('O00401')
     domain = prot.domains[0]
     domain.add_attribute('test_attribute', 1)
@@ -80,13 +81,64 @@ def test_add_domain_attribute():
 def test_write_domain_with_attributes():
 
     # this setup was also tested in test_add_domain_attribute
-    test_data_dir = shephard.get_data('test_data')
     fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
     domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_domains.add_domains_from_file(P, domain_file)
+    si_domains.add_domains_from_file(P, domain_file)
     prot = P.protein('O00401')
     domain = prot.domains[0]
     domain.add_attribute('test_attribute_1', 1)
     domain.add_attribute('test_attribute_cat', 'cat')
+
+
+def test_write_domains():
+
+    
+    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+
+    n_domains = 3
+
+    uid2domain_info = {}
+    for p in TS1:
+
+        
+        uid2domain_info[p.unique_ID] = []
+        for idx in range(n_domains):
+            s = random.randint(1,len(p))
+            e = random.randint(1,len(p))
+            if s > e:
+                start = e
+                end = s
+            else:
+                start = s
+                end = e
+                
+            if start  == 0:
+                start = start +1
+
+            if end > len(p):
+                end = len(p)-1
+            
+
+            uid2domain_info[p.unique_ID].append([start,end,idx])
+
+            p.add_domain(start, end, f'test_domain_{idx}', attributes={'att1':'test'})
+
+    si_domains.write_domains(TS1, 'output_test/test_domains.tsv')
+
+
+    TS2 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    si_domains.add_domains_from_file(TS2, 'output_test/test_domains.tsv')
+
+    # check domain positions can be read in correctly
+    for p in TS2:
+
+        assert p.get_domains_by_type('test_domain_0')[0].start == uid2domain_info[p.unique_ID][0][0]
+        assert p.get_domains_by_type('test_domain_1')[0].start == uid2domain_info[p.unique_ID][1][0]
+        assert p.get_domains_by_type('test_domain_2')[0].start == uid2domain_info[p.unique_ID][2][0]
+
+
+        assert p.get_domains_by_type('test_domain_0')[0].end == uid2domain_info[p.unique_ID][0][1]
+        assert p.get_domains_by_type('test_domain_1')[0].end == uid2domain_info[p.unique_ID][1][1]
+        assert p.get_domains_by_type('test_domain_2')[0].end == uid2domain_info[p.unique_ID][2][1]

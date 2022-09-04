@@ -75,7 +75,16 @@ class _SitesInterface:
                 position = int(sline[1].strip())
                 site_type = sline[2].strip()
                 symbol = sline[3].strip()
-                value = float(sline[4].strip())
+
+                # this enables the value to be None if you
+                # write a symbol where there's no value associated
+                # with a site
+                tmp = sline[4].strip()
+                if tmp == 'None':
+                    value = None
+                else:
+                    value = float(tmp)
+
                 attributes = {}
             except Exception as e:
                 msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
@@ -334,7 +343,7 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
                 # build a line 
                 # if the passed parameter site_types is being
                 # used
-                line = __build_site_line(s, site_types, delimiter)
+                line = __build_site_line(s, delimiter)
 
                 fh.write(f"{line}")
 
@@ -374,23 +383,17 @@ def write_sites_from_list(site_list, filename, delimiter='\t'):
 
     # first check if items in the list are site objects
     for s in site_list:
-        interface_tools.check_site(t, 'write_sites_from_list')
+        interface_tools.check_site(s, 'write_sites_from_list')
 
     with open(filename, 'w') as fh:
 
         # for each site in the list
         for s in site_list:
 
-            # if we're using site_types and the current site_type
-            # is not 
-            if site_types is not None:
-                if s.site_type not in site_types:
-                    continue
-
             # build a line 
             # if the passed parameter site_types is being
             # used
-            line = __build_site_line(s, site_types, delimiter)
+            line = __build_site_line(s, delimiter)
 
             fh.write(f"{line}")
 
