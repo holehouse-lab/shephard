@@ -187,6 +187,7 @@ class Domain:
         self._attributes[name] = val 
 
 
+
     ## ------------------------------------------------------------------------
     ##
     def remove_attribute(self, name, safe=True):

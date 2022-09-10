@@ -3,7 +3,7 @@ uniprot.py
 
 From the SHEPHARD package
 Sequence-based Hierachical and Extendable Platform for High-throughput Analysis of Region of Disorder
-Ginell & Holehouse, 2020
+Ginell & Holehouse, 2020-2022
 
 Handles all I/O associated with uniprot-derived files.
 
@@ -47,44 +47,6 @@ def uniprot_accession_from_line(line):
         return line.split('|')[1].strip()
     except:
         raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(line))
-
-
-## ------------------------------------------------------------------------
-##
-def uniprot_attributes_from_header(line):
-    """
-    Function that converts the header information from a uniprot fasta file
-    to key value pairs in an attribute in dictionary. This an example of the 
-    type of function that can be passed to quickstart using the 
-    build_attributes argument.
-    
-    This function assumes the uniprot-standard format for the header file has 
-    been maintained - i.e.
-    
-    >>> >xx|ACCESSION|EntryName Isoform/ProtienName key=value ...
-
-    where ACCESSION is the uniprot accession. 
-
-    Parameters
-    -----------
-
-    line : string
-        String where we expect the EntryName to be contained within the second 
-        'pipe' characters ('|') and a space (' '). 
-        
-    Returns
-    -----------
-    dictionary
-        Returns the attribute dictionary, although this is not formally 
-        validated. However, assuming the string follows standard uniprot 
-        fasta header conventions this should be true!
-    """
-
-    try:
-        return line.split('|')[1].strip()
-    except:
-        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(line))
-
 
         
         
@@ -145,7 +107,7 @@ def uniprot_fasta_to_proteome(filename,
     
     Returns 
     --------
-    Proteome Object
+    Proteome
         Returns an initialized Proteome object 
     
     """
