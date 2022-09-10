@@ -51,7 +51,8 @@ extensions = [
     'sphinx.ext.extlinks',
 ]
 
-autodoc_mock_imports = ['numpy']
+#
+autodoc_mock_imports = ['numpy','protfasta']
 
 autosummary_generate = True
 napoleon_numpy_docstring = True
