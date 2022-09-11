@@ -18,6 +18,9 @@ __git_revision__ = versions['full-revisionid']
 del get_versions, versions
 
 
+def get_version():
+    return __version__
+
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 def get_data(path):
     """

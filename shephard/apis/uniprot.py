@@ -117,7 +117,7 @@ def uniprot_fasta_to_proteome(filename,
 
 ## ------------------------------------------------------------------------
 ##
-def uniprot_proteome_to_fasta(proteome, filename):                              
+def uniprot_proteome_to_fasta(filename, proteome):                              
     """
     Stand alone function that allows the user to write a FASTA file from
     a Proteome under the assumption that the Proteome was built from a 
@@ -131,11 +131,12 @@ def uniprot_proteome_to_fasta(proteome, filename):
     Parameters
     ------------
 
+    filename : string
+        Name of the FASTA file we're going to write sequences to
+
     proteome : Proteome
         The Proteome object from which FASTA file will be generated
 
-    filename : string
-        Name of the FASTA file we're going to write sequences to
     
     Returns 
     --------
