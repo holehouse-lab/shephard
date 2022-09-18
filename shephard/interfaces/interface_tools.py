@@ -259,7 +259,7 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
         except Exception:
                 
             # should update this to also display the actual error...
-            raise InterfaceException('Failed parsing key-value pairs in file [{filename}] on line [{linecount}]... line printed below:\n{line}')
+            raise InterfaceException(f'Failed parsing key-value pairs in file [{filename}] on line [{linecount}]... line printed below:\n{line}.\nPassed split_line:[{split_line}]')
             
         # note we enclose this in a try/catch block
         try:
@@ -268,7 +268,7 @@ def parse_key_value_pairs(split_line, filename, linecount, line):
                         
             attributes[k] = v
         except IndexError:
-            raise InterfaceException('Failed parsing key-value pairs in file [{filename}] on line [{linecount}]... line printed below:\n{line}')
+            raise InterfaceException(f'Failed parsing key-value pairs in file [{filename}] on line [{linecount}]... line printed below:\n{line}.\nPassed split_line:[{split_line}]')
 
 
     return attributes
