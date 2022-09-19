@@ -10,6 +10,40 @@ Holehouse Lab - Washington University in St. Louis
 
 from shephard.exceptions import InterfaceException
 
+
+## ------------------------------------------------------------------------
+##
+def check_protein(p, function_name):
+    """
+    Function that takes takes in some object and tests if its a Protein
+    object (or not). If yes returns None, but if no raise an exception with 
+    an error message that includes the name of the parent function that is 
+    calling this validation function
+
+    Parameters
+    --------------
+    p : Protein object 
+        Unknown object that will be tested to see if it's a Proteome object
+        or not
+
+    function_name : string
+        Passed string that makes it easy for the user to debug which function 
+        has failed
+
+    Returns
+    ---------
+    None
+        No returns but the function will raise an exception if the passed object 
+        is not a Proteome object
+    
+
+    """
+    if "<class 'shephard.protein.Protein'>" == str(p.__class__):
+        return None
+    else:
+        raise InterfaceException(f'First argument passed to function {function_name} was not a Protein object')
+
+
 ## ------------------------------------------------------------------------
 ##
 def check_proteome(p, function_name):

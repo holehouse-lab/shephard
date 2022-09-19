@@ -13,6 +13,7 @@ import random
 from . import site_tools
 from shephard import general_utilities
 from shephard import exceptions
+from shephard.interfaces.interface_tools import check_protein
 
 ## ------------------------------------------------------------------------
 ##
@@ -207,6 +208,8 @@ def build_missing_domains(protein, new_domain_type = 'missing'):
         added to a protein via the add_domains() function.
     
     """
+
+    check_protein(protein, 'build_missing_domains()')
 
     ##
     ## NOTE -this function uses i0 indexing to keep things simple and then
