@@ -7,3 +7,6 @@ Contact: (g.ginell@wustl.edu)
 
 Holehouse Lab - Washington University in St. Louis
 """
+
+from . import uniprot
+from . import fasta

@@ -103,7 +103,7 @@ def check_domain(d, function_name):
     
 
     """
-    if "<class 'shephard.domain.Domain'>" == str(p.__class__):
+    if "<class 'shephard.domain.Domain'>" == str(d.__class__):
         return None
     else:
         raise InterfaceException(f'First argument passed to function {function_name} was not a Domain object')
@@ -111,7 +111,7 @@ def check_domain(d, function_name):
 
 ## ------------------------------------------------------------------------
 ##
-def check_track(p, function_name):
+def check_track(t, function_name):
     """
     Function that takes takes in some object and tests if its a Track
     object (or not). If yes returns None, but if no raise an exception with 
@@ -120,7 +120,7 @@ def check_track(p, function_name):
 
     Parameters
     --------------
-    p : Track object 
+    t : Track object 
         Unknown object that will be tested to see if it's a Track object
         or not
 
@@ -136,7 +136,7 @@ def check_track(p, function_name):
     
 
     """
-    if "<class 'shephard.track.Track'>" == str(p.__class__):
+    if "<class 'shephard.track.Track'>" == str(t.__class__):
         return None
     else:
         raise InterfaceException(f'First argument passed to function {function_name} was not a track object')
@@ -144,7 +144,7 @@ def check_track(p, function_name):
 
 ## ------------------------------------------------------------------------
 ##
-def check_site(p, function_name):
+def check_site(s, function_name):
     """
     Function that takes takes in some object and tests if its a Site
     object (or not). If yes returns None, but if no raise an exception with 
@@ -153,7 +153,7 @@ def check_site(p, function_name):
 
     Parameters
     --------------
-    p : Site object 
+    s : Site object 
         Unknown object that will be tested to see if it's a Site object
         or not
 
@@ -169,7 +169,7 @@ def check_site(p, function_name):
     
 
     """
-    if "<class 'shephard.site.Site'>" == str(p.__class__):
+    if "<class 'shephard.site.Site'>" == str(s.__class__):
         return None
     else:
         raise InterfaceException(f'First argument passed to function {function_name} was not a site object')
