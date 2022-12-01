@@ -2,7 +2,9 @@
 ##### Last updated 2022-12-01
 
 ## About
-`dommap2shephard.py` is a Python script for converting output files from [DomainMapper]() to a SHEPHARD-compliant [Domains file](https://shephard.readthedocs.io/en/latest/shephard_file_types.html#domain-files). DomainMapper is a Python tool developed by the [Fried lab]() to robustly identify distinct domains, specifically annotating those with complex topologies. The resulting domains are well-suited for downstream analysis using SHEPHARD. As such, we developed `dommap2shephard.py` to make these annotations easy to obtain.
+`dommap2shephard.py` is a Python script for converting output files from [DomainMapper](https://github.com/FriedLabJHU/DomainMapper) to a SHEPHARD-compliant [Domains file](https://shephard.readthedocs.io/en/latest/shephard_file_types.html#domain-files). 
+
+DomainMapper is a Python tool developed by the [Fried lab](http://friedlab.com/) to robustly identify distinct domains, specifically annotating those with complex topologies. The resulting domains are well-suited for downstream analysis using SHEPHARD. As such, we developed `dommap2shephard.py` to make these annotations easy to obtain.
 
 ## Usage
 
@@ -79,6 +81,9 @@ Note this does obviously require `pytest` to be installed, which if it's not can
 Note that the tests should be updated if/when DomainMapper is updated, because they use a precomputed output file from DomainMapper by default.	
 ## Help
 If you encounter any problems, please raise an issue on the [SHEPHARD GitHub page](https://github.com/holehouse-lab/shephard/issues). Alternatively contact Alex at alex dot holehouse 
+
+## References
+Manriquez-Sandoval, E., & Fried, S. D. (2022). DomainMapper: Accurate domain structure annotation including those with non-contiguous topologies. Protein Science: A Publication of the Protein Society, 31(11), e4465.
 
 ## Changelog
 
