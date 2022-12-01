@@ -1,0 +1,207 @@
+#===========================================================================================
+#  DOMAIN MAPPER v3.0.2
+#  Johns Hopkins Univeristy - September 22nd, 2022
+#  Edgar Manriquez-Sandoval, M.S. - Dept. of Biophysics
+#  emanriq1@jhu.edu
+#  & 
+#  Stephen D. Fried, Ph.D. - Dept. of Chemistry
+#  sdfried@jhu.edu
+#===========================================================================================
+#  Excecuted on:
+#               2022-11-27 14:44:15.387098
+#  Input HMM: 
+#               yeast_proteome.hmm.out
+#  Output:
+#               mapped_yeast_proteome.hmm.out
+#  Options:
+#               Intra domain gap = 30
+#               Inter domain gap = 30
+#               overlap = 40
+#               E-value cutoff = 1.00e-05
+#  Domain Counts:
+#               Total Proteins:   6060         Total Domains:    7260
+#                                                        NC : 778 (10.72%)
+#                                                        CP :  19 (0.26%)
+#                                                        IS : 190 (2.62%)
+#  Property Definitions:
+#               CP = Circular Permutant Domain
+#               NC = Non-Contiguous Domain
+#               IS = InSertional Domain
+#===========================================================================================
+# Accession	E-Value	Residue Range	Property	Architecture	X-group	T-group	F-group	F-id
+sp|A0A0B7P3V8|YP41B_YEAST	8.90e-30	626-782		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	rve	2484.1.1.57	
+sp|O13297|CET1_YEAST	1.10e-72	282-533		a+b complex topology	mRNA triphosphatase CET1-related	mRNA triphosphatase CET1-related	mRNA_triPase	868.1.1.5	
+sp|O13329|FOB1_YEAST	4.40e-06	220-282		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	rve	2484.1.1.57	
+sp|O13516|RS9A_YEAST	9.80e-17	101-152		a+b two layers	beta-Grasp	Alpha-L RNA-binding motif	S4	221.1.2.19	
+sp|O13527|YA11B_YEAST	4.60e-21	105-258		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	rve	2484.1.1.57	
+sp|O13535|YH11B_YEAST	1.50e-21	702-855		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	rve	2484.1.1.57	
+sp|O13563|RPN13_YEAST	7.00e-36	7-130		beta barrels	PH domain-like	PH domain-like	Proteasom_Rpn13	220.1.1.21	
+sp|O14467|MBF1_YEAST	8.80e-28	81-135		alpha arrays	HTH	tetra-helical, lambda repressor-like	HTH_3_6	101.1.4.95	
+sp|O60200|MDM35_YEAST	1.90e-27	10-58		alpha bundles	Mitochondrial distribution and morphology protein 35	Mitochondrial distribution and morphology protein 35	UPF0203	3981.1.1.1	
+sp|O74700|TIM9_YEAST	8.70e-06	4-48		alpha arrays	HTH	tetra-helical, lambda repressor-like	HTH_25	101.1.4.7	
+sp|O74700|TIM9_YEAST	2.40e-26	20-76		few secondary structure elements	Tim10/DDP	Tim10/DDP	zf-Tim10_DDP	4120.1.1.1	
+sp|O75012|MRP10_YEAST	4.60e-13	29-86		few secondary structure elements	p8-MTCP1-related	p8-MTCP1-related	KOG4695	568.1.1.13	
+sp|O94742|SEM1_YEAST	1.70e-06	44-86		alpha bundles	fingers" domain in bacteriophage RB69-like DNA polymerase I	fingers" domain in bacteriophage RB69-like DNA polymerase I	43_1st	4970.1.1.20	
+sp|P00044|CYC1_YEAST	2.10e-47	8-106		alpha arrays	Cytochrome c-like	Cytochrome c	Cytochrom_C_1	107.1.1.16	
+sp|P00127|QCR6_YEAST	2.00e-26	76-145		alpha bundles	cytochrome bc1 complex 11 kDa protein-like	Non-heme 11 kDa protein of cytochrome bc1 complex (Ubiquinol-cytochrome c reductase)	UCR_hinge	5071.1.1.1	
+sp|P00128|QCR7_YEAST	1.20e-38	36-122		alpha arrays	14 kDa protein of cytochrome bc1 complex (Ubiquinol-cytochrome c reductase)	14 kDa protein of cytochrome bc1 complex (Ubiquinol-cytochrome c reductase)	UCR_14kD	5070.1.1.1	
+sp|P00163|CYB_YEAST	3.00e-84	17-240		alpha bundles	Transmembrane heme-binding four-helical bundle	Transmembrane di-heme cytochromes	Cytochrome_B	5069.1.1.3	
+sp|P00163|CYB_YEAST	3.60e-35	262-354		alpha bundles	a domain/subunit of cytochrome bc1 complex (Ubiquinol-cytochrome c reductase)	a domain/subunit of cytochrome bc1 complex (Ubiquinol-cytochrome c reductase)	Cytochrom_B_C	5068.1.1.1	
+sp|P00175|CYB2_YEAST	1.80e-28	89-165		a+b two layers	Cystatin-like	Cytochrome b5-like heme/steroid binding domain	Cyt-b5	243.7.1.1	
+sp|P00175|CYB2_YEAST	5.20e-13	467-522		a/b barrels	TIM beta/alpha-barrel	TIM barrels	Glu_synthase	2002.1.1.460	
+sp|P00330|ADH1_YEAST	3.50e-49	9-155		beta barrels	GroES-like	Alcohol dehydrogenase-like, N-terminal domain	ADH_N	236.1.1.22	
+sp|P00330|ADH1_YEAST	2.60e-42	146-312		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	ADH_zinc_N	2003.1.1.8	
+sp|P00331|ADH2_YEAST	5.10e-50	8-155		beta barrels	GroES-like	Alcohol dehydrogenase-like, N-terminal domain	ADH_N	236.1.1.22	
+sp|P00331|ADH2_YEAST	5.80e-44	146-312		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	ADH_zinc_N	2003.1.1.8	
+sp|P00358|G3P2_YEAST	3.90e-75	2-165		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	Gp_dh_N_2	2003.1.1.36	
+sp|P00358|G3P2_YEAST	1.50e-86	150-312		a+b two layers	FwdE/GAPDH domain-like	Glyceraldehyde-3-phosphate dehydrogenase-like, C-terminal domain	Gp_dh_C	298.1.1.65	
+sp|P00359|G3P3_YEAST	1.10e-74	2-165		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	Gp_dh_N_2	2003.1.1.36	
+sp|P00359|G3P3_YEAST	4.30e-87	150-312		a+b two layers	FwdE/GAPDH domain-like	Glyceraldehyde-3-phosphate dehydrogenase-like, C-terminal domain	Gp_dh_C	298.1.1.65	
+sp|P00360|G3P1_YEAST	7.60e-76	2-164		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	Gp_dh_N_2	2003.1.1.36	
+sp|P00360|G3P1_YEAST	2.80e-87	150-312		a+b two layers	FwdE/GAPDH domain-like	Glyceraldehyde-3-phosphate dehydrogenase-like, C-terminal domain	Gp_dh_C	298.1.1.65	
+sp|P00401|COX1_YEAST	6.00e-206	12-465		alpha superhelices	Cytochrome c oxidase subunit I-like	Cytochrome c oxidase subunit I-like	COX1	5038.1.1.6	
+sp|P00410|COX2_YEAST	1.50e-25	31-110		extended segments	Cytochrome c oxidase subunit II-like, transmembrane region	Cytochrome c oxidase subunit II-like, transmembrane region	COX2_TM	5040.1.1.2	
+sp|P00410|COX2_YEAST	4.20e-42	113-240		beta sandwiches	Cupredoxin-like	Cupredoxin-related	COX2	3156.1.1.2	
+sp|P00420|COX3_YEAST	1.80e-64	27-267		alpha bundles	Cytochrome c oxidase subunit III-like	Cytochrome c oxidase subunit III-like	COX3	5039.1.1.1	
+sp|P00424|COX5A_YEAST	1.40e-07	45-149		extended segments	Mitochondrial cytochrome c oxidase subunit IV	Mitochondrial cytochrome c oxidase subunit IV	COX4	5003.1.1.1	
+sp|P00427|COX6_YEAST	7.90e-38	51-137		alpha superhelices	Repetitive alpha hairpins	Cytochrome c oxidase subunit E	COX5A	109.7.1.1	
+sp|P00431|CCPR_YEAST	2.90e-83	84-341		alpha complex topology	Heme-dependent peroxidases	Heme-dependent peroxidases	peroxidase	136.1.1.7	
+sp|P00445|SODC_YEAST	3.90e-62	3-151		beta sandwiches	Immunoglobulin-like beta-sandwich	Cu,Zn superoxide dismutase-like	Sod_Cu	11.1.3.1	
+sp|P00546|CDK1_YEAST	5.50e-65	7-288		a+b complex topology	Protein kinase/SAICAR synthase/ATP-grasp	Protein kinase	Pkinase_Tyr	206.1.1.24	
+sp|P00549|KPYK1_YEAST	4.90e-116	17-120,185-360	NC	a/b barrels	TIM beta/alpha-barrel	TIM barrels	PK_1st	2002.1.1.220	
+sp|P00549|KPYK1_YEAST	5.40e-27	88-188	IS	beta barrels	cradle loop barrel	PK beta-barrel domain-like	PK_2nd	1.1.15.4	
+sp|P00549|KPYK1_YEAST	9.00e-42	369-500		a/b three-layered sandwiches	PK C-terminal domain-like	PK C-terminal domain-like	PK_C	7518.1.1.1	
+sp|P00560|PGK_YEAST	3.40e-68	7-189		a/b three-layered sandwiches	Phosphoglycerate kinase domain 1	Phosphoglycerate kinase domain 1	PGK_N	7532.1.1.1	
+sp|P00560|PGK_YEAST	1.10e-91	191-414		a/b three-layered sandwiches	Phosphoglycerate kinase domain 2	Phosphoglycerate kinase domain 2	PGK_C	7533.1.1.1	
+sp|P00572|KTHY_YEAST	6.80e-56	4-204		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	Thymidylate_kin	2004.1.1.166	
+sp|P00635|PPA5_YEAST	1.20e-68	63-429		a/b three-layered sandwiches	Phosphoglycerate mutase-like	Phosphoglycerate mutase-like	His_Phos_2	7525.1.1.2	
+sp|P00724|INV2_YEAST	4.20e-07	41-211		beta duplicates or obligate multimers	beta-propeller-like	5-bladed	BNR_2	5.1.2.33	
+sp|P00724|INV2_YEAST	2.40e-17	368-507		beta sandwiches	jelly-roll	Concanavalin A-like lectins/glucanases	Glyco_hydro_32C	10.1.1.16	
+sp|P00729|CBPY_YEAST	4.40e-144	121-528		a/b three-layered sandwiches	alpha/beta-Hydrolases	alpha/beta-Hydrolases	Peptidase_S10	7579.1.1.16	
+sp|P00812|ARGI_YEAST	5.50e-77	16-330		a/b three-layered sandwiches	HAD domain-like	Arginase/deacetylase	Arginase	2006.1.5.2	
+sp|P00815|HIS2_YEAST	3.70e-26	160-238		beta barrels	Ribosomal protein L25-like	HisI-like	PRA-CH	239.2.1.1	
+sp|P00815|HIS2_YEAST	1.40e-15	248-326		alpha bundles	all-alpha NTP pyrophosphatases	MazG-related	PRA-PH_1	159.1.2.2	
+sp|P00815|HIS2_YEAST	2.90e-77	388-582		a/b three-layered sandwiches	ALDH-like	ALDH-like	Histidinol_dh_N	7524.1.1.3	
+sp|P00815|HIS2_YEAST	6.00e-77	595-788		a/b three-layered sandwiches	ALDH-like	ALDH-like	Histidinol_dh_C	7524.1.1.4	
+sp|P00817|IPYR_YEAST	3.30e-76	30-228		beta barrels	OB-fold	Inorganic pyrophosphatase	Pyrophosphatase	2.5.1.1	
+sp|P00830|ATPB_YEAST	1.10e-30	43-115		beta barrels	cradle loop barrel	Alanine racemase-C	ATP-synt_ab_N	1.1.7.6	
+sp|P00830|ATPB_YEAST	1.00e-107	117-390		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	ATP-synt_ab	2004.1.1.53	
+sp|P00830|ATPB_YEAST	6.50e-38	399-508		alpha superhelices	C-terminal domain of alpha and beta subunits of F1 ATP synthase	C-terminal domain of alpha and beta subunits of F1 ATP synthase	ATP-synt_ab_C	160.1.1.1	
+sp|P00854|ATP6_YEAST	4.80e-29	94-252		alpha bundles	F1F0 ATP synthase subunit A	F1F0 ATP synthase subunit A	ATP-synt_A	5045.1.1.1	
+sp|P00890|CISY1_YEAST	8.10e-121	81-469		alpha complex topology	Citrate synthase-like	Citrate synthase	Citrate_synt	172.1.1.1	
+sp|P00924|ENO1_YEAST	7.10e-62	3-136		a+b two layers	Enolase-N/ribosomal protein	Enolase N-terminal domain-like	Enolase_N	218.1.1.1	
+sp|P00924|ENO1_YEAST	1.50e-135	145-432		a/b barrels	TIM beta/alpha-barrel	TIM barrels	Enolase_C	2002.1.1.58	
+sp|P00925|ENO2_YEAST	2.20e-61	3-136		a+b two layers	Enolase-N/ribosomal protein	Enolase N-terminal domain-like	Enolase_N	218.1.1.1	
+sp|P00925|ENO2_YEAST	7.10e-136	145-432		a/b barrels	TIM beta/alpha-barrel	TIM barrels	Enolase_C	2002.1.1.58	
+sp|P00927|THDH_YEAST	1.40e-88	71-373		a/b three-layered sandwiches	Rossmann-like	Tryptophan synthase beta subunit-like PLP-dependent enzymes	PALP	2003.4.1.5	
+sp|P00927|THDH_YEAST	1.50e-31	391-483		a+b two layers	Alpha-beta plaits	ACT-like	Thr_dehydrat_C	304.8.1.11	
+sp|P00927|THDH_YEAST	1.50e-25	493-576		a+b two layers	Alpha-beta plaits	ACT-like	Thr_dehydrat_C	304.8.1.11	
+sp|P00937|TRPG_YEAST	7.40e-57	13-199		a/b three-layered sandwiches	Flavodoxin-like	Class I glutamine amidotransferase-like	GATase	2007.1.1.6	
+sp|P00937|TRPG_YEAST	1.30e-93	215-482		a/b barrels	TIM beta/alpha-barrel	TIM barrels	IGPS	2002.1.1.111	
+sp|P00942|TPIS_YEAST	7.00e-102	3-246		a/b barrels	TIM beta/alpha-barrel	TIM barrels	TIM	2002.1.1.701	
+sp|P00950|PMG1_YEAST	1.30e-59	3-221		a/b three-layered sandwiches	Phosphoglycerate mutase-like	Phosphoglycerate mutase-like	His_Phos_1	7525.1.1.1	
+sp|P00958|SYMC_YEAST	5.80e-36	2-70		a+b three layers	Thioredoxin-like	Thioredoxin-like	MetRS-N_N	2485.1.1.74	
+sp|P00958|SYMC_YEAST	1.70e-39	77-158		alpha superhelices	Repetitive alpha hairpins	Glutathione S-transferase (GST)-C	MetRS-N_C	109.1.1.13	
+sp|P00958|SYMC_YEAST	3.10e-100	196-313,382-577	NC	alpha bundles	Anticodon-binding domain of a subclass of class I aminoacyl-tRNA synthetases	Anticodon-binding domain of a subclass of class I aminoacyl-tRNA synthetases	tRNA-synt_1g	140.1.1.17	
+sp|P00958|SYMC_YEAST	2.00e-11	332-362		few secondary structure elements	Rubredoxin-like	Rubredoxin-related	tRNA-synt_1g_1	375.1.1.68	
+sp|P01094|IPA3_YEAST	1.10e-23	4-29		extended segments	Proteinase A inhibitor IA3	Proteinase A inhibitor IA3	Inhibitor_I34	4153.1.1.1	
+sp|P01119|RAS1_YEAST	2.10e-64	10-171		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	Ras	2004.1.1.144	
+sp|P01120|RAS2_YEAST	2.30e-63	10-171		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	Ras	2004.1.1.144	
+sp|P01123|YPT1_YEAST	1.10e-70	9-170		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	Ras	2004.1.1.144	
+sp|P02293|H2B1_YEAST	4.70e-28	41-106		alpha arrays	Histone-like	Histone	Histone	148.1.1.38	
+sp|P02294|H2B2_YEAST	4.70e-28	41-106		alpha arrays	Histone-like	Histone	Histone	148.1.1.38	
+sp|P02309|H4_YEAST	8.20e-26	15-97		alpha arrays	Histone-like	Histone	Histone_1	148.1.1.8	
+sp|P02400|RLA4_YEAST	4.70e-44	1-110		alpha arrays	60S acidic ribosomal protein P1/P2	60S acidic ribosomal protein P1/P2	Ribosomal_60s	1091.1.1.5	
+sp|P02406|RL28_YEAST	1.50e-21	69-148		a/b three-layered sandwiches	Ribosomal protein L13/L15p/L18e/L32e	Ribosomal proteins L15p and L18e	Ribosomal_L18	2490.3.1.1	
+sp|P02557|TBB_YEAST	1.40e-30	4-27,58-237	NC	a/b three-layered sandwiches	Rossmann-like	Tubulin nucleotide-binding domain-like	Tubulin	2003.1.6.1	
+sp|P02557|TBB_YEAST	1.30e-81	247-426		a+b three layers	Bacillus chorismate mutase-like	Tubulin C-terminal domain-like	Tubulin_C	301.6.1.2	
+sp|P02829|HSP82_YEAST	8.20e-16	7-160		a+b two layers	ATPase domain of HSP90 chaperone/DNA topoisomerase II/histidine kinase-like	ATPase domain of HSP90 chaperone/DNA topoisomerase II/histidine kinase	HATPase_c	225.1.1.3	
+sp|P02829|HSP82_YEAST	1.60e-66	285-418		a+b two layers	Ribosomal protein S5 domain 2-like	Ribosomal protein S5 domain 2-like	HSP90_1st	212.1.1.30	
+sp|P02829|HSP82_YEAST	3.20e-44	423-526		a/b three-layered sandwiches	HSP90 C-terminal a/b domain	HSP90 C-terminal a/b domain	HSP90_2nd	3703.1.1.1	
+sp|P02829|HSP82_YEAST	1.50e-52	529-672		mixed a+b and a/b	Zincin-like	HSP90 C-terminal domain (C-terminal part of Pfam 00183)	HSP90_3rd	2498.4.1.3	
+sp|P02992|EFTU_YEAST	1.50e-34	49-212		a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	MnmE_helical_2nd	2004.1.1.258	
+sp|P02992|EFTU_YEAST	2.20e-36	243-335		beta barrels	cradle loop barrel	Alanine racemase-C	GTP_EFTU_D2_1	1.1.7.125	
+sp|P02992|EFTU_YEAST	1.40e-39	341-437		beta barrels	cradle loop barrel	Aminomethyltransferase beta-barrel domain	GTP_EFTU_D3	1.1.8.3	
+sp|P02994|EF1A_YEAST	1.20e-31	8-30,61-201	NC	a/b three-layered sandwiches	P-loop domains-like	P-loop containing nucleoside triphosphate hydrolases	MnmE_helical_2nd	2004.1.1.258	
+sp|P02994|EF1A_YEAST	2.40e-36	238-328		beta barrels	cradle loop barrel	Alanine racemase-C	GTP_EFTU_D2_1	1.1.7.125	
+sp|P02994|EF1A_YEAST	2.20e-49	337-441		beta barrels	cradle loop barrel	Aminomethyltransferase beta-barrel domain	GTP_EFTU_D3_1	1.1.8.6	
+sp|P03069|GCN4_YEAST	1.30e-31	238-280		alpha bundles	Helical domain in structural maintenance of chromosomes protein 3	Helical domain in structural maintenance of chromosomes protein 3	KOG0837	3922.1.1.13	
+sp|P03870|FLP_YEAST	8.20e-70	11-107		alpha arrays	lambda integrase-N-like	lambda integrase-N	Flp_N	186.1.1.1	
+sp|P03870|FLP_YEAST	7.20e-86	155-293		alpha arrays	HTH	DNA breaking-rejoining enzymes	Flp_C_N	101.1.8.19	
+sp|P03870|FLP_YEAST	1.10e-84	306-421		alpha arrays	HTH	DNA breaking-rejoining enzymes	Flp_C_C	101.1.8.18	
+sp|P03873|MBI2_YEAST	1.30e-48	17-165		alpha bundles	Transmembrane heme-binding four-helical bundle	Transmembrane di-heme cytochromes	Cytochrome_B	5069.1.1.3	
+sp|P03873|MBI2_YEAST	3.50e-06	227-306		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_2_N	242.1.1.20	
+sp|P03873|MBI2_YEAST	5.20e-21	331-418		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_2_C	242.1.1.19	
+sp|P03877|SCE3_YEAST	1.60e-16	12-81		alpha superhelices	Cytochrome c oxidase subunit I-like	Cytochrome c oxidase subunit I-like	COX1	5038.1.1.6	
+sp|P03877|SCE3_YEAST	1.40e-17	112-230		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03877|SCE3_YEAST	7.20e-30	241-395		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03878|SCE2_YEAST	3.60e-94	12-250		alpha superhelices	Cytochrome c oxidase subunit I-like	Cytochrome c oxidase subunit I-like	COX1	5038.1.1.6	
+sp|P03878|SCE2_YEAST	3.50e-14	324-416		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03878|SCE2_YEAST	7.90e-12	430-535		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03879|MBI4_YEAST	2.00e-83	17-240		alpha bundles	Transmembrane heme-binding four-helical bundle	Transmembrane di-heme cytochromes	Cytochrome_B	5069.1.1.3	
+sp|P03879|MBI4_YEAST	5.40e-16	404-499		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03879|MBI4_YEAST	5.30e-10	510-610		a+b two layers	Homing endonucleases-like	Homing endonucleases	LAGLIDADG_1	242.1.1.4	
+sp|P03962|PYRF_YEAST	2.50e-52	28-256		a/b barrels	TIM beta/alpha-barrel	TIM barrels	OMPdecase	2002.1.1.140	
+sp|P03965|CARB_YEAST	1.20e-43	29-149		a/b three-layered sandwiches	Rossmann-like	PreATP-grasp domain	carB	2003.1.10.2	
+sp|P03965|CARB_YEAST	3.90e-25	149-329		a+b complex topology	Protein kinase/SAICAR synthase/ATP-grasp	ATP-grasp	ATP-grasp	206.1.3.1	
+sp|P03965|CARB_YEAST	6.10e-45	443-573		alpha arrays	HTH	winged	CPSase_L_D3	101.1.2.9	
+sp|P03965|CARB_YEAST	2.60e-48	581-692		a/b three-layered sandwiches	Rossmann-like	PreATP-grasp domain	carB	2003.1.10.2	
+sp|P03965|CARB_YEAST	6.50e-27	693-889		a+b complex topology	Protein kinase/SAICAR synthase/ATP-grasp	ATP-grasp	ATP-grasp	206.1.3.1	
+sp|P03965|CARB_YEAST	8.00e-09	977-1087		a/b three-layered sandwiches	Methylglyoxal synthase-like	Methylglyoxal synthase-like	MGS	7543.1.1.1	
+sp|P04037|COX4_YEAST	4.90e-33	67-145		few secondary structure elements	Rubredoxin-like	Cytochrome c oxidase Subunit F	COX5B	375.1.8.1	
+sp|P04050|RPB1_YEAST	1.40e-78	13-332		a+b complex topology	N-terminal domain in RNA-polymerase beta-prime subunit	N-terminal domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_1	4246.1.1.6	
+sp|P04050|RPB1_YEAST	2.90e-57	334-374,436-519	NC	beta barrels	cradle loop barrel	double psi	RNA_pol_Rpb1_2	1.1.2.14	
+sp|P04050|RPB1_YEAST	1.90e-28	375-435	IS	a+b two layers	MoeA-I/Ornithine decarboxylase-C/Reverse ferredoxin-like domain in RNA-polymerase	MoeA-I/Ornithine decarboxylase-C/Reverse ferredoxin-like domain in RNA-polymerase	RNA_pol_Rpb1_2_1	275.1.1.28	
+sp|P04050|RPB1_YEAST	1.20e-42	521-662		a+b complex topology	first helical domain in RNA-polymerase beta-prime subunit	first helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_3	4959.1.1.1	
+sp|P04050|RPB1_YEAST	4.40e-73	665-852		a+b complex topology	second helical domain in RNA-polymerase beta-prime subunit	second helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_4	4958.1.1.2	
+sp|P04050|RPB1_YEAST	1.20e-72	873-1056		a+b complex topology	helical domain in yeast RNA-polymerases	third helical domain in yeast RNA-polymerase II beta-prime subunit	RNA_pol_Rpb1_6	4957.1.1.1	
+sp|P04050|RPB1_YEAST	8.20e-71	1060-1114,1330-1450	NC	a+b complex topology	central helical domain in RNA-polymerase beta-prime subunit	central helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_5_3rd	4954.1.1.4	
+sp|P04050|RPB1_YEAST	5.30e-42	1103-1141,1241-1300	NC IS	a+b two layers	ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_7_1	4956.1.1.5	
+sp|P04050|RPB1_YEAST	6.20e-50	1142-1268	IS	a+b two layers	permuted ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	permuted ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_7	4955.1.1.1	
+sp|P04051|RPC1_YEAST	1.50e-50	12-360		a+b complex topology	N-terminal domain in RNA-polymerase beta-prime subunit	N-terminal domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_1	4246.1.1.6	
+sp|P04051|RPC1_YEAST	3.10e-61	362-402,466-549	NC	beta barrels	cradle loop barrel	double psi	RNA_pol_Rpb1_2	1.1.2.14	
+sp|P04051|RPC1_YEAST	7.20e-27	403-465	IS	a+b two layers	MoeA-I/Ornithine decarboxylase-C/Reverse ferredoxin-like domain in RNA-polymerase	MoeA-I/Ornithine decarboxylase-C/Reverse ferredoxin-like domain in RNA-polymerase	RNA_pol_Rpb1_2_1	275.1.1.28	
+sp|P04051|RPC1_YEAST	1.10e-41	550-710		a+b complex topology	first helical domain in RNA-polymerase beta-prime subunit	first helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_3	4959.1.1.1	
+sp|P04051|RPC1_YEAST	1.10e-69	712-900		a+b complex topology	second helical domain in RNA-polymerase beta-prime subunit	second helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_4	4958.1.1.2	
+sp|P04051|RPC1_YEAST	6.60e-59	930-1082		a+b complex topology	helical domain in yeast RNA-polymerases	third helical domain in yeast RNA-polymerase II beta-prime subunit	KOG0261_1st	4957.1.1.2	
+sp|P04051|RPC1_YEAST	3.00e-74	1085-1139,1317-1433	NC	a+b complex topology	central helical domain in RNA-polymerase beta-prime subunit	central helical domain in RNA-polymerase beta-prime subunit	RNA_pol_Rpb1_5_3rd	4954.1.1.4	
+sp|P04051|RPC1_YEAST	1.70e-44	1165-1271	IS	a+b two layers	permuted ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	permuted ferredoxin-like domain in yeast RNA-polymerase beta-prime subunit	KOG0261_2nd	4955.1.1.9	
+sp|P04147|PABP_YEAST	1.00e-25	38-115		a+b two layers	Alpha-beta plaits	RNA-binding domain, RBD	RRM_1	304.9.1.30	
+sp|P04147|PABP_YEAST	2.70e-28	127-212		a+b two layers	Alpha-beta plaits	RNA-binding domain, RBD	RRM_1_7	304.9.1.112	
+sp|P04147|PABP_YEAST	1.90e-26	219-295		a+b two layers	Alpha-beta plaits	RNA-binding domain, RBD	RRM_1_1	304.9.1.10	
+sp|P04147|PABP_YEAST	1.80e-31	323-399		a+b two layers	Alpha-beta plaits	RNA-binding domain, RBD	RRM_1_5	304.9.1.74	
+sp|P04147|PABP_YEAST	3.80e-25	497-574		alpha arrays	PABP domain-like	PABC(PABP) domain	PABP	143.1.1.1	
+sp|P04385|GAL1_YEAST	8.20e-31	48-225		a+b two layers	Ribosomal protein S5 domain 2-like	Ribosomal protein S5 domain 2-like	GHMP_kinases_N	212.1.1.9	
+sp|P04385|GAL1_YEAST	1.50e-53	253-284,390-524	NC	a+b two layers	Alpha-beta plaits	GHMP Kinase, C-terminal domain	GHMP_kinases_C	304.1.1.1	
+sp|P04386|GAL4_YEAST	1.60e-32	8-63		few secondary structure elements	Zn2/Cys6 DNA-binding domain	Zn2/Cys6 DNA-binding domain	Zn_clus_1	373.1.1.4	
+sp|P04387|GAL80_YEAST	1.70e-76	155-323		a+b two layers	FwdE/GAPDH domain-like	Glyceraldehyde-3-phosphate dehydrogenase-like, C-terminal domain	KOG2741	298.1.1.19	
+sp|P04397|GAL10_YEAST	5.80e-112	14-353		a/b three-layered sandwiches	Rossmann-like	NAD(P)-binding Rossmann-fold domains	GDP_Man_Dehyd	2003.1.1.410	
+sp|P04397|GAL10_YEAST	4.40e-84	373-699		beta sandwiches	Glycosyl hydrolase domain-like	supersandwich	Aldose_epim	12.3.1.1	
+sp|P04456|RL25_YEAST	2.40e-39	61-137		a+b two layers	Alpha-beta plaits	Ribosomal proteins S24e, L23 and L15e	Ribosomal_L23_3	304.109.1.16	
+sp|P04710|ADT1_YEAST	2.50e-105	15-306		alpha complex topology	Mitochondrial ADP/ATP carrier-like	Mitochondrial ADP/ATP carrier	Mito_carr	5076.1.1.1	
+sp|P04786|TOP1_YEAST	8.60e-36	165-242		alpha arrays	Alpha-helical domain in eukaryotic DNA topoisomerase I, N-terminal DNA-binding fragment	Alpha-helical domain in eukaryotic DNA topoisomerase I, N-terminal DNA-binding fragment	Topoisom_I_N_N	4057.1.1.1	
+sp|P04786|TOP1_YEAST	8.30e-55	248-362		beta complex topology	Beta-strand domain in eukaryotic DNA topoisomerase I, N-terminal DNA-binding fragment	Beta-strand domain in eukaryotic DNA topoisomerase I, N-terminal DNA-binding fragment	Topoisom_I_N_C	4039.1.1.2	
+sp|P04786|TOP1_YEAST	2.50e-52	377-506		alpha arrays	HTH	DNA breaking-rejoining enzymes	Topoisom_I_N	101.1.8.53	
+sp|P04786|TOP1_YEAST	5.50e-20	518-578		alpha arrays	HTH	DNA breaking-rejoining enzymes	Topo_C_assoc	101.1.8.54	
+sp|P04786|TOP1_YEAST	1.10e-24	679-751		alpha arrays	HTH	DNA breaking-rejoining enzymes	Topo_C_assoc	101.1.8.54	
+sp|P04802|SYDC_YEAST	7.00e-16	96-199		beta barrels	OB-fold	Nucleic acid-binding proteins	tRNA_anti-codon	2.1.1.63	
+sp|P04802|SYDC_YEAST	4.80e-107	227-551		a+b three layers	Class II aaRS and biotin synthetases	Class II aaRS and biotin synthetases	tRNA-synt_2	314.1.1.5	
+sp|P04806|HXKA_YEAST	3.90e-60	80-218		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	Hexokinase_1	2484.1.1.519	
+sp|P04806|HXKA_YEAST	4.90e-86	226-472		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	Hexokinase_2	2484.1.1.520	
+sp|P04807|HXKB_YEAST	2.70e-58	80-218		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	Hexokinase_1	2484.1.1.519	
+sp|P04807|HXKB_YEAST	5.30e-86	226-473		mixed a+b and a/b	Ribonuclease H-like	Ribonuclease H-like	Hexokinase_2	2484.1.1.520	
+sp|P04817|CAN1_YEAST	1.60e-48	95-475		alpha complex topology	Sodium:neurotransmitter symporter family (SNF)-like	Sodium:neurotransmitter symporter family (SNF)-like	AA_permease_2_1	5051.1.1.16	
+sp|P04819|DNLI1_YEAST	3.60e-20	145-243		alpha bundles	ATP-dependent DNA ligase DNA-binding domain	ATP-dependent DNA ligase DNA-binding domain	DNA_ligase_A_N	4095.1.1.1	
+sp|P04819|DNLI1_YEAST	1.90e-29	257-375		alpha bundles	ATP-dependent DNA ligase DNA-binding domain	ATP-dependent DNA ligase DNA-binding domain	DNA_ligase_A_N	4095.1.1.1	
+sp|P04819|DNLI1_YEAST	5.00e-72	389-599		a+b complex topology	Protein kinase/SAICAR synthase/ATP-grasp	ATP-grasp	DNA_ligase_A_M	206.1.3.13	
+sp|P04819|DNLI1_YEAST	1.30e-48	607-750		beta barrels	OB-fold	Nucleic acid-binding proteins	DNA_ligase_A_C	2.1.1.10	
+sp|P04821|CDC25_YEAST	2.90e-12	63-122		beta barrels	SH3	SH3	SH3_1	4.1.1.116	
+sp|P04821|CDC25_YEAST	3.60e-103	1127-1536		alpha superhelices	Repetitive alpha hairpins	Ras GEF	RasGEF	109.6.1.7	
+sp|P04840|VDAC1_YEAST	8.90e-90	4-281		beta barrels	Outer membrane meander beta-barrels	Porin	Porin_3	5084.5.1.8	
+sp|P04911|H2A1_YEAST	1.90e-51	8-108		alpha arrays	Histone-like	Histone	Histone_1	148.1.1.8	
+sp|P04912|H2A2_YEAST	1.90e-51	8-108		alpha arrays	Histone-like	Histone	Histone_1	148.1.1.8	
+sp|P05030|PMA1_YEAST	5.28e-34	78-179,259-382	NC	alpha bundles	Calcium ATPase transmembrane domain-related	Calcium ATPase transmembrane domain M	Cation_ATPase_C	5073.1.1.14	
+sp|P05030|PMA1_YEAST	5.90e-33	180-277	IS	beta sandwiches	jelly-roll	Calcium ATPase, transduction domain A	E1-E2_ATPase_N	10.13.1.2	
+sp|P05030|PMA1_YEAST	7.90e-16	361-520	IS	a+b complex topology	Metal cation-transporting ATPase, ATP-binding domain	Metal cation-transporting ATPase, ATP-binding domain	Cation_ATPase	267.1.1.3	
+sp|P00549|KPYK1_YEAST	4.90e-116	17-120,185-360	NC	a/b barrels	TIM beta/alpha-barrel	TIM barrels	PK_1st	2002.1.1.220	
+
