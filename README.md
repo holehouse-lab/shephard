@@ -14,7 +14,7 @@ SHEPHARD
 SHEPHARD is a Python toolkit for integrative proteome-wide analysis. It was written by Garrett Ginell and Alex Holehouse.
 
 SHEPHARD enables you to read in protein sequence data and annotate it with different types of sequence annotations (Sites, Domains, and Tracks). As an example
-
+  
 
 ## Installation
 Copy and paste into your terminal:
