@@ -333,3 +333,53 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
                 line = line + "\n"
 
                 fh.write(line)
+
+
+## ------------------------------------------------------------------------
+##
+def write_protein_attributes_from_dictionary(protein_attribute_dictionary, filename, delimiter='\t'):
+    r"""
+    Function that writes out protein attributes to file in a standardized 
+    format. Note that attributes are converted to a string, which for simple 
+    attributes is reasonable but is not really a viable stratergy for 
+    complex objects, although this will not yeild and error.
+    
+    Parameters
+    -----------
+    protein_attribute_dictionary :  dictionary
+        protein_attribute_dictionary for which the protein IDs are keys 
+        and the values are dictionaries with key:value pairs of attributes
+        which are to be writen
+    filename : str
+        Filename that will be used to write the new domains file
+    delimiter : str (default = '\\t')
+        Character (or characters) used to separate between fields. 
+        Default is '\t', which is recommended to maintain compliance 
+        with default `add_protein_attributes_from_file()` function.        
+        
+    Returns
+    --------
+    None
+        No return type, but generates a new file with the complete set 
+        of protein attributes from this proteome written to disk.
+    """
+
+    with open(filename, 'w') as fh:
+
+        for protein in protein_attribute_dictionary:
+
+            local_attributes = protein_attribute_dictionary[protein]
+            
+            if len(local_attributes) > 0:
+
+                line = protein
+
+                for k,v in local_attributes.items():
+
+                    atrbt = interface_tools.full_clean_string(v)
+
+                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+
+                line = line + "\n"
+
+                fh.write(line)
