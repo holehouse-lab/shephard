@@ -88,6 +88,7 @@ Domain functions
 ---------------------
 
 .. autofunction:: shephard.protein.Protein.domains
+.. autofunction:: shephard.protein.Protein.domain_names
 .. autofunction:: shephard.protein.Protein.domain
 .. autofunction:: shephard.protein.Protein.domain_types
 .. autofunction:: shephard.protein.Protein.add_domain
