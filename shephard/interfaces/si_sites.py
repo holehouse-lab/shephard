@@ -331,6 +331,12 @@ def write_sites(proteome, filename, delimiter='\t', site_types=None):
 
     """
 
+    # added so that we ensure site_types is a list if passed
+    if site_types is not None:
+        if type(site_types) is not list:
+            raise InterfaceException('When passing a site_type this must be a list')
+
+
     with open(filename, 'w') as fh:
         for protein in proteome:
             for s in protein.sites:

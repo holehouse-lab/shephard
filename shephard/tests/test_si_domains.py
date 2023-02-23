@@ -142,3 +142,50 @@ def test_write_domains():
         assert p.get_domains_by_type('test_domain_0')[0].end == uid2domain_info[p.unique_ID][0][1]
         assert p.get_domains_by_type('test_domain_1')[0].end == uid2domain_info[p.unique_ID][1][1]
         assert p.get_domains_by_type('test_domain_2')[0].end == uid2domain_info[p.unique_ID][2][1]
+
+
+def test_write_domains_with_domain_types():
+
+    
+    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+
+    n_domains = 2
+
+    n_test_domains = 0
+    uid2domain_info = {}
+    for p in TS1:
+
+        
+        uid2domain_info[p.unique_ID] = []
+        for idx in range(n_domains):
+            s = random.randint(1,len(p))
+            e = random.randint(1,len(p))
+            if s > e:
+                start = e
+                end = s
+            else:
+                start = s
+                end = e
+                
+            if start  == 0:
+                start = start +1
+
+            if end > len(p):
+                end = len(p)-1
+            
+
+            uid2domain_info[p.unique_ID].append([start,end])
+
+            p.add_domain(start, end, f'test_domain', attributes={'att1':'test'})
+            n_test_domains = n_test_domains + 1
+
+            p.add_domain(start, end, f'test_domain2', attributes={'att1':'test'})
+
+    si_domains.write_domains(TS1, 'output_test/test_domains_types.tsv', domain_types=['test_domain'])
+
+    TS2 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    si_domains.add_domains_from_file(TS2, 'output_test/test_domains_types.tsv')
+
+    assert len(TS2.domains) == n_test_domains
+
+        

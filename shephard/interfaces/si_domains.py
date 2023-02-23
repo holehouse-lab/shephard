@@ -590,6 +590,12 @@ def write_domains(proteome, filename, delimiter='\t', domain_types=None):
 
     """
 
+    # added so that we ensure domain_types is a list if passed
+    if domain_types is not None:
+        if type(domain_types) is not list:
+            raise InterfaceException('When passing a domain_type this must be a list')
+        
+
     with open(filename, 'w') as fh:
         for protein in proteome:
             for d in protein.domains:
