@@ -246,8 +246,8 @@ class Protein:
         """
 
         # validate passed range
-        self._check_position_is_valid(start, helper_string='Sequence region cannot start below 1 [%i]'%(start))
-        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+        self._check_position_is_valid(start, helper_string=f'Invalid sequence start position [{start}]. Sequence runs between 1 and {self._len}')
+        self._check_position_is_valid(end, f'Invalid sequence end position [{end}]. Sequence runs between 1 and {self._len}')
             
         # note +1 because we're inclusive with positions
         return self._sequence[start:end + 1]
