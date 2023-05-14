@@ -20,6 +20,15 @@ The uniprot module provides tools for working with uniprot data. Right now, only
 .. autofunction:: shephard.apis.uniprot.uniprot_proteome_to_fasta
 
 
+metapredict
+------------
+The metapredict module provides tools for annotating proteome-scale information using metapredict. This depends on having metapredict V3 available, which is not defined as a hard requirement, but, if used, enables the annotation of entire proteomes in terms of IDRs and disorder scores with a single function.
+
+.. autofunction:: shephard.apis.metapredict.annotate_proteome_with_disorder_track
+.. autofunction:: shephard.apis.metapredict.annotate_proteome_with_disordered_domains
+.. autofunction:: shephard.apis.metapredict.annotate_proteome_with_disorder_tracks_and_disordered_domains
+
+
 
 
 
