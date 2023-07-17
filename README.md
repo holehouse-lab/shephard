@@ -13,7 +13,7 @@ SHEPHARD
 ## About
 SHEPHARD is a Python toolkit for integrative proteome-wide analysis. It was written by Garrett Ginell and Alex Holehouse.
 
-SHEPHARD enables you to read in protein sequence data and annotate it with different types of sequence annotations (Sites, Domains, and Tracks). As an example
+SHEPHARD enables you to read in protein sequence data and annotate it with different types of sequence annotations (Sites, Domains, and Tracks).
   
 
 ## Installation
@@ -43,7 +43,7 @@ Examples and Google Colab tutorials can be found here:
 [https://github.com/holehouse-lab/shephard-colab](https://github.com/holehouse-lab/shephard-colab)
 
 ## Status
-SHEPHARD is fully released, and the SHEPHARD preprint is forthcoming. 
+SHEPHARD is fully released, and the [SHEPHARD preprint](http://dx.doi.org/10.1101/2022.09.18.508433) is in press at *Bioinformatics*.
 
 ## Roadmap
 SHEPHARD is the base code for a large body of sequence-based bioinformatic tools developed by the Holehouse lab. These include:
@@ -58,10 +58,10 @@ SHEPHARD is the base code for a large body of sequence-based bioinformatic tools
 These tools together form the backbone of our informatics infrastructure, and SHEPHARD will contain direct or indirect API access to each of them (and various other tools).
 
 ## Change log
-As we approach final release and versions of SHEPHARD are available for distribution, a change log is updated and changes that break backwards compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
+As we approach the final release and versions of SHEPHARD are available for distribution, a change log is updated, and changes that break backward compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
 
 
-#### Version 0.1.18 (February 2022)
+#### Version 0.1.18 (February 2023)
 * Added defensive programming for writing sites and domains where if a `domain_type` or `site_type` variable is passed, we check explicitly that it's a list.
 * Added ability to write_protein_attributes_from_dictionary (new function in `si_protein_attributes.py`.
 
@@ -139,5 +139,5 @@ As we approach final release and versions of SHEPHARD are available for distribu
 
 ### Copyright
 
-Copyright (c) 2019-2022, Garrett M. Ginell and Alex S. Holehouse  - [Holehouse lab](http://holehouse.wustl.edu/)
+Copyright (c) 2019-2023, Garrett M. Ginell and Alex S. Holehouse  - [Holehouse lab](http://holehouse.wustl.edu/)
 
