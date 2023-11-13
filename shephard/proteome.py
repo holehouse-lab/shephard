@@ -113,7 +113,8 @@ class Proteome:
         In both cases, the function automatically determines the type of 
         the passed list, and adds dictionaries accordingly. Note that 
         in both cases proteins are added by value - i.e. a new Protein
-        object is generated.
+        objects are generated, and changes to Proteomes in the new 
+        Proteome will not affect the original Proteome.
         
         Parameters
         -----------
