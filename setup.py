@@ -13,7 +13,7 @@ needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 try:
-    with open("README.md", "r") as handle:
+    with open("README.md", "r") as handle:])
         long_description = handle.read()
 except:
     long_description = "\n".join(short_description[2:])
@@ -54,7 +54,7 @@ setup(
     #            'Mac OS-X',
     #            'Unix',
     #            'Windows'],            # Valid platforms your code works on, adjust to your flavor
-    # python_requires=">=3.5",          # Python version restrictions
+    python_requires=">=3.7,<3.12.0",          # Python version restrictions    
 
     # Manual control if final package is compressible or not, set False to prevent the .egg from being made
     # zip_safe=False,

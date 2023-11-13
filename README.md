@@ -61,6 +61,9 @@ These tools together form the backbone of our informatics infrastructure, and SH
 As we approach the final release and versions of SHEPHARD are available for distribution, a change log is updated, and changes that break backward compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
 
 
+#### Version 0.1.19 (November 2023)
+* Added version requirement (3.7 to 3.11 inclusive)
+
 #### Version 0.1.18 (February 2023)
 * Added defensive programming for writing sites and domains where if a `domain_type` or `site_type` variable is passed, we check explicitly that it's a list.
 * Added ability to write_protein_attributes_from_dictionary (new function in `si_protein_attributes.py`.
