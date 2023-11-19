@@ -76,7 +76,7 @@ class Site:
         self._symbol    = general_utilities.cast_or_none(symbol, str)
 
         # verify that the attributes dictionary is a dictionary
-        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed to site %i in protein %s is not a dictionary' %(self._position, self._protein), or_none=True)
+        general_utilities.variable_is_dictionary(attributes, SiteException, 'attributes argument passed is not a dictionary', or_none=True)
         
         if attributes is None:
             self._attributes = {}

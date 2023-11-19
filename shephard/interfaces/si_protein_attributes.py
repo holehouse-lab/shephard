@@ -13,6 +13,8 @@ from . import interface_tools
 from shephard.exceptions import ProteinException
 import shephard.exceptions as shephard_exceptions
 
+MAX_BAD_COUNT  = 10
+
 class _ProteinAttributesInterface:
 
     """
@@ -22,7 +24,7 @@ class _ProteinAttributesInterface:
     
     """
 
-    def __init__(self, filename, delimiter='\t', skip_bad=True):
+    def __init__(self, filename, delimiter='\t', skip_bad=True, preauthorized_uids=None):
         r"""
         Expect files of the followin format:
 
@@ -50,8 +52,14 @@ class _ProteinAttributesInterface:
             printed (regardless of verbose flag). 
             Default = True
 
+        preauthorized_ids : list of str (default = None)
+            List of unique_IDs that are expected to have relevant protein attributes
+            If None then all protein attributes are parsed. Avoids parsing
+            lines that are not needed into the interface objects.
 
         """
+
+        bad_count = 0
 
         if delimiter == ':':
             raise InterfaceException('When parsing domain file cannot use ":" as a delimeter because this is used to delimit key/value pairs (if provided)')
@@ -59,6 +67,10 @@ class _ProteinAttributesInterface:
         with open(filename,'r') as fh:
             content = fh.readlines()
 
+        # convert the preauthorized uids to a set for faster lookup
+        if preauthorized_uids is not None:
+            preauthorized_uids = set(preauthorized_uids)
+            
         ID2ADs={}
 
         linecount=0
@@ -75,14 +87,22 @@ class _ProteinAttributesInterface:
             # try
             try:
                 unique_ID = sline[0].strip()
+                
+                # check if UID associated with this line is found in the
+                # preauthorized list. If  not then skip this line
+                if preauthorized_uids is not None and unique_ID not in preauthorized_uids:
+                    continue
+                
                 attributes = {}                
             except Exception as e:
 
-                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
+                msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
 
                 # should update this to also display the actual error...
-                if skip_bad:
-                    shephard_exceptions.print_warning(msg + "\nSkipping this line...")
+                if skip_bad and bad_count < MAX_BAD_COUNT:
+                    bad_count = bad_count + 1
+                    shephard_exceptions.print_warning(msg + f"\nSkipping this line (count {bad_count} of {MAX_BAD_COUNT} ...)")
+
                     continue
                 else:
                     raise InterfaceException(msg)
@@ -108,83 +128,6 @@ class _ProteinAttributesInterface:
 ##     PUBLIC FACING FUNCTIONS BELOW        ##
 ##                                          ##
 ##############################################
-
-
-## ------------------------------------------------------------------------
-##
-def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
-    r"""
-    Function that takes a correctly formatted protein_atttribute dictionary
-    and will add those attributes to the proteins in the Proteome.
-    
-    protein attribute dictionaries are key-value pairs, where the key is a 
-    unique ID and the value is a list of dictionaries. For each sub-dictionary, 
-    the key-value pair reflects the attribute key-value pairing.
-
-    Parameters
-    ----------
-    proteome : Proteome Object
-        Proteome object to which attributes will be added
-
-    protein_attribute_dictionary : dict
-        Dictionary that defines protein attributes. This is slightly 
-        confusing, but the keys for this dictionary is a unique 
-        protein IDs and the values is a list of dictionaries. Each of 
-        THOSE sub-dictionaries has one (or more) key:value pairs that 
-        define key:value pairs that will be associated with the protein 
-        of interest.
-
-    safe : boolean (default = True)
-        If set to True then any exceptions raised during the process of 
-        adding a protein_attribute are further raised. If set to False, 
-        exceptions simply mean the protein_attribute in question is skipped.         
-        Note if set to False, pre-existing protein_attributes with the same 
-        name would be silently overwritten (although this is not consider an 
-        error), while overwriting will trigger an exception if safe=True.
-        Default = True
-        
-        The only reason protein attribute addition could fail is if the 
-        attribute already exists, so this is effectively a flag to define 
-        if pre-existing attributes should be overwritten (False) or not 
-        (True).
-    
-    verbose : bool (default = True)
-        Flag that defines how 'loud' output is. Will warn about errors on 
-        adding attributes.
-
-    Returns
-    -----------
-    None
-        No return value, but attributes are added to proteins in the Proteome 
-        object passed as the first argument
-    """
-
-    # check first argument is a Proteome
-    interface_tools.check_proteome(proteome, 'add_protein_attributes (si_protein_attributes)')
-    
-    for protein in proteome:
-        if protein.unique_ID in protein_attribute_dictionary:
-
-            # note here each AD is its own dictionary
-            for AD in protein_attribute_dictionary[protein.unique_ID]:
-
-                # for each attribute-key
-                for k in AD:            
-
-                    # get the value
-                    v = AD[k]
-
-                    try:
-                        protein.add_attribute(k, v, safe=safe)
-                    except ProteinException as e:
-                        msg='- skipping attribute entry on protein %s (key: %s) ' % (protein.unique_ID, k)
-                        if safe:
-                            shephard_exceptions.print_and_raise_error(msg, e)
-                        else:
-                            if verbose:
-                                shephard_exceptions.print_warning(msg)
-                                continue
-
 
 ## ------------------------------------------------------------------------
 ##
@@ -273,18 +216,97 @@ def add_protein_attributes_from_file(proteome,
 
     # next read in the file
     protein_attribute_interface = _ProteinAttributesInterface(filename, 
-                                                              delimiter, 
-                                                              skip_bad=skip_bad)
+                                                              delimiter=delimiter,
+                                                              skip_bad=skip_bad,
+                                                              preauthorized_uids=proteome.proteins)
 
     if return_dictionary:
         return protein_attribute_interface.data
 
 
-    # finally add the domains from the dictionary generated by the DomainsInterface parser
+    # finally add the domains from the dictionary generated by the ProteinAttributesInterface parser
     add_protein_attributes_from_dictionary(proteome, 
                                            protein_attribute_interface.data, 
                                            safe=safe, 
                                            verbose=verbose)
+
+
+
+## ------------------------------------------------------------------------
+##
+def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionary, safe=True, verbose=True):
+    r"""
+    Function that takes a correctly formatted protein_atttribute dictionary
+    and will add those attributes to the proteins in the Proteome.
+    
+    protein attribute dictionaries are key-value pairs, where the key is a 
+    unique ID and the value is a list of dictionaries. For each sub-dictionary, 
+    the key-value pair reflects the attribute key-value pairing.
+
+    Parameters
+    ----------
+    proteome : Proteome Object
+        Proteome object to which attributes will be added
+
+    protein_attribute_dictionary : dict
+        Dictionary that defines protein attributes. This is slightly 
+        confusing, but the keys for this dictionary is a unique 
+        protein IDs and the values is a list of dictionaries. Each of 
+        THOSE sub-dictionaries has one (or more) key:value pairs that 
+        define key:value pairs that will be associated with the protein 
+        of interest.
+
+    safe : boolean (default = True)
+        If set to True then any exceptions raised during the process of 
+        adding a protein_attribute are further raised. If set to False, 
+        exceptions simply mean the protein_attribute in question is skipped.         
+        Note if set to False, pre-existing protein_attributes with the same 
+        name would be silently overwritten (although this is not consider an 
+        error), while overwriting will trigger an exception if safe=True.
+        Default = True
+        
+        The only reason protein attribute addition could fail is if the 
+        attribute already exists, so this is effectively a flag to define 
+        if pre-existing attributes should be overwritten (False) or not 
+        (True).
+    
+    verbose : bool (default = True)
+        Flag that defines how 'loud' output is. Will warn about errors on 
+        adding attributes.
+
+    Returns
+    -----------
+    None
+        No return value, but attributes are added to proteins in the Proteome 
+        object passed as the first argument
+    """
+
+    # check first argument is a Proteome
+    interface_tools.check_proteome(proteome, 'add_protein_attributes (si_protein_attributes)')
+    
+    for protein in proteome:
+        if protein.unique_ID in protein_attribute_dictionary:
+
+            # note here each AD is its own dictionary
+            for AD in protein_attribute_dictionary[protein.unique_ID]:
+
+                # for each attribute-key
+                for k in AD:            
+
+                    # get the value
+                    v = AD[k]
+
+                    try:
+                        protein.add_attribute(k, v, safe=safe)
+                    except ProteinException as e:
+                        msg='- skipping attribute entry on protein %s (key: %s) ' % (protein.unique_ID, k)
+                        if safe:
+                            shephard_exceptions.print_and_raise_error(msg, e)
+                        else:
+                            if verbose:
+                                shephard_exceptions.print_warning(msg)
+                                continue
+
 
 
 

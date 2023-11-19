@@ -156,7 +156,7 @@ def variable_is_dictionary(v, exc, msg, or_none=False):
 
     """
 
-    if or_none:
+    if or_none is True:
         if v is None:
             return None
 

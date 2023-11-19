@@ -1250,8 +1250,6 @@ class Proteome:
         it allows the Proteome object to keep track of the total number 
         of unique Site types in the Proteome.
 
-        
-
        
         The function is (by default) called by the Site constructor.
 

@@ -15,11 +15,12 @@ from . import interface_tools
 from shephard import general_utilities
 import os
 
+MAX_BAD_COUNT  = 10
 
 
 class _TracksInterface:
 
-    def __init__(self, filename, delimiter='\t', mode='values', skip_bad=True):
+    def __init__(self, filename, delimiter='\t', mode='values', skip_bad=True, preauthorized_uids=None):
         """
         
         Class for reading in correctly formatted tracks files for parsing 
@@ -28,7 +29,7 @@ class _TracksInterface:
         Tracks files must adhere to the following specification
 
             unique_ID, track_name, val_1, val_2, ...., val_n 
-
+si
         where n = length of protein.
 
         This class allows a tracksfile to be read in and defined as either 
@@ -59,15 +60,26 @@ class _TracksInterface:
             also hide errors. Note that if lines are skipped a warning will 
             be printed (regardless of verbose flag). 
 
+        preauthorized_ids : list of str (default = None)
+            List of unique_IDs that are allowed to be added to the track
+            dictionary. If None then all tracks are allowed. Avoids parsing
+            lines that are not needed into the interface objects
+
+
         """
+
+        bad_count = 0
         
         with open(filename,'r') as fh:
             content = fh.readlines()
 
+        # convert the preauthorized uids to a set for faster lookup
+        if preauthorized_uids is not None:
+            preauthorized_uids = set(preauthorized_uids)
+            
         ID2track = {}
 
         linecount = 0
-
         # cycle over every line in the file
         for line in content:
 
@@ -86,6 +98,12 @@ class _TracksInterface:
 
                 # extract track name and unique_id
                 unique_ID = sline[0].strip()
+
+                # check if UID associated with this line is found in the
+                # preauthorized list. If  not then skip this line
+                if preauthorized_uids is not None and unique_ID not in preauthorized_uids:
+                    continue
+                
                 track_name = sline[1].strip()
                 
                 # parse track values or symbols
@@ -98,7 +116,7 @@ class _TracksInterface:
                     # for each element in sline strip whitespace 
                     track_data = [i.strip() for i in sline[2:]]
                 else:
-                    raise InterfaceException('Error: %s'% "mode passed = %s, yet this does not match 'symbols' or 'values'")
+                    raise InterfaceException(f"Error: mode='{mode}' passed, yet this does not match 'symbols' or 'values'")
 
                         
                 if unique_ID in ID2track:
@@ -109,11 +127,12 @@ class _TracksInterface:
 
             except Exception as e:
 
-                msg = 'Failed parsing file [%s] on line [%i].\n\nException raised: %s\n\nline printed below:\n%s'%(filename, linecount, str(e), line)
+                msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
 
                 # should update this to also display the actual error...
-                if skip_bad:
-                    shephard_exceptions.print_warning(msg + "\nSkipping this line...")
+                if skip_bad and bad_count < MAX_BAD_COUNT:
+                    bad_count = bad_count + 1
+                    shephard_exceptions.print_warning(msg + f"\nSkipping this line (count {bad_count} of {MAX_BAD_COUNT} ...)")
                     continue
                 else:
                     raise InterfaceException(msg)
@@ -280,7 +299,12 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
     general_utilities.valid_keyword('mode', mode, ['symbols','values'])
     
     # next read in the file
-    tracks_interface = _TracksInterface(filename, delimiter=delimiter, mode=mode, skip_bad=skip_bad)
+    tracks_interface = _TracksInterface(filename,
+                                        delimiter=delimiter,
+                                        mode=mode,
+                                        skip_bad=skip_bad,
+                                        preauthorized_uids=proteome.proteins)
+                                        
 
     if return_dictionary:
         return tracks_interface.data
@@ -607,7 +631,7 @@ def write_tracks(proteome, filename, track_name, value_fmt = "%.3f", delimiter='
 def __build_track_line(t, delimiter, value_fmt):
     """
     Internal function that takes a Track object and returns a line that can
-    be written to a Sites file. This is called internally by functions that
+    be written to a Track file. This is called internally by functions that
     write Tracks.
 
     Parameters
