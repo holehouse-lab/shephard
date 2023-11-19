@@ -93,3 +93,22 @@ Here:
 * :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each protein. The colon ':' character splits two strings, where the first is a key and second a value. These become accessible via the Protein's :code:`attributes` properties. 
 
 
+Protein files
+-------------------------
+
+For consistency, SHEPHARD also allows entire proteins to be read/written via Protein files which follows the same structure as the other SHEPHARD interface files. In general our suggested workflow for analysis/annotation involves keep protein sequence information within FASTA files and then storing protein annotations in the various SHEPHARD files listed above. However, it can be useful to distribute sequence information with attributes and other identifying information directly connected in a single file, so the Protein filke read/write functions enable this.
+
+
+ The format of a protein attribute file is as follows: 
+
+.. code-block:: 
+		   
+   Unique_ID    name    sequence    [key1:value1     ...keyn:valuen   ]
+
+Here:
+
+* :code:`Unique_ID` is a unique identifier for a protein that will be used to cross reference this set of attributes to a specific protein in the Proteome. We recommend uniprot IDs for naturally occurring proteins.
+* :code:`name` is the protein name (i.e. information associated with the name field in the Protein object)
+* :code:`sequence` is the amino acid sequence of the protein		
+* :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each protein. The colon ':' character splits two strings, where the first is a key and second a value. These become accessible via the Protein's :code:`attributes` properties. 
+

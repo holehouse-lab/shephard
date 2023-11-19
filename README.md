@@ -4,11 +4,8 @@ SHEPHARD
 
 
 ### Current major version: 0.1.19 (November 2023)
-
 [//]: # (Badges)
-[![Travis Build Status](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard.svg?branch=master)](https://travis-ci.com/REPLACE_WITH_OWNER_ACCOUNT/shephard)
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/shephard/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/shephard/branch/master)
-
+[![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://soursop.readthedocs.io/en/shephard/?badge=latest)
 
 ## About
 SHEPHARD is a Python toolkit for integrative proteome-wide analysis. It was written by Garrett Ginell and Alex Holehouse.
@@ -43,14 +40,15 @@ Examples and Google Colab tutorials can be found here:
 [https://github.com/holehouse-lab/shephard-colab](https://github.com/holehouse-lab/shephard-colab)
 
 ## Status
-SHEPHARD is fully released, and the [SHEPHARD preprint](http://dx.doi.org/10.1101/2022.09.18.508433) is in press at *Bioinformatics*.
+SHEPHARD is fully released, and the [SHEPHARD paper](http://dx.doi.org/10.1101/2022.09.18.508433) is out in Bioinformatics. Please cite SHEPHARD as:
+
+Ginell, G. M., Flynn, A. J. & Holehouse, A. S. SHEPHARD: a modular and extensible software architecture for analyzing and annotating large protein datasets. Bioinformatics 39, (2023).
 
 ## Roadmap
 SHEPHARD is the base code for a large body of sequence-based bioinformatic tools developed by the Holehouse lab. These include:
 
 * [metapredict](https://github.com/idptools/metapredict) - high-performance disorder predictor
 * [parrot](https://github.com/idptools/parrot) - a general tool for deep learning of sequence features
-* [pipit](https://github.com/idptools/PIPIT) - A simple tool for sequential sequence shuffling, as implemented in Langstein *et al.* [preprint here](https://www.biorxiv.org/content/10.1101/2022.02.10.480018v1).
 * [sparrow](https://github.com/idptools/sparrow) - a high-throughput tool for sequence analysis (*in development*)
 * [goose](https://github.com/idptools/goose) - a general purpose tool for the rational design of disordered protein sequences (*in development*)
 
@@ -58,11 +56,17 @@ SHEPHARD is the base code for a large body of sequence-based bioinformatic tools
 These tools together form the backbone of our informatics infrastructure, and SHEPHARD will contain direct or indirect API access to each of them (and various other tools).
 
 ## Change log
-As we approach the final release and versions of SHEPHARD are available for distribution, a change log is updated, and changes that break backward compatibility or introduce new features are tagged as minor/major increments. Bug fixes/docs/tests are simply tagged by their git hash.
+The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
 
 #### Version 0.1.19 (November 2023)
 * Added version requirement (3.7 to 3.11 inclusive)
+* **PERFORMANCE UPGRADE**: Improved how large annotation files are parsed so we ONLY parse lines with unique IDs matching unique IDs in the associated Proteome we're annotating - massive improvement in performance when working with large (10,000 - 100,0000) annotation datasets. This should change nothing on the frontend or any of the behavior other than making SHEPHARD much faster for large datasets
+* **PERFORMANCE UPGRADES** Changed some of the error message construction to avoid major overhead when many (1000s of sites) are added (specifically, we previously by default generated an error message that listed out all the sites in a protein when testing for a dictionary type in a Site construction line; this has been removed). 
+* Better error handling for interface classes (print only the first 10 errors if many lines are read incorrectly - avoids a situation where the wrong file causes GBs of out text)
+* Added explicit tests for all internal Interface classes.
+* Added documentation for Protein interface files (as missing previously)
+
 
 #### Version 0.1.18 (February 2023)
 * Added defensive programming for writing sites and domains where if a `domain_type` or `site_type` variable is passed, we check explicitly that it's a list.
@@ -70,7 +74,7 @@ As we approach the final release and versions of SHEPHARD are available for dist
 
 
 #### Version 0.1.17 (September 2022)
-* Fixed bug in writing domains from list
+* **BUG FIX** Fixed bug in writing domains from list.
 * Added import from apis module such that `from shephard import apis` now enables `apis.<module>` to work
 
 #### Version 0.1.16 (September 2022)
