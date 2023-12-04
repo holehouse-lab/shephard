@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.1.19 (November 2023)
+### Current major version: 0.1.20 (December 2023)
 [//]: # (Badges)
 [![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://soursop.readthedocs.io/en/shephard/?badge=latest)
 
@@ -58,6 +58,9 @@ These tools together form the backbone of our informatics infrastructure, and SH
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
+
+#### Version 0.1.20 (December 2023)
+* Fixed a minor but where the `shephard.interfaces.si_proteins` interface required proteins to ALREADY be in the proteome which proteins were being added to, which makes no sense, so we removed this constraint. 
 
 #### Version 0.1.19 (November 2023)
 * Added version requirement (3.7 to 3.11 inclusive)
