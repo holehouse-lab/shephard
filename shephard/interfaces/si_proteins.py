@@ -24,7 +24,7 @@ class _ProteinsInterface:
     
     """
 
-    def __init__(self, filename, delimiter='\t', skip_bad=True, preauthorized_uids=None):
+    def __init__(self, filename, delimiter='\t', skip_bad=True):
         r"""
         Expect files of the following format:
 
@@ -48,10 +48,6 @@ class _ProteinsInterface:
             also hide errors. Note that if lines are skipped a warning will be 
             printed (regardless of verbose flag). 
 
-        preauthorized_ids : list of str (default = None)
-            List of unique_IDs that are allowed to be added to the protein
-            dictionary. If None then all proteins are allowed. Avoids parsing
-            lines that are not needed into the interface objects
 
         """
 
@@ -62,10 +58,6 @@ class _ProteinsInterface:
 
         with open(filename,'r') as fh:
             content = fh.readlines()
-
-        # convert the preauthorized uids to a set for faster lookup
-        if preauthorized_uids is not None:
-            preauthorized_uids = set(preauthorized_uids)
             
 
         ID2protein = {}
@@ -84,11 +76,6 @@ class _ProteinsInterface:
             # try
             try:
                 unique_ID = sline[0].strip()
-
-                # check if UID associated with this line is found in the
-                # preauthorized list. If  not then skip this line
-                if preauthorized_uids is not None and unique_ID not in preauthorized_uids:
-                    continue
                 
                 name = sline[1].strip()
                 sequence = sline[2].strip()
@@ -203,8 +190,7 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
     # next read in the file
     proteins_interface = _ProteinsInterface(filename, 
                                             delimiter=delimiter,
-                                            skip_bad=skip_bad,
-                                            preauthorized_uids=proteome.proteins)
+                                            skip_bad=skip_bad)
 
     if return_dictionary:
         return proteins_interface.data

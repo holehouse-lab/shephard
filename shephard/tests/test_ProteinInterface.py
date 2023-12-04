@@ -15,13 +15,6 @@ def test_read_correctly():
     SI = ProteinsInterface(test_file_name)
     assert len(set(SI.data.keys())) == 3
 
-    # check we can reduce parsing
-    SI = ProteinsInterface(test_file_name, preauthorized_uids=['O00401'])
-    assert len(set(SI.data.keys())) == 1
-
-    # check we can read an empty list without throwing an error
-    SI = ProteinsInterface(test_file_name, preauthorized_uids=[])
-    assert len(set(SI.data.keys())) == 0
 
 
 
