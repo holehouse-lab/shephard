@@ -1,5 +1,5 @@
 import shephard
-from shephard.apis import metapredict as meta_api
+from shephard.apis import metapredict_api as meta_api
 from shephard.apis import uniprot
 import pytest
 from shephard.exceptions import ProteinException

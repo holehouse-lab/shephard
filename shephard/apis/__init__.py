@@ -10,3 +10,4 @@ Holehouse Lab - Washington University in St. Louis
 
 from . import uniprot
 from . import fasta
+from . import metapredict_api

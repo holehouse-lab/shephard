@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.1.20 (December 2023)
+### Current major version: 0.1.21 (January 2024)
 [//]: # (Badges)
 [![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://soursop.readthedocs.io/en/shephard/?badge=latest)
 
@@ -58,6 +58,11 @@ These tools together form the backbone of our informatics infrastructure, and SH
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
+
+#### Version 0.1.21 (January 2024)
+* BREAKING CHANGE: We renamed shephard.apis.metapredict to shephard.apis.metapredict_api to avoid namespace clashing with metapredict the package. This is of course avoidable by aliasing one/both, but this was poor design. Going forward, we will append _api to the end of api modules.
+* Including import of metapredict_api from apis such that `from shephard.apis import metapredict_api` syntax works
+* Removed batch_mode as a variable to consider in the metapredict_api functions; size-collect is the only mode supported in metapredict; if this changes we'll revisit things but for now no need to add additional confusion.
 
 #### Version 0.1.20 (December 2023)
 * Fixed a minor but where the `shephard.interfaces.si_proteins` interface required proteins to ALREADY be in the proteome which proteins were being added to, which makes no sense, so we removed this constraint. 

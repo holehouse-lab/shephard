@@ -8,6 +8,7 @@
 ##
 
 
+## Check metapredict is installed
 try:
     import metapredict as meta
     
@@ -16,6 +17,15 @@ except ModuleNotFoundError:
     print('To use the metapredict API, make sure metapredict is installed')
     print('This can be done as follows:')
     print('pip install metapredict')
+
+## then check batch mode is available
+if not hasattr(meta, 'predict_disorder_batch'):
+    print('Unable to import metapredict batch mode')
+    print('This means you probably have an earlier version of metapredict installed')    
+    print('This can be fixed by updating metapredict as follows:')
+    print('pip install --upgrade metapredict')
+
+    
 
 def annotate_proteome_with_disorder_track(proteome,                                        
                                           name='disorder',
@@ -57,30 +67,6 @@ def annotate_proteome_with_disorder_track(proteome,
         predictions are made, while if False no progress bar is printed.
         Default  =  True
 
-    batch_mode : int
-        Indictora which, if set to 1 or 2 will FORCE the batch 
-        algorithm to use mode 1 or mode 2 for batch 
-        decomposition.
-
-        Mode 1 means we pre-filter sequences into groups where 
-        they're all the same length, avoiding padding/packing. 
-        This works in all versions of torch, and will be faster
-        if you have very large datasets or have many copies of 
-        the same sequence.
-
-        Mode 2 involves padding/packing the sequences so that 
-        all sequences can be passed in a batchsize of 32. This 
-        is only available if pytorch 1.11 or higher is available, 
-        but for small sets of sequences 1-10,000 will be much 
-        faster than mode 1. We default to mode 2 if available, 
-        but in special cases you may want to force mode 1.
-
-        Default = None, which means dynamic selection occurs (2
-        if available, fall-back to 1). However 1 may often actually
-        be more efficient, so it's worth testing modes to see if
-        there's any change in perforance for a given dataset.
-
-
     safe : bool
         Flag which, if set to False, means the function overwrites 
         existing tracks and domains if present. If True, overwriting
@@ -99,7 +85,7 @@ def annotate_proteome_with_disorder_track(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    D = meta.predict_disorder_batch(uid2seq, gpuid=gpuid, show_progress_bar=show_progress_bar, batch_mode=batch_mode)
+    D = meta.predict_disorder_batch(uid2seq, gpuid=gpuid, show_progress_bar=show_progress_bar)
 
     for k in uid2seq:
         proteome.protein(k).add_track(name, values=D[k][1], safe=safe)
@@ -114,7 +100,6 @@ def annotate_proteome_with_disordered_domains(proteome,
                                               folded_domain_name = 'FD',
                                               gpuid=00,
                                               show_progress_bar=True,
-                                              batch_mode=None,                                              
                                               safe=True):
     """
     Function that annotates a proteome with disordered
@@ -175,29 +160,6 @@ def annotate_proteome_with_disordered_domains(proteome,
         predictions are made, while if False no progress bar is printed.
         Default  =  True
 
-    batch_mode : int
-        Indictora which, if set to 1 or 2 will FORCE the batch 
-        algorithm to use mode 1 or mode 2 for batch 
-        decomposition.
-
-        Mode 1 means we pre-filter sequences into groups where 
-        they're all the same length, avoiding padding/packing. 
-        This works in all versions of torch, and will be faster
-        if you have very large datasets or have many copies of 
-        the same sequence.
-
-        Mode 2 involves padding/packing the sequences so that 
-        all sequences can be passed in a batchsize of 32. This 
-        is only available if pytorch 1.11 or higher is available, 
-        but for small sets of sequences 1-10,000 will be much 
-        faster than mode 1. We default to mode 2 if available, 
-        but in special cases you may want to force mode 1.
-
-        Default = None, which means dynamic selection occurs (2
-        if available, fall-back to 1). However 1 may often actually
-        be more efficient, so it's worth testing modes to see if
-        there's any change in perforance for a given dataset.
-
     safe : bool
         Flag which, if set to False, means the function overwrites 
         existing tracks and domains if present. If True, overwriting
@@ -217,7 +179,7 @@ def annotate_proteome_with_disordered_domains(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar, batch_mode=batch_mode)
+    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar)
 
     for k in uid2seq:
 
@@ -241,7 +203,6 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
                                                                   folded_domain_name = 'FD',
                                                                   gpuid=00,
                                                                   show_progress_bar=True,
-                                                                  batch_mode=None,
                                                                   safe=True):
     """
     Function that annotates a proteome with disorder Tracks and
@@ -305,29 +266,6 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         predictions are made, while if False no progress bar is printed.
         Default  =  True
 
-    batch_mode : int
-        Indictora which, if set to 1 or 2 will FORCE the batch 
-        algorithm to use mode 1 or mode 2 for batch 
-        decomposition.
-
-        Mode 1 means we pre-filter sequences into groups where 
-        they're all the same length, avoiding padding/packing. 
-        This works in all versions of torch, and will be faster
-        if you have very large datasets or have many copies of 
-        the same sequence.
-
-        Mode 2 involves padding/packing the sequences so that 
-        all sequences can be passed in a batchsize of 32. This 
-        is only available if pytorch 1.11 or higher is available, 
-        but for small sets of sequences 1-10,000 will be much 
-        faster than mode 1. We default to mode 2 if available, 
-        but in special cases you may want to force mode 1.
-
-        Default = None, which means dynamic selection occurs (2
-        if available, fall-back to 1). However 1 may often actually
-        be more efficient, so it's worth testing modes to see if
-        there's any change in perforance for a given dataset.
-
     safe : bool
         Flag which, if set to False, means the function overwrites 
         existing tracks and domains if present. If True, overwriting
@@ -348,7 +286,7 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder annotations/scores
-    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar, batch_mode=batch_mode)
+    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar)
 
     # for each unique ID
     for k in uid2seq:

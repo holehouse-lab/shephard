@@ -54,6 +54,8 @@ extensions = [
 #
 autodoc_mock_imports = ['numpy','protfasta']
 
+language = 'en'
+
 autosummary_generate = True
 napoleon_numpy_docstring = True
 napoleon_google_docstring = False
