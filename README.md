@@ -5,7 +5,8 @@ SHEPHARD
 
 ### Current major version: 0.1.21 (January 2024)
 [//]: # (Badges)
-[![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://soursop.readthedocs.io/en/shephard/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://readthedocs.org/projects/shephard/badge/?version=latest&style=for-the-badge)
+
 
 ## About
 SHEPHARD is a Python toolkit for integrative proteome-wide analysis. It was written by Garrett Ginell and Alex Holehouse.
