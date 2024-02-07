@@ -48,16 +48,18 @@ Ginell, G. M., Flynn, A. J. & Holehouse, A. S. SHEPHARD: a modular and extensibl
 ## Roadmap
 SHEPHARD is the base code for a large body of sequence-based bioinformatic tools developed by the Holehouse lab. These include:
 
-* [metapredict](https://github.com/idptools/metapredict) - high-performance disorder predictor
-* [parrot](https://github.com/idptools/parrot) - a general tool for deep learning of sequence features
-* [sparrow](https://github.com/idptools/sparrow) - a high-throughput tool for sequence analysis (*in development*)
-* [goose](https://github.com/idptools/goose) - a general purpose tool for the rational design of disordered protein sequences (*in development*)
-
+* [metapredict](https://github.com/idptools/metapredict) - high-performance disorder predictor [paper v1](http://dx.doi.org/10.1016/j.bpj.2021.08.039), [paper v2](http://dx.doi.org/10.1101/2022.06.06.494887), [paper v2-ff](http://dx.doi.org/10.1038/s41592-023-02159-5).
+* [parrot](https://github.com/idptools/parrot) - a general tool for deep learning of sequence features [paper](http://dx.doi.org/10.7554/eLife.70576)
+* [sparrow](https://github.com/idptools/sparrow) - a high-throughput tool for sequence analysis, including the [ALBATROSS networks](http://dx.doi.org/10.1038/s41592-023-02159-5) (*in development*)
+* [goose](https://github.com/idptools/goose) - a general-purpose tool for the rational design of disordered protein sequences [paper](http://dx.doi.org/10.1101/2023.10.29.564547).
 
 These tools together form the backbone of our informatics infrastructure, and SHEPHARD will contain direct or indirect API access to each of them (and various other tools).
 
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
+
+
+
 
 
 #### Version 0.1.21 (January 2024)
