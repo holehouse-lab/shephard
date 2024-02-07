@@ -11,6 +11,14 @@
 ## Check metapredict is installed
 try:
     import metapredict as meta
+
+
+    # run this AFTER checking metapredict is installed
+    if not hasattr(meta, 'predict_disorder_batch'):
+        print('Unable to import metapredict batch mode')
+        print('This means you probably have an earlier version of metapredict installed')    
+        print('This can be fixed by updating metapredict as follows:')
+        print('pip install --upgrade metapredict')
     
 except ModuleNotFoundError:
     print('Unable to import metapredict')
@@ -19,11 +27,6 @@ except ModuleNotFoundError:
     print('pip install metapredict')
 
 ## then check batch mode is available
-if not hasattr(meta, 'predict_disorder_batch'):
-    print('Unable to import metapredict batch mode')
-    print('This means you probably have an earlier version of metapredict installed')    
-    print('This can be fixed by updating metapredict as follows:')
-    print('pip install --upgrade metapredict')
 
     
 
