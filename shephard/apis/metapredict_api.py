@@ -29,7 +29,8 @@ except ModuleNotFoundError:
 ## then check batch mode is available
 
     
-
+## ------------------------------------------------------------------------
+##
 def annotate_proteome_with_disorder_track(proteome,                                        
                                           name='disorder',
                                           gpuid=00,
@@ -95,7 +96,8 @@ def annotate_proteome_with_disorder_track(proteome,
 
     
 
-
+## ------------------------------------------------------------------------
+##
 def annotate_proteome_with_disordered_domains(proteome,
                                               name='IDR',
                                               disorder_threshold=0.5,
@@ -197,7 +199,8 @@ def annotate_proteome_with_disordered_domains(proteome,
             
 
 
-
+## ------------------------------------------------------------------------
+##
 def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
                                                                   disorder_threshold=0.5,
                                                                   track_name='disorder',
