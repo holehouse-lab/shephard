@@ -59,7 +59,8 @@ These tools together form the backbone of our informatics infrastructure, and SH
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
 
-
+#### Version 0.1.21-patch (May 2024)
+* We added the `albatross_api` module to apis, which lets you pass in a Proteome and annotate at either the protein level or domain level all sequence predicted Rg and Re values. Right now this does both but better granularity and tests will be added before the bump to 0.1.22
 
 
 #### Version 0.1.21 (January 2024)

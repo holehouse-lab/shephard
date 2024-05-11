@@ -28,8 +28,12 @@ The metapredict module provides tools for annotating proteome-scale information 
 .. autofunction:: shephard.apis.metapredict_api.annotate_proteome_with_disordered_domains
 .. autofunction:: shephard.apis.metapredict_api.annotate_proteome_with_disorder_tracks_and_disordered_domains
 
+albatross_api
+-----------------
+The ALBATROSS API interfaces with the radius of gyration (Rg) and end-to-end distance (Re) predictions provided by ALBATROSS (Lotthammer et al. Nat. Meth. 2024). This depends on `sparrow <https://github.com/idptools/sparrow>`_ being installed, but enables you to annotate at either a proteine level or a domain level sequences with predicted Rg and Re values. 
 
-
+.. autofunction:: shephard.apis.albatross_api.annotate_proteome_with_dimensions
+.. autofunction:: shephard.apis.albatross_api.annotate_domains_with_dimensions
 
 
 
