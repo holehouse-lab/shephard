@@ -180,3 +180,8 @@ texinfo_documents = [
 
 # added by Alex (2022-02-28) to try and remove 
 add_module_names = False
+
+# custom
+if os.getenv('READTHEDOCS') == 'True':
+    import versioningit
+    versioningit.write_version_file('protfasta/_version.py')

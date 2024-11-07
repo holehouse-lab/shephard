@@ -1,4 +1,3 @@
-
 def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=False):
     """
     Function which takes a SHEPHARD object with attributes and then casts 

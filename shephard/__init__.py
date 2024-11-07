@@ -8,15 +8,15 @@ Contact: (g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 import os
+from shephard.proteome import Proteome
 
 
-# Handle versioneer
-from ._version import get_versions
-versions = get_versions()
-__version__ = versions['version']
-__git_revision__ = versions['full-revisionid']
-del get_versions, versions
-
+# Generate _version.py if missing and in the Read the Docs environment
+if os.getenv("READTHEDOCS") == "True" and not os.path.isfile('../shephard/_version.py'):   
+    import versioningit            
+    __version__ = versioningit.get_version('../')
+else:
+    from ._version import __version__
 
 def get_version():
     return __version__
@@ -28,4 +28,4 @@ def get_data(path):
     """
     return os.path.join(_ROOT, 'data', path)
 
-from .proteome import Proteome
+

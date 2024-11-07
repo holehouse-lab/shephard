@@ -1,5 +1,3 @@
-
-
 ##
 ## API into ALBATROSS
 ##
@@ -84,15 +82,15 @@ def annotate_proteome_with_dimensions(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict dimensions for all proteins
-    rg = batch_predict(uid2seq, network='rg_scaled', gpuid=gpuid, show_progress_bar=show_progress_bar)
-    re = batch_predict(uid2seq, network='re_scaled', gpuid=gpuid, show_progress_bar=show_progress_bar)
+    rg = batch_predict(uid2seq, network='scaled_rg', gpuid=gpuid, show_progress_bar=show_progress_bar)
+    re = batch_predict(uid2seq, network='scaled_re', gpuid=gpuid, show_progress_bar=show_progress_bar)
 
     # add as an attribute to the proteins
     for k in rg:
-        proteome.protein(k).add_attribute(rg_name, values=rg[k][1], safe=safe)
+        proteome.protein(k).add_attribute(rg_name, rg[k][1], safe=safe)
         
     for k in re:
-        proteome.protein(k).add_attribute(re_name, values=re[k][1], safe=safe)
+        proteome.protein(k).add_attribute(re_name, re[k][1], safe=safe)
 
 
         

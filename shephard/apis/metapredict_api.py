@@ -1,5 +1,3 @@
-
-
 ##
 ## API into metapredict
 ##
@@ -12,12 +10,10 @@
 try:
     import metapredict as meta
 
-
-    # run this AFTER checking metapredict is installed
-    if not hasattr(meta, 'predict_disorder_batch'):
-        print('Unable to import metapredict batch mode')
-        print('This means you probably have an earlier version of metapredict installed')    
-        print('This can be fixed by updating metapredict as follows:')
+    try:
+        meta.predict_disorder('AAPAPA',version=3)
+    except TypeError:
+        print('shephard requires metapredict V3 or higher. Please upgrade:')
         print('pip install --upgrade metapredict')
     
 except ModuleNotFoundError:
@@ -31,11 +27,11 @@ except ModuleNotFoundError:
     
 ## ------------------------------------------------------------------------
 ##
-def annotate_proteome_with_disorder_track(proteome,                                        
+def annotate_proteome_with_disorder_track(proteome,                                       
                                           name='disorder',
-                                          gpuid=00,
+                                          device='cpu',
+                                          version=3,                                          
                                           show_progress_bar=True,
-                                          batch_mode=None,
                                           safe=True):
 
     """
@@ -58,13 +54,14 @@ def annotate_proteome_with_disorder_track(proteome,
         Name of the Track added to each Protein. 
         Default = 'disorder'
 
-    gpuid : int 
-        Identifier for the GPU being requested. Note that if
-        this is left unset the code will use the first GPU available
-        and if none is available will default back to CPU; in 
-        general, it is recommended not to try and set this unless
-        there's a specific reason why a specific GPU should be
-        used. Default = 0.
+    device : str 
+        Define the device to use, either 'cpu', 'mps', 'cuda'
+        or the integer index of a specific GPU device to use.
+        Default = 'cpu'.
+
+    version : int
+        Defines the metapredict version to use (must be one of 1, 2 
+        or 3).
 
     show_progress_bar : bool
         Flag which, if set to True, means a progress bar is printed as 
@@ -89,7 +86,10 @@ def annotate_proteome_with_disorder_track(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    D = meta.predict_disorder_batch(uid2seq, gpuid=gpuid, show_progress_bar=show_progress_bar)
+    try:
+        D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version)
+    except:
+        D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version)
 
     for k in uid2seq:
         proteome.protein(k).add_track(name, values=D[k][1], safe=safe)
@@ -103,7 +103,8 @@ def annotate_proteome_with_disordered_domains(proteome,
                                               disorder_threshold=0.5,
                                               annotate_folded_domains=False,
                                               folded_domain_name = 'FD',
-                                              gpuid=00,
+                                              device='cpu',
+                                              version=3,                                                                                        
                                               show_progress_bar=True,
                                               safe=True):
     """
@@ -127,18 +128,13 @@ def annotate_proteome_with_disordered_domains(proteome,
     proteome : shephard.proteome.Proteome 
         Proteome object to be annotated.
 
+    name : str
+        Name to give IDR domains.
+
     disorder_threshold : float
         Threshold to be used to define IDRs by the metapredict
         domain decomposition algorithm. The default is 0.5, 
         and we strongly recommend sticking with this value.
-
-    track_name : str
-        Name of the Track added to each Protein. 
-        Default = 'disorder'
-
-    domain_name : str
-        Name of the Domain added to each Protein. 
-        Default = 'IDR'
 
     annotate_folded_domains : bool
         Flag which, if included, means we ALSO annotate 
@@ -146,19 +142,20 @@ def annotate_proteome_with_disordered_domains(proteome,
         domains), where the name can be changed using
         the folded_domain_name variable.
         Default = False
-
+    
     folded_domain_name : str
         String used to name Folded Domains. Only relevant
         if annotate_folded_domains is set to True.
         Default = 'FD'
 
-    gpuid : int 
-        Identifier for the GPU being requested. Note that if
-        this is left unset the code will use the first GPU available
-        and if none is available will default back to CPU; in 
-        general, it is recommended not to try and set this unless
-        there's a specific reason why a specific GPU should be
-        used. Default = 0.
+    device : str 
+        Define the device to use, either 'cpu', 'mps', 'cuda'
+        or the integer index of a specific GPU device to use.
+        Default = 'cpu'.
+
+    version : int
+        Defines the metapredict version to use (must be one of 1, 2 
+        or 3).
 
     show_progress_bar : bool
         Flag which, if set to True, means a progress bar is printed as 
@@ -184,7 +181,7 @@ def annotate_proteome_with_disordered_domains(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar)
+    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True)
 
     for k in uid2seq:
 
@@ -196,18 +193,19 @@ def annotate_proteome_with_disordered_domains(proteome,
         if annotate_folded_domains:
             for boundaries in X.folded_domain_boundaries:
                 proteome.protein(k).add_domain(boundaries[0]+1, boundaries[1], folded_domain_name, safe=safe)
-            
+
 
 
 ## ------------------------------------------------------------------------
 ##
 def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
-                                                                  disorder_threshold=0.5,
                                                                   track_name='disorder',
                                                                   domain_name='IDR',
+                                                                  disorder_threshold=0.5,
                                                                   annotate_folded_domains=False,
                                                                   folded_domain_name = 'FD',
-                                                                  gpuid=00,
+                                                                  device='cpu',
+                                                                  version=3,                                                                                        
                                                                   show_progress_bar=True,
                                                                   safe=True):
     """
@@ -234,11 +232,6 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
     proteome : shephard.proteome.Proteome 
         Proteome object to be annotated.
 
-    disorder_threshold : float
-        Threshold to be used to define IDRs by the metapredict
-        domain decomposition algorithm. Default is 0.5 and strongly
-        recommend sticking with this value.
-
     track_name : str
         Name of the Track added to each Protein. 
         Default = 'disorder'
@@ -246,6 +239,11 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
     domain_name : str
         Name of the Domain added to each Protein. 
         Default = 'IDR'
+
+    disorder_threshold : float
+        Threshold to be used to define IDRs by the metapredict
+        domain decomposition algorithm. Default is 0.5 and strongly
+        recommend sticking with this value.
 
     annotate_folded_domains : bool
         Flag which, if included, means we ALSO annotate 
@@ -259,13 +257,14 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         if annotate_folded_domains is set to True.
         Default = 'FD'
 
-    gpuid : int 
-        Identifier for the GPU being requested. Note that if
-        this is left unset the code will use the first GPU available
-        and if none is available will default back to CPU; in 
-        general, it is recommended not to try and set this unless
-        there's a specific reason why a specific GPU should be
-        used. Default = 0.
+    device : str 
+        Define the device to use, either 'cpu', 'mps', 'cuda'
+        or the integer index of a specific GPU device to use.
+        Default = 'cpu'.
+
+    version : int
+        Defines the metapredict version to use (must be one of 1, 2 
+        or 3).
 
     show_progress_bar : bool
         Flag which, if set to True, means a progress bar is printed as 
@@ -292,7 +291,7 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder annotations/scores
-    D = meta.predict_disorder_batch(uid2seq, return_domains=True, gpuid=gpuid, show_progress_bar=show_progress_bar)
+    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True)
 
     # for each unique ID
     for k in uid2seq:

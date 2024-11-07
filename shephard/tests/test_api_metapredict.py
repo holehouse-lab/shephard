@@ -1,10 +1,13 @@
 import shephard
-from shephard.apis import metapredict_api as meta_api
 from shephard.apis import uniprot
 import pytest
 from shephard.exceptions import ProteinException
 
 import numpy as np
+import sys
+from shephard.apis import metapredict_api as meta_api
+
+pytest.importorskip("metapredict")
 
 
 IDR_seqs = {'O00401-1-14': 'MSSVQQQPPPPRRV',
@@ -55,7 +58,6 @@ mean_disorder = {'O00401': 0.5794089119018362,
                  'Q9UJX3': 0.15904156943216002}
 
 
-
 def test_disorder_annotation():
 
     # precomputed mean disorder we can compare against
@@ -65,33 +67,33 @@ def test_disorder_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disorder_track(P)
+    meta_api.annotate_proteome_with_disorder_track(P, version=2)
 
     for protein in P:
-        assert mean_disorder[protein.unique_ID] == np.mean(protein.track('disorder').values)
+        assert np.isclose(mean_disorder[protein.unique_ID], np.mean(protein.track('disorder').values))
 
     ## Test if we can change the name
     # build a proteome        
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))        
-    meta_api.annotate_proteome_with_disorder_track(P, name='test')
+    meta_api.annotate_proteome_with_disorder_track(P, name='test', version=2)
 
     for protein in P:
-        assert mean_disorder[protein.unique_ID] == np.mean(protein.track('test').values)
+        assert np.isclose(mean_disorder[protein.unique_ID],np.mean(protein.track('test').values))
 
     ## Test if we raise an error if we try and overwrite
     # build a proteome        
     with pytest.raises(ProteinException):
-        meta_api.annotate_proteome_with_disorder_track(P, name='test')
+        meta_api.annotate_proteome_with_disorder_track(P, name='test', version=2)
 
 
     ## test we can override this with safe=False
-    meta_api.annotate_proteome_with_disorder_track(P, name='test', safe=False)
+    meta_api.annotate_proteome_with_disorder_track(P, name='test', safe=False, version=2)
 
 
     ## test adding a random int for gpuid does not break things (should only be used
     # if that device is available)
-    meta_api.annotate_proteome_with_disorder_track(P, name='test', safe=False, gpuid=3)
+    meta_api.annotate_proteome_with_disorder_track(P, name='test', safe=False, device='mps', version=2)
     
 
 
@@ -106,7 +108,7 @@ def test_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disordered_domains(P)
+    meta_api.annotate_proteome_with_disordered_domains(P,version=2)
     
     for d in P.domains:
         assert IDR_seqs[f"{d.protein.unique_ID}-{d.start}-{d.end}"] == d.sequence
@@ -115,7 +117,7 @@ def test_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disordered_domains(P, name='TEST')
+    meta_api.annotate_proteome_with_disordered_domains(P, name='TEST',version=2)
     
     for d in P.domains:
         if d.domain_type == 'TEST':
@@ -125,7 +127,7 @@ def test_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True)
+    meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True, version=2)
     
     for d in P.domains:
         if d.domain_type == 'IDR':
@@ -143,7 +145,7 @@ def test_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='YES')
+    meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='YES', version=2)
     
     for d in P.domains:
         if d.domain_type == 'IDR':
@@ -165,7 +167,7 @@ def test_disorder_and_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P)
+    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, version=2)
 
 
     ## check IDRs
@@ -174,8 +176,7 @@ def test_disorder_and_idr_annotation():
 
     ## test disorder values
     for protein in P:
-        assert mean_disorder[protein.unique_ID] == np.mean(protein.track('disorder').values)
-
+        assert np.isclose(mean_disorder[protein.unique_ID], np.mean(protein.track('disorder').values))
         
 
     ## Test we can change names of IDRs and disorder tracks
@@ -185,18 +186,18 @@ def test_disorder_and_idr_annotation():
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, track_name='track-TEST', domain_name='domain-TEST')    
+    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, track_name='track-TEST', domain_name='domain-TEST', version=2)    
     for d in P.domains:
         if d.domain_type == 'domain-TEST':
             assert IDR_seqs[f"{d.protein.unique_ID}-{d.start}-{d.end}"] == d.sequence
 
-        assert mean_disorder[d.protein.unique_ID] == np.mean(d.protein.track('track-TEST').values)
+        assert np.isclose(mean_disorder[d.protein.unique_ID], np.mean(d.protein.track('track-TEST').values))
         
     ## check we can annotate folded domains as well and we can change their name
     test_data_dir = shephard.get_data('test_data')
     P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
 
-    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='FD-test')
+    meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='FD-test', version=2)
     
     for d in P.domains:
         if d.domain_type == 'IDR':
