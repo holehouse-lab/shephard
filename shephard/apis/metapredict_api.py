@@ -29,7 +29,7 @@ except ModuleNotFoundError:
 ##
 def annotate_proteome_with_disorder_track(proteome,                                       
                                           name='disorder',
-                                          device='cpu',
+                                          device=None,
                                           version=3,                                          
                                           show_progress_bar=True,
                                           safe=True):
@@ -54,11 +54,23 @@ def annotate_proteome_with_disorder_track(proteome,
         Name of the Track added to each Protein. 
         Default = 'disorder'
 
-    device : str 
-        Define the device to use, either 'cpu', 'mps', 'cuda'
-        or the integer index of a specific GPU device to use.
-        Default = 'cpu'.
-
+    device : int or str 
+        Identifier for the device to be used for predictions. 
+        Possible inputs: 'cpu', 'mps', 'cuda', or an int that corresponds to
+        the index of a specific cuda-enabled GPU. If 'cuda' is specified and
+        cuda.is_available() returns False, instead of falling back to CPU, 
+        metapredict will raise an Exception so you know that you are not
+        using CUDA as you were expecting. 
+        Default: None
+            When set to None, we will check if there is a cuda-enabled
+            GPU. If there is, we will try to use that GPU. 
+            If you set the value to be an int, we will use cuda:int as the device
+            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
+            corresponds to the first GPU, and so on. Only specify this if you
+            know which GPU you want to use. 
+            * Note: MPS is only supported in Pytorch 2.1 or later. 
+            MPS is still fairly new, so use it at your own risk.  
+                                          
     version : int
         Defines the metapredict version to use (must be one of 1, 2 
         or 3).
@@ -103,7 +115,7 @@ def annotate_proteome_with_disordered_domains(proteome,
                                               disorder_threshold=0.5,
                                               annotate_folded_domains=False,
                                               folded_domain_name = 'FD',
-                                              device='cpu',
+                                              device=None,
                                               version=3,                                                                                        
                                               show_progress_bar=True,
                                               safe=True):
@@ -148,10 +160,22 @@ def annotate_proteome_with_disordered_domains(proteome,
         if annotate_folded_domains is set to True.
         Default = 'FD'
 
-    device : str 
-        Define the device to use, either 'cpu', 'mps', 'cuda'
-        or the integer index of a specific GPU device to use.
-        Default = 'cpu'.
+    device : int or str 
+        Identifier for the device to be used for predictions. 
+        Possible inputs: 'cpu', 'mps', 'cuda', or an int that corresponds to
+        the index of a specific cuda-enabled GPU. If 'cuda' is specified and
+        cuda.is_available() returns False, instead of falling back to CPU, 
+        metapredict will raise an Exception so you know that you are not
+        using CUDA as you were expecting. 
+        Default: None
+            When set to None, we will check if there is a cuda-enabled
+            GPU. If there is, we will try to use that GPU. 
+            If you set the value to be an int, we will use cuda:int as the device
+            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
+            corresponds to the first GPU and so on. Only specify this if you
+            know which GPU you want to use. 
+            * Note: MPS is only supported in Pytorch 2.1 or later. 
+            MPS is still fairly new, so use it at your own risk.  
 
     version : int
         Defines the metapredict version to use (must be one of 1, 2 
@@ -204,7 +228,7 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
                                                                   disorder_threshold=0.5,
                                                                   annotate_folded_domains=False,
                                                                   folded_domain_name = 'FD',
-                                                                  device='cpu',
+                                                                  device=None,
                                                                   version=3,                                                                                        
                                                                   show_progress_bar=True,
                                                                   safe=True):
@@ -257,10 +281,22 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         if annotate_folded_domains is set to True.
         Default = 'FD'
 
-    device : str 
-        Define the device to use, either 'cpu', 'mps', 'cuda'
-        or the integer index of a specific GPU device to use.
-        Default = 'cpu'.
+    device : int or str 
+        Identifier for the device to be used for predictions. 
+        Possible inputs: 'cpu', 'mps', 'cuda', or an int that corresponds to
+        the index of a specific cuda-enabled GPU. If 'cuda' is specified and
+        cuda.is_available() returns False, instead of falling back to CPU, 
+        metapredict will raise an Exception so you know that you are not
+        using CUDA as you were expecting. 
+        Default: None
+            When set to None, we will check if there is a cuda-enabled
+            GPU. If there is, we will try to use that GPU. 
+            If you set the value to be an int, we will use cuda:int as the device
+            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
+            corresponds to the first GPU and so on. Only specify this if you
+            know which GPU you want to use. 
+            * Note: MPS is only supported in Pytorch 2.1 or later. 
+            MPS is still fairly new, so use it at your own risk.             
 
     version : int
         Defines the metapredict version to use (must be one of 1, 2 

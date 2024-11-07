@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.2.1 (Novemver 2024)
+### Current major version: 0.2.2 (Novemver 2024)
 [//]: # (Badges)
 [![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://readthedocs.org/projects/shephard/badge/?version=latest&style=for-the-badge)
 
@@ -58,7 +58,7 @@ Together, these tools form the backbone of our informatics infrastructure, and S
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
-#### Version 0.2.1 (November 2024)
+#### Version 0.2.2 (November 2024)
 * Updated and fixed `metapredict_api` and `albatross_api` including adding tests
 * Defaulted to use metapredict V3
 * Restructured organization to use `pyproject.toml`
