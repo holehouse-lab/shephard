@@ -1,7 +1,7 @@
 # Defining the exact version will make sure things don't break
-sphinx==6.2.1
-sphinx_rtd_theme==2.0.0
-readthedocs-sphinx-search==0.3.2
+sphinx
+sphinx_rtd_theme
+readthedocs-sphinx-search
 numpy
 protfasta
 versioningit
