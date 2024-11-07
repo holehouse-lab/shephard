@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.1.21 (January 2024)
+### Current major version: 0.2.1 (Novemver 2024)
 [//]: # (Badges)
 [![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://readthedocs.org/projects/shephard/badge/?version=latest&style=for-the-badge)
 
@@ -53,11 +53,15 @@ SHEPHARD is the base code for a large body of sequence-based bioinformatic tools
 * [sparrow](https://github.com/idptools/sparrow) - a high-throughput tool for sequence analysis, including the [ALBATROSS networks](http://dx.doi.org/10.1038/s41592-023-02159-5) (*in development*)
 * [goose](https://github.com/idptools/goose) - a general-purpose tool for the rational design of disordered protein sequences [paper](http://dx.doi.org/10.1101/2023.10.29.564547).
 
-These tools together form the backbone of our informatics infrastructure, and SHEPHARD will contain direct or indirect API access to each of them (and various other tools).
+Together, these tools form the backbone of our informatics infrastructure, and SHEPHARD provides direct or indirect API access to each of them (and various other tools).
 
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
 
+#### Version 0.2.1 (November 2024)
+* Updated and fixed `metapredict_api` and `albatross_api` including adding tests
+* Defaulted to use metapredict V3
+* Restructured organization to use `pyproject.toml`
 
 #### Version 0.1.21-patch (May 2024)
 * We added the `albatross_api` module to apis, which lets you pass in a Proteome and annotate at either the protein level or domain level all sequence predicted Rg and Re values. Right now this does both but better granularity and tests will be added before the bump to 0.1.22
