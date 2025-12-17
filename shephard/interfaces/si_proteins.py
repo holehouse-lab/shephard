@@ -99,7 +99,7 @@ class _ProteinsInterface:
                 pass
   
             if unique_ID in ID2protein:
-                raise InterfaceException("Duplicate protein found in the file %s (offending UID=%s). This cannot be skipped" % (filename, UID))            
+                raise InterfaceException("Duplicate protein found in the file %s (offending UID=%s). This cannot be skipped" % (filename, unique_ID))            
             else:
                 ID2protein[unique_ID] = {'name':name, 'sequence':sequence, 'attributes':attributes}
 
