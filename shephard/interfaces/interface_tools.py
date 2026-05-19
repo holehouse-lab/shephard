@@ -330,8 +330,15 @@ def is_comment_line(line):
     """
     line = line.strip()
 
+    # treat blank lines like comment lines so they are skipped by callers
+    # (rather than triggering an IndexError on line[0])
+    if len(line) == 0:
+        return True
+
     if line[0] == '#':
         return True
+
+    return False
         
 
             

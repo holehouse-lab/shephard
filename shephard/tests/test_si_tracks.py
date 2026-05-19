@@ -16,8 +16,8 @@ import random
 def test_add_track_from_file():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
     
     
     def testfunct(P):
@@ -78,7 +78,7 @@ def test_add_track_from_file():
 def test_add_track_from_dictionary():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
@@ -120,8 +120,8 @@ def test_add_track_from_dictionary():
 def test_write_track_part1():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
     
     # write
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
@@ -148,8 +148,8 @@ def test_write_track_part1():
 def test_write_track_part2():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    pscore_track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
 
 
     # build proteome
@@ -159,7 +159,7 @@ def test_write_track_part2():
     special_ID = 'O00401'
     random_vals = np.random.rand(len(P.protein(special_ID)))
     track_name = 'random_vals'
-    outname = 'output_test/track_%s.tsv'%(track_name)
+    outname = f'output_test/track_{track_name}.tsv'
 
     track_dict = {special_ID: [{'track_name':track_name, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
@@ -182,8 +182,8 @@ def test_write_track_part2():
 def test_write_track_part3():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    pscore_track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
 
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
@@ -195,7 +195,7 @@ def test_write_track_part3():
     special_ID = 'O00401'
     random_vals = np.random.rand(len(P.protein(special_ID)))
     track_name_rv = 'random_vals'
-    outname_rv = 'output_test/track_%s.tsv'%(track_name_rv)
+    outname_rv = f'output_test/track_{track_name_rv}.tsv'
 
     track_dict = {special_ID: [{'track_name':track_name_rv, 'track_data':random_vals}]}
     interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='values')
@@ -203,7 +203,7 @@ def test_write_track_part3():
 
 
     track_name = 'phospho_track'
-    outname = 'output_test/track_%s.tsv'%(track_name)
+    outname = f'output_test/track_{track_name}.tsv'
 
 
     # create an additional symbols tracks and write track
@@ -239,8 +239,8 @@ def test_write_tracks_separate_files():
     ## This code block just creates a proteome where we have 2 different
     ## typs of tracks
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    pscore_track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P, pscore_track_file, mode='values')
@@ -265,8 +265,8 @@ def test_write_tracks_separate_files():
     ## This code block just creates a proteome where we have 2 different
     ## typs of tracks
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    pscore_track_file = '%s/%s' % (test_data_dir, 'TS1_tracks_pscore.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    pscore_track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P, pscore_track_file, mode='values')
@@ -303,7 +303,7 @@ def test_write_tracks_separate_files():
 def test_write_tracks_single_file_symbols():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
@@ -351,7 +351,7 @@ def test_write_tracks_single_file_symbols():
 def test_write_tracks_single_file_values():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
@@ -393,7 +393,7 @@ def test_write_tracks_single_file_values():
 def test_write_values_tracks_from_list():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
@@ -439,7 +439,7 @@ def test_write_values_tracks_from_list():
 def test_write_symbols_tracks_from_list():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
@@ -485,7 +485,7 @@ def test_write_symbols_tracks_from_list():
 def test_write_symbols_tracks_from_list():
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 

@@ -149,7 +149,7 @@ def test_build_track_symbols_from_sequence(TS1_domains2_sites_tracks):
 
 
 def test_getter_properies():
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     prot = TS1.protein('O00470')
 

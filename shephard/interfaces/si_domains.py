@@ -328,31 +328,37 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_domains (si_domains)')
     
-    for protein in proteome:
-        if protein.unique_ID in domain_dictionary:
-            for domain in domain_dictionary[protein.unique_ID]:
+    # iterate the (typically smaller) dictionary rather than every protein
+    # in the proteome; protein() is an O(1) dict lookup
+    for unique_ID in domain_dictionary:
 
-                start       = domain['start']
-                end         = domain['end']
-                domain_type = domain['domain_type']
-                                    
-                try:
-                    ad          = domain['attributes']
-                except:
-                    ad = {}
-                
-                # try and add the domain...
-                try:
-                    protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
-                except (ProteinException, DomainException) as e:
+        protein = proteome.protein(unique_ID, safe=False)
+        if protein is None:
+            continue
 
-                    msg='- skipping domain at %i-%i on %s' %(start, end, protein)
-                    if safe:
-                        shephard_exceptions.print_and_raise_error(msg, e)
-                    else:
-                        if verbose:
-                            shephard_exceptions.print_warning(msg)
-                            continue
+        for domain in domain_dictionary[unique_ID]:
+
+            start       = domain['start']
+            end         = domain['end']
+            domain_type = domain['domain_type']
+
+            try:
+                ad          = domain['attributes']
+            except:
+                ad = {}
+
+            # try and add the domain...
+            try:
+                protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
+            except (ProteinException, DomainException) as e:
+
+                msg=f'- skipping domain at {int(start)}-{int(end)} on {protein}'
+                if safe:
+                    shephard_exceptions.print_and_raise_error(msg, e)
+                else:
+                    if verbose:
+                        shephard_exceptions.print_warning(msg)
+                    continue
                 
 
 ## ------------------------------------------------------------------------
@@ -526,11 +532,11 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
         if unique_ID in proteome:
 
             # build dict of local domains with domain IDs as keys
-            local_domain_dict = {"%s_%i_%i" % (d.domain_type, d.start, d.end): d for d in proteome.protein(unique_ID).domains}
+            local_domain_dict = {f"{d.domain_type}_{int(d.start)}_{int(d.end)}": d for d in proteome.protein(unique_ID).domains}
 
             # iterate new domains
             for new_domain in domain_dictionary[unique_ID]:
-                new_domain_ID = "%s_%i_%i" % (new_domain['domain_type'], new_domain['start'], new_domain['end'])
+                new_domain_ID = f"{new_domain['domain_type']}_{int(new_domain['start'])}_{int(new_domain['end'])}"
                 
                 # check if domain is in local domain by ID 
                 if new_domain_ID in local_domain_dict:
@@ -553,7 +559,7 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                             else:
                                 if verbose:
                                     shephard_exceptions.print_warning(msg)
-                                    continue
+                                continue
 
                     # move on to next new domain
                     continue
@@ -570,13 +576,13 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                         proteome.protein(unique_ID).add_domain(new_domain['start'], new_domain['end'], new_domain['domain_type'], attributes=ad, safe=safe)
                     except (ProteinException, DomainException) as e:
 
-                        msg='- skipping domain at %i-%i on %s' %(new_domain['start'], new_domain['end'], proteome.protein(unique_ID))
+                        msg=f"- skipping domain at {int(new_domain['start'])}-{int(new_domain['end'])} on {proteome.protein(unique_ID)}"
                         if safe:
                             shephard_exceptions.print_and_raise_error(msg, e)
                         else:
                             if verbose:
                                 shephard_exceptions.print_warning(msg)
-                                continue
+                            continue
 
 
     

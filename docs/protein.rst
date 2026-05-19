@@ -93,7 +93,8 @@ Domain functions
 .. autofunction:: shephard.protein.Protein.domain_types
 .. autofunction:: shephard.protein.Protein.add_domain
 .. autofunction:: shephard.protein.Protein.add_domains
-.. autofunction:: shephard.protein.Protein.build_domains
+.. autofunction:: shephard.protein.Protein.build_domain
+.. autofunction:: shephard.protein.Protein.remove_domain
 .. autofunction:: shephard.protein.Protein.get_domains_by_type
 .. autofunction:: shephard.protein.Protein.get_domains_by_position
 .. autofunction:: shephard.protein.Protein.get_domains_by_position_and_type

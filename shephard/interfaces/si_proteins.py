@@ -99,7 +99,7 @@ class _ProteinsInterface:
                 pass
   
             if unique_ID in ID2protein:
-                raise InterfaceException("Duplicate protein found in the file %s (offending UID=%s). This cannot be skipped" % (filename, unique_ID))            
+                raise InterfaceException(f"Duplicate protein found in the file {filename} (offending UID={unique_ID}). This cannot be skipped")            
             else:
                 ID2protein[unique_ID] = {'name':name, 'sequence':sequence, 'attributes':attributes}
 
@@ -281,13 +281,13 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
         try:
             proteome.add_protein(s, n, UID, attributes=ats, force_overwrite=force_overwrite)
         except (ProteinException, ProteomeException) as e:
-            msg='- skipping protein %s (name = %s, len=%i' %(UID, n, len(s))
+            msg=f'- skipping protein {UID} (name = {n}, len={len(s)}'
             if safe:
                 shephard_exceptions.print_and_raise_error(msg, e)
             else:
                 if verbose:
                     shephard_exceptions.print_warning(msg)
-                    continue
+                continue
 
 
 
@@ -351,7 +351,7 @@ def write_proteins(proteome, filename, delimiter='\t'):
 
                     atrbt = interface_tools.full_clean_string(protein.attribute(k))
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{k}:{atrbt}"
 
                     
 

@@ -265,7 +265,7 @@ class Site:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise SiteException('Requesting attribute [%s] from Site [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise SiteException(f'Requesting attribute [{name}] from Site [{self!s}] but this attribute has not been assigned') 
 
             # if safe not passed just return None
             else:
@@ -303,7 +303,7 @@ class Site:
 
         if safe:
             if name in self._attributes:
-                raise SiteException("Trying to add attribute [%s=%s] to Site [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise SiteException(f"Trying to add attribute [{name}={val}] to Site [{self!s}] but this attribute is already set.\nPossible options are: {self._attributes.keys()!s}")
                 
         self._attributes[name] = val
 
@@ -339,7 +339,7 @@ class Site:
 
         if name not in self._attributes:
             if safe:
-                raise ProteinException(f'Passed attribute [{name}] not found in {self}')
+                raise SiteException(f'Passed attribute [{name}] not found in {self}')
         else:
             del self._attributes[name]
         
@@ -507,7 +507,10 @@ class Site:
             at this site.
 
         """
-        return self.get_track_values(name, offset=0, safe=safe)[0]
+        v = self.get_track_values(name, offset=0, safe=safe)
+        if v is None:
+            return None
+        return v[0]
 
 
     ## ------------------------------------------------------------------------
@@ -585,12 +588,15 @@ class Site:
 
         """
 
-        return self.get_track_symbols(name, offset=0, safe=safe)[0]
+        v = self.get_track_symbols(name, offset=0, safe=safe)
+        if v is None:
+            return None
+        return v[0]
 
 
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "|Site: %s @ %i in protein %s" % (self._site_type, self.position, self.protein.unique_ID)
+        return f"|Site: {self._site_type} @ {int(self.position)} in protein {self.protein.unique_ID}"
     
     

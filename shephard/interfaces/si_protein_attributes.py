@@ -299,13 +299,13 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
                     try:
                         protein.add_attribute(k, v, safe=safe)
                     except ProteinException as e:
-                        msg='- skipping attribute entry on protein %s (key: %s) ' % (protein.unique_ID, k)
+                        msg=f'- skipping attribute entry on protein {protein.unique_ID} (key: {k}) '
                         if safe:
                             shephard_exceptions.print_and_raise_error(msg, e)
                         else:
                             if verbose:
                                 shephard_exceptions.print_warning(msg)
-                                continue
+                            continue
 
 
 
@@ -350,7 +350,7 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
 
                     atrbt = interface_tools.full_clean_string(protein.attribute(k))
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{k}:{atrbt}"
 
                 line = line + "\n"
 
@@ -400,7 +400,7 @@ def write_protein_attributes_from_dictionary(protein_attribute_dictionary, filen
 
                     atrbt = interface_tools.full_clean_string(v)
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{k}:{atrbt}"
 
                 line = line + "\n"
 

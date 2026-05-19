@@ -18,7 +18,7 @@ STANDARD_AAs = 'ACDEFGHIKLMNPQRSTVWY'
 ##
 def valid_keyword(keywordname, kw, kwlist):
     if kw not in kwlist:
-        raise ShephardException("Provided keyword '%s' for argument %s but expected one of %s" % (kw, keywordname, str(kwlist)))
+        raise ShephardException(f"Provided keyword '{kw}' for argument {keywordname} but expected one of {kwlist!s}")
 
 
 ## ------------------------------------------------------------------------
@@ -53,7 +53,7 @@ def cast_or_none(value, cast_type):
         try:
             return cast_type(value)
         except Exception as e:
-            raise ShephardException('In cast_or_none unable to cast passed variable, error below:\n%s' % str(e))
+            raise ShephardException(f'In cast_or_none unable to cast passed variable, error below:\n{e!s}')
             
 
 

@@ -14,11 +14,11 @@ def print_warning(msg):
     Function that prints a warning message (with an exception if provided).
     """
     
-    print('WARNING: %s' %(msg))
+    print(f'WARNING: {msg}')
 
 
 def print_and_raise_error(msg, e):    
-    print('ERROR: %s' %(msg))
+    print(f'ERROR: {msg}')
     raise e
 
     

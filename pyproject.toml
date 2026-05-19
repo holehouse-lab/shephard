@@ -1,7 +1,9 @@
 [build-system]
 
-# delete cython/numpy if not needed
-requires = ["setuptools>=61", "versioningit~=2.0", "numpy"]
+# SHEPHARD is a pure-Python package (no compiled extensions), so the build
+# only needs setuptools + versioningit. numpy is a *runtime* dependency and
+# is declared under [project.dependencies], not here.
+requires = ["setuptools>=61", "versioningit~=2.0"]
 build-backend = "setuptools.build_meta"
 
 
@@ -11,26 +13,49 @@ name = "SHEPHARD"
 dynamic = ["version"]
 description = "Python package for organizing large sets of protein data"
 authors = [
-    {name = "Alex Holehouse", email = "alex.holehouse@wustl.edu"}
+    {name = "Alex Holehouse", email = "alex.holehouse@wustl.edu"},
+    {name = "Garrett M. Ginell"},
 ]
 license = {text = "MIT"}
-readme = "README.md"  
-requires-python = ">=3.7"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["bioinformatics", "proteome", "protein", "disorder", "annotation"]
 
-# add in as needed  
-dependencies = [      
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+# runtime dependencies
+dependencies = [
     "numpy",
     "protfasta",
 ]
 
 [project.optional-dependencies]
 test = [
-  "pytest>=6.1.2",
+    "pytest>=6.1.2",
+    "pytest-cov",
 ]
+
+[project.urls]
+Homepage = "https://github.com/holehouse-lab/shephard"
+Documentation = "https://shephard.readthedocs.io/"
+Source = "https://github.com/holehouse-lab/shephard"
+Issues = "https://github.com/holehouse-lab/shephard/issues"
 
 [tool.setuptools]
 zip-safe = false
-include-package-data = true 
+include-package-data = true
 
 [tool.setuptools.packages.find]
 namespaces = true
@@ -38,9 +63,16 @@ where = ["."]
 include = ["shephard", "shephard.*"]  # Discover all sub-packages inside the main package
 
 [tool.setuptools.package-data]
+# Ship the typing marker and the bundled data files (test_data/, look_and_say
+# .dat, ...) so they are available from an installed wheel - shephard.get_data
+# relies on these being present alongside the package.
 shephard = [
-    "py.typed"
+    "py.typed",
+    "data/**/*",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["shephard/tests"]
 
 [tool.versioningit]
 default-version = "1+unknown"

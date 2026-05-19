@@ -83,7 +83,7 @@ def test_add_protein():
 
     # creating proteome and adding protein
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     assert len(P.protein('O00401')) == 505
     assert len(P.protein('O00470')) == 390
     assert len(P.protein('O00472')) == 640
@@ -95,7 +95,7 @@ def test_add_protein():
     assert len(P.protein('Q9UJX3')) == 599
 
     # creating a proteome from a FASTA file (using defaul unique key)
-    P = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = fasta.fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     assert len(P.protein('1')) == 390
     assert len(P.protein('2')) == 640
     assert len(P.protein('3')) == 593
@@ -106,7 +106,7 @@ def test_add_protein():
     assert len(P.protein('8')) == 599
 
     # create a proteome where FASTA header is used as uniqueID 
-    P = fasta.fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'), use_header_as_unique_ID=True)
+    P = fasta.fasta_to_proteome(f'{test_data_dir}/testset_1.fasta', use_header_as_unique_ID=True)
     assert len(P.protein('sp|O00470|MEIS1_HUMAN Homeobox protein Meis1 OS=Homo sapiens OX=9606 GN=MEIS1 PE=1 SV=1')) == 390
     assert len(P.protein('sp|O00472|ELL2_HUMAN RNA polymerase II elongation factor ELL2 OS=Homo sapiens OX=9606 GN=ELL2 PE=1 SV=2')) == 640
     assert len(P.protein('sp|O00499|BIN1_HUMAN Myc box-dependent-interacting protein 1 OS=Homo sapiens OX=9606 GN=BIN1 PE=1 SV=1')) == 593

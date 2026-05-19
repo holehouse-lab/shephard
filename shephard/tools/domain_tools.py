@@ -46,7 +46,7 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
 
     if check_origin:
         if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
-            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+            raise exceptions.DomainException(f'Examining overlap of {domain_1!s} and {domain_2!s} but these are from different proteins')
             
     return domain_overlap_by_position(domain_1.start, domain_1.end, domain_2.start, domain_2.end)
 
@@ -81,7 +81,7 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
 
     if check_origin:
         if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
-            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+            raise exceptions.DomainException(f'Examining overlap of {domain_1!s} and {domain_2!s} but these are from different proteins')
 
 
     if len(domain_1) < len(domain_2):
@@ -407,7 +407,7 @@ def build_domains_from_track_values(proteome,
         # we hit a 500-protein milestone print status if verbose is true
         c = c + 1
         if verbose and c % 500 == 0:
-            print('On %i of %i' %(c, len(proteome)))
+            print(f'On {int(c)} of {len(proteome)}')
         
         # safe = false so will return None if no track of that name
         # found, and if so we continue to next protein

@@ -3,7 +3,7 @@ SHEPHARD
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
 
-### Current major version: 0.2.2 (Novemver 2024)
+### Current major version: 0.2.3 (May 2026)
 [//]: # (Badges)
 [![Documentation Status](https://readthedocs.org/projects/shephard/badge/?version=latest)](https://readthedocs.org/projects/shephard/badge/?version=latest&style=for-the-badge)
 
@@ -57,6 +57,49 @@ Together, these tools form the backbone of our informatics infrastructure, and S
 
 ## Change log
 The Changelog below reports on changes as we updated SHEPHARD. Specific types of changes include **BUG FIXES**, **PERFORMANCE UPGRADES**, and **NEW FEATURES**, and these will be tagged as such.
+
+#### Version 0.2.3 (May 2026)
+* **BUG FIXES**:
+  * Fixed a typo in `proteome.py` (`s.position. s.site_type`) that raised an `AttributeError` when copying any `Protein` containing sites into a new `Proteome` (e.g. `Proteome(list_of_Protein_objects)` or `add_proteins()` with `Protein` objects).
+  * Fixed a broken type check in `track.py` (`elif(symbols, str):`, an always-true tuple) so symbols tracks are validated correctly and the invalid-input error path is reachable.
+  * Fixed an undefined-name error in `track.py` where a non-dict `attribute_dictionary` raised `NameError` instead of a `TrackException`.
+  * Fixed an undefined-name error in `Domain.site()` (`domain.start`/`domain.end`) that raised `NameError` instead of a `DomainException` for out-of-range positions.
+  * Fixed `interface_tools.is_comment_line()` raising an `IndexError` on blank lines; blank lines are now skipped, so all `si_*` file parsers tolerate blank lines.
+  * `tools.sequence_tools.build_mega_string()` now honors the `return_as_list` argument (previously ignored).
+  * `tools.site_tools.build_site_density_vector()` now honors the `append_leading_lagging` argument (previously ignored) and raises a clear `ShephardException` when `window_size` exceeds the protein length (previously an `IndexError`).
+  * `Proteome.add_proteins()` no longer raises an `IndexError` when passed an empty list.
+  * Copying proteins between Proteomes now keys off the track type rather than list truthiness, so an all-zero/empty values track is no longer miscopied as a symbols track.
+  * `Domain.site()` now raises a `DomainException` (instead of a raw `KeyError`) when no site exists at an in-range position.
+  * Cleaned up the `safe=False` skip path in the `si_sites`, `si_domains`, `si_proteins`, and `si_protein_attributes` interfaces so the `continue` is no longer nested under `if verbose:`.
+  * Fixed `Protein.convert_to_valid()`, which was effectively unusable: the internal indexing sentinel was counted in the length check so it *always* raised with the default `safe=True`, and with `copy=False` the cleaned sequence was never written back (silent no-op). It now operates on the user sequence and correctly mutates in place.
+  * Fixed `apis.fasta.shephard_fasta_to_proteome()` attribute parsing, which set each round-tripped attribute's value to a copy of its key and produced a spurious empty-string attribute. Attribute name/value round trips now work (and values containing `=` are preserved).
+  * Added the missing `random` and `site_tools` imports in `tools.experimental`; both public functions previously raised `NameError` on any call.
+  * `Site.remove_attribute()` now raises a `SiteException` instead of a `ProteinException`, consistent with the other annotation objects.
+  * `Site.get_track_value()` and `Site.get_track_symbol()` now return `None` (as documented) when the track is missing and `safe=False`, instead of raising a `TypeError` (`None[0]`).
+  * Fixed the error path in `Protein.remove_track()` which referenced a non-existent `self.protein` attribute, raising an `AttributeError` instead of the intended `ProteinException` when removing a Track that belongs to a different protein.
+  * `Track.attribute()` error message now correctly refers to the `Track` rather than a "protein" (copy-paste fix).
+  * `Proteome.__contains__()` now returns `False` (rather than implicitly `None`) when tested against an object that is neither a `str` nor a `Protein`, so `x in proteome` always evaluates to a bool.
+  * `Domain.get_track_values()` / `Domain.get_track_symbols()` now use `is None` instead of `== None` for their internal identity checks.
+  * Fixed the coverage configuration in `setup.cfg`, which omitted `metapredict/_version.py` (a copy-paste from another project) instead of `shephard/_version.py`.
+* **NEW FEATURES**:
+  * Added `Proteome.tracks` (property) and `Proteome.get_tracks_by_name()`, mirroring the existing `Proteome.domains` / `Proteome.sites` and `get_domains_by_type()` / `get_sites_by_type()` accessors (previously there was no way to retrieve `Track` objects at the Proteome level).
+* **PERFORMANCE UPGRADES**:
+  * `Protein.add_domain()` now performs an O(1) uniqueness check against the internal domain dictionary instead of rebuilding and sorting the full domain list on every call (and on every iteration of the `autoname` loop). Loading *D* domains into a protein drops from ~O(D² log D) to ~O(D).
+  * `si_domains.add_domains_from_dictionary()`, `si_sites.add_sites_from_dictionary()` and `si_tracks.add_tracks_from_dictionary()` now iterate the (typically small) annotation dictionary and use O(1) protein look-ups, rather than scanning every protein in the Proteome. Annotating *K* proteins in a *P*-protein Proteome drops from O(P) to O(K) — a large speed-up when annotating a subset of a big Proteome (this also makes `Protein.add_domains()`/`build_domain()` no longer O(P)).
+  * `Proteome[i]` / slicing no longer materialises a list of every Protein on each access; indexing is now lazy (`P[0]` is ~O(1) rather than O(P)).
+* **PACKAGING / INSTALL & CI**:
+  * Added the `shephard/py.typed` PEP 561 marker. It was already declared in `package-data` but the file did not exist; SHEPHARD now correctly advertises itself as a typed package.
+  * Fixed wheel packaging: the bundled data files (`shephard/data/`, including `test_data/` and `look_and_say.dat`) are now included via `package-data`. Previously they were absent from built wheels, so `shephard.get_data()` pointed at missing files for wheel installs.
+  * `pyproject.toml`: removed the unnecessary `numpy` build-system requirement (SHEPHARD is pure Python; `numpy` remains a runtime dependency); bumped `requires-python` to `>=3.8` (3.7 is end-of-life); added trove classifiers, keywords, `[project.urls]`, a second author, a `pytest-cov` test extra, and `[tool.pytest.ini_options] testpaths` so `pytest` discovers the suite from any directory.
+  * `setup.cfg`: removed the deprecated `[aliases] test = pytest` (removed in setuptools ≥ 72).
+  * Removed dead CI configuration for shut-down services (`.travis.yml`, `.lgtm.yml`, `devtools/travis-ci/`) and added a modern GitHub Actions workflow (`.github/workflows/ci.yml`) running the test suite on Python 3.8–3.12 (Ubuntu + macOS) with coverage upload.
+  * Modernized `.readthedocs.yaml` (`ubuntu-22.04`, Python 3.11) and made it install the package itself so autodoc can import `shephard`; clarified `docs/requirements.txt`.
+* **TESTS**:
+  * Added a comprehensive test suite (`test_comprehensive_*` and `test_bugfix_regressions`) covering the user-facing Proteome, Protein, Domain, Site, Track, interface, tools and FASTA/UniProt APIs, plus an explicit regression test for every bug fixed in this release (~285 new tests).
+  * Added a session-scoped `conftest.py` fixture that pins the working directory, making the entire test suite runnable from any directory (~13 legacy `si_*` write tests previously only passed when run from inside the tests directory).
+  * Relocated the stray `shephard/test_domains_sites.py` into `shephard/tests/`.
+* **REFACTOR**:
+  * Converted all `%`-style string formatting in the package to f-strings.
 
 #### Version 0.2.2 (November 2024)
 * Updated and fixed `metapredict_api` and `albatross_api` including adding tests

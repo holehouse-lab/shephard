@@ -33,7 +33,7 @@ def test_proteome_wide_protein_preductions():
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     albatross_api.annotate_proteome_with_dimensions(P)
 
@@ -59,7 +59,7 @@ def test_proteome_wide_protein_preductions():
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     interfaces.si_domains.add_domains_from_file(P, f"{test_data_dir}/TS1_domains_pscore.tsv")
 
     albatross_api.annotate_domains_with_dimensions(P, 'pscore_domain')

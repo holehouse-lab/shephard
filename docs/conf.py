@@ -52,7 +52,17 @@ extensions = [
 ]
 
 #
-autodoc_mock_imports = ['numpy','protfasta']
+# Mock heavy / optional dependencies so autodoc can import every module
+# (the apis sub-package eagerly imports metapredict_api / albatross_api,
+# which pull in metapredict, sparrow and torch - none of which are hard
+# requirements of SHEPHARD and none of which are available on Read the Docs).
+autodoc_mock_imports = [
+    'numpy',
+    'protfasta',
+    'metapredict',
+    'sparrow',
+    'torch',
+]
 
 language = 'en'
 
@@ -79,7 +89,8 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+# (kept as the valid 'en' set above; do not reset to None - newer Sphinx
+# rejects `language = None` and falls back with a warning)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

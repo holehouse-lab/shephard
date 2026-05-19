@@ -287,35 +287,41 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
     
     """
     
-    for protein in proteome:
-        if protein.unique_ID in sites_dictionary:
-            for site in sites_dictionary[protein.unique_ID]:
+    # iterate the (typically smaller) dictionary rather than every protein
+    # in the proteome; protein() is an O(1) dict lookup
+    for unique_ID in sites_dictionary:
 
+        protein = proteome.protein(unique_ID, safe=False)
+        if protein is None:
+            continue
+
+        for site in sites_dictionary[unique_ID]:
+
+            try:
+                position = site['position']
+                site_type = site['site_type']
+                symbol = site['symbol']
+                value = site['value']
                 try:
-                    position = site['position']
-                    site_type = site['site_type']
-                    symbol = site['symbol']
-                    value = site['value']
-                    try:
-                        ad = site['attributes'] 
-                    except:
-                        ad = {}
-                except Exception:
-                    raise InterfaceException('When sites dictionary for key [%s] was unable to extract five distinct parametes. Entry is:\n%s\n'% (protein.unique_ID, site))
+                    ad = site['attributes']
+                except:
+                    ad = {}
+            except Exception:
+                raise InterfaceException(f'When sites dictionary for key [{unique_ID}] was unable to extract five distinct parametes. Entry is:\n{site}\n')
 
-                # assuming we can read all five params try and add the site
-                try:
-                    protein.add_site(position, site_type, symbol, value, attributes = ad)
+            # assuming we can read all five params try and add the site
+            try:
+                protein.add_site(position, site_type, symbol, value, attributes = ad)
 
 
-                except ProteinException as e:
-                    msg='- skipping site %s at %i on %s' %(site_type, position, protein)
-                    if safe:
-                        shephard_exceptions.print_and_raise_error(msg, e)
-                    else:
-                        if verbose:
-                            shephard_exceptions.print_warning(msg)
-                            continue
+            except ProteinException as e:
+                msg=f'- skipping site {site_type} at {int(position)} on {protein}'
+                if safe:
+                    shephard_exceptions.print_and_raise_error(msg, e)
+                else:
+                    if verbose:
+                        shephard_exceptions.print_warning(msg)
+                    continue
   
 
                   

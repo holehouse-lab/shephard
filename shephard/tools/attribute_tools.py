@@ -78,7 +78,7 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     if skip_failed:
                         continue
                     else:
-                        print('Failed to cast attribute: {}'.format(a))
+                        print(f'Failed to cast attribute: {a}')
                         raise e
 
     # if we had attributes keys to explicitly exclude (note the default behavior
@@ -94,6 +94,6 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     if skip_failed:
                         continue
                     else:
-                        print('Failed to cast attribute: {}'.format(a))
+                        print(f'Failed to cast attribute: {a}')
                         raise e
                     

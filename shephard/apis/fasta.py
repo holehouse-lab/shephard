@@ -306,7 +306,7 @@ def shephard_fasta_to_proteome(filename,
 
         # ENSURE EVERY single line is a valid 
         if fasta_split[0] != "SHPRD":
-            raise APIException('Trying to parse a FASTA file that is expected to be SHEPHARD generated but formatting does not comply [on entry %s in file %s]' % (k, filename))
+            raise APIException(f'Trying to parse a FASTA file that is expected to be SHEPHARD generated but formatting does not comply [on entry {k} in file {filename}]')
         
         # extract out 
         try:
@@ -318,7 +318,7 @@ def shephard_fasta_to_proteome(filename,
             attributes_string = tmp.split(SHEPHARD_ATTRIBUTE_SPLITTER)
             name = attributes_string[0]
         except IndexError:
-            raise APIException('Trying to parse a FASTA file that is expected to be SHEPHARD generated but formatting does not comply [on entry %s in file %s]' % (k, filename))
+            raise APIException(f'Trying to parse a FASTA file that is expected to be SHEPHARD generated but formatting does not comply [on entry {k} in file {filename}]')
 
         attributes_dict = {}
 
@@ -326,9 +326,19 @@ def shephard_fasta_to_proteome(filename,
             attributes_string_s = attributes_string[1].split('\t')
 
             for a in attributes_string_s:
-                local_k = a.strip().split('=')[0].strip()
-                local_v = a.strip().split('=')[0].strip()
-                attributes_dict[local_k] = local_v
+
+                # the writer emits a leading tab after SHPRD_ATTRIBUTES=
+                # so skip empty tokens rather than creating a spurious
+                # '' : '' attribute
+                a = a.strip()
+                if a == '':
+                    continue
+
+                # partition on the first '=' so attribute values that
+                # themselves contain '=' are preserved, and the value is
+                # the value (not a duplicate of the key)
+                local_k, _, local_v = a.partition('=')
+                attributes_dict[local_k.strip()] = local_v.strip()
                                         
         # now create an protein dictionary object and populate!
         newdict = {}
@@ -389,7 +399,7 @@ def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
     for protein in proteome:
 
         # this is where we define the FASTA header...
-        fasta_header = "SHPRD|%s|%s" % (protein.unique_ID, protein.name)
+        fasta_header = f"SHPRD|{protein.unique_ID}|{protein.name}"
             
         # this is where we append the FASTA header with attributes    
         if include_attributes_in_header:
@@ -407,7 +417,7 @@ def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
                 i = protein.attribute(k)
                 i_fixed = i.replace('\t', ' ')
                 
-                fasta_header = fasta_header + '\t' + "%s=%s" %(k_fixed, i_fixed)
+                fasta_header = fasta_header + '\t' + f"{k_fixed}={i_fixed}"
             
         outlist.append([fasta_header, protein.sequence])
         

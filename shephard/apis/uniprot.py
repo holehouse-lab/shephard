@@ -46,7 +46,7 @@ def uniprot_accession_from_line(line):
     try:
         return line.split('|')[1].strip()
     except:
-        raise UtilitiesException('Unable to parse string [%s] to identify uniprot ID' %(line))
+        raise UtilitiesException(f'Unable to parse string [{line}] to identify uniprot ID')
 
         
         

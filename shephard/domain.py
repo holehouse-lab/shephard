@@ -63,10 +63,10 @@ class Domain:
         """
         
         if start > end:
-            raise DomainException("Trying to a domain to protein [%s] where start site is bigger than the end site (positions: %i-%i - this does not work!" %(str(protein), start, end))
+            raise DomainException(f"Trying to a domain to protein [{protein!s}] where start site is bigger than the end site (positions: {int(start)}-{int(end)} - this does not work!")
 
         # check the domain falls within the region
-        helper_string="Trying to add domain to protein [%s] at positions [%i-%i] - this falls outside the protein's dimensions [%i-%i]" %(protein, start, end, 1, protein._len)
+        helper_string=f"Trying to add domain to protein [{protein}] at positions [{int(start)}-{int(end)}] - this falls outside the protein's dimensions [{int(1)}-{int(protein._len)}]"
         protein._check_position_is_valid(start, helper_string)
         protein._check_position_is_valid(end, helper_string) 
 
@@ -78,7 +78,7 @@ class Domain:
         self._domain_type = domain_type
         self._domain_name = domain_name
 
-        general_utilities.variable_is_dictionary(attributes, DomainException, 'attributes argument passed to domain %s [%i-%i] in protein %s is not a dictionary' %(self._domain_type, self._start, self._end, self._protein), or_none=True)
+        general_utilities.variable_is_dictionary(attributes, DomainException, f'attributes argument passed to domain {self._domain_type} [{int(self._start)}-{int(self._end)}] in protein {self._protein} is not a dictionary', or_none=True)
 
         if attributes is None:
             self._attributes = {}
@@ -144,7 +144,7 @@ class Domain:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise DomainException('Requesting attribute [%s] from domain [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise DomainException(f'Requesting attribute [{name}] from domain [{self!s}] but this attribute has not been assigned') 
 
             # if safe not passed just return None
             else:
@@ -182,7 +182,7 @@ class Domain:
 
         if safe:
             if name in self._attributes:
-                raise DomainException("Trying to add attribute [%s=%s] to domain [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise DomainException(f"Trying to add attribute [{name}={val}] to domain [{self!s}] but this attribute is already set.\nPossible options are: {self._attributes.keys()!s}")
                 
         self._attributes[name] = val 
 
@@ -442,9 +442,11 @@ class Domain:
         ipos = int(position)
 
         if sequence_utilities.inside_region(self.start, self.end, ipos):
-            return self._protein._sites[int(position)]
+            if ipos not in self._protein._sites:
+                raise DomainException(f'No sites found at position [{int(ipos)}] in domain [{self!s}]')
+            return self._protein._sites[ipos]
         else:
-            raise DomainException('Passed position [%i] is outside of the domain boundaries [%i-%i]' %(ipos, domain.start, domain.end))
+            raise DomainException(f'Passed position [{int(ipos)}] is outside of the domain boundaries [{int(self.start)}-{int(self.end)}]')
 
 
     ## ------------------------------------------------------------------------
@@ -526,7 +528,7 @@ class Domain:
             try:
                 return t.values_region(self._start, self._end)
             except TypeError:
-                if t.values == None:
+                if t.values is None:
                     raise DomainException('Passed associated track has no values - try get_track_symbols')
                 else:
                     raise DomainException('Error with passed associated track')
@@ -569,7 +571,7 @@ class Domain:
             try:
                 return t.symbols_region(self._start, self._end)
             except TypeError:
-                if t.symbols == None:
+                if t.symbols is None:
                     raise DomainException('Passed associated track has no symbols - try get_track_values')
                 else:
                     raise DomainException('Error with passed associated track')
@@ -580,7 +582,7 @@ class Domain:
     ## ------------------------------------------------------------------------
     ##      
     def __repr__(self):
-        return "|Domain: %s (%i-%i, len=%i) in protein %s" % (self._domain_type, self.start, self.end, len(self), self.protein.unique_ID)
+        return f"|Domain: {self._domain_type} ({int(self.start)}-{int(self.end)}, len={len(self)}) in protein {self.protein.unique_ID}"
 
     ## ------------------------------------------------------------------------
     ##      

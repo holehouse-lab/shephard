@@ -377,34 +377,39 @@ def add_tracks_from_dictionary(proteome, tracks_dictionary, mode, safe=True, ver
     # check mode is valid
     general_utilities.valid_keyword('mode', mode, ['symbols','values'])
     
-    # cycle through each protein in the proteome...
-    for protein in proteome:
-        if protein.unique_ID in tracks_dictionary:
-            for track in tracks_dictionary[protein.unique_ID]:
+    # iterate the (typically smaller) dictionary rather than every protein
+    # in the proteome; protein() is an O(1) dict lookup
+    for unique_ID in tracks_dictionary:
 
-                # get the track name and vector info
-                track_name = track['track_name']
-                track_data = track['track_data']
+        protein = proteome.protein(unique_ID, safe=False)
+        if protein is None:
+            continue
 
-                # add the track as either values or symbols depending 
-                # on what was provided
-                try:
-                    if mode == 'values':
-                        protein.add_track(track_name, values=track_data, safe=safe)
-                    else:
-                        protein.add_track(track_name, symbols=track_data, safe=safe)
+        for track in tracks_dictionary[unique_ID]:
 
-                # if an ProteinException was raised when trying to add a track some
-                # anticipated error occurred
-                except (ProteinException, TrackException) as e:      
+            # get the track name and vector info
+            track_name = track['track_name']
+            track_data = track['track_data']
 
-                    msg='- skipping track at %s on %s' %(track_name, protein)
-                    if safe:
-                        shephard_exceptions.print_and_raise_error(msg, e)
-                    else:
-                        if verbose:
-                            shephard_exceptions.print_warning(msg)
-                        continue
+            # add the track as either values or symbols depending
+            # on what was provided
+            try:
+                if mode == 'values':
+                    protein.add_track(track_name, values=track_data, safe=safe)
+                else:
+                    protein.add_track(track_name, symbols=track_data, safe=safe)
+
+            # if an ProteinException was raised when trying to add a track some
+            # anticipated error occurred
+            except (ProteinException, TrackException) as e:
+
+                msg=f'- skipping track at {track_name} on {protein}'
+                if safe:
+                    shephard_exceptions.print_and_raise_error(msg, e)
+                else:
+                    if verbose:
+                        shephard_exceptions.print_warning(msg)
+                    continue
 
 
 
@@ -461,7 +466,7 @@ def write_all_tracks_separate_files(proteome,
     """
 
     for t_name in proteome.unique_track_names:
-        outname = os.path.join(outdirectory, "shephard_track_%s.tsv" %( t_name))            
+        outname = os.path.join(outdirectory, f"shephard_track_{t_name}.tsv")            
         write_tracks(proteome, outname, t_name, value_fmt, delimiter)
 
 
@@ -603,9 +608,9 @@ def write_tracks(proteome, filename, track_name, value_fmt = "%.3f", delimiter='
         a = value_fmt %( 1.5 )
 
         if float(a) != 1.5:
-            raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
+            raise InterfaceException(f'Invalid value_fmt passed [{value_fmt!s}]')
     except TypeError:
-        raise InterfaceException('Invalid value_fmt passed [%s]'%(str(value_fmt)))
+        raise InterfaceException(f'Invalid value_fmt passed [{value_fmt!s}]')
 
     if file_handle is not None:
         fh  = file_handle
@@ -654,17 +659,14 @@ def __build_track_line(t, delimiter, value_fmt):
     unique_ID = t.protein.unique_ID
 
     # build the initial string
-    #out_string = "%s%s%s%s" % (unique_ID, delimiter, t.name, delimiter)
-
-    # build the initial string
     out_string = f"{unique_ID}{delimiter}{t.name}{delimiter}"
 
     if t.values is not None:
         for v in t.values:
-            out_string = out_string + "%s%s" % (value_fmt %(v), delimiter)
+            out_string = out_string + f"{value_fmt % v}{delimiter}"
     else:
         for v in t.symbols:
-            out_string = out_string + "%s%s" % (v, delimiter)
+            out_string = out_string + f"{v}{delimiter}"
 
 
     return out_string + "\n"

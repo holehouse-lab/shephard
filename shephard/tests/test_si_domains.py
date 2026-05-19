@@ -16,8 +16,8 @@ test_data_dir = shephard.get_data('test_data')
 def test_add_domains_file():
 
 
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    domain_file = f'{test_data_dir}/TS1_domains_idr.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     si_domains.add_domains_from_file(P, domain_file)
@@ -43,8 +43,8 @@ def test_add_domains_file():
 def test_add_domain_attribute():
 
 
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    domain_file = f'{test_data_dir}/TS1_domains_idr.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     si_domains.add_domains_from_file(P, domain_file)
@@ -81,8 +81,8 @@ def test_add_domain_attribute():
 def test_write_domain_with_attributes():
 
     # this setup was also tested in test_add_domain_attribute
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    domain_file = f'{test_data_dir}/TS1_domains_idr.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     si_domains.add_domains_from_file(P, domain_file)
@@ -95,7 +95,7 @@ def test_write_domain_with_attributes():
 def test_write_domains():
 
     
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     n_domains = 3
 
@@ -128,7 +128,7 @@ def test_write_domains():
     si_domains.write_domains(TS1, 'output_test/test_domains.tsv')
 
 
-    TS2 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS2 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     si_domains.add_domains_from_file(TS2, 'output_test/test_domains.tsv')
 
     # check domain positions can be read in correctly
@@ -147,7 +147,7 @@ def test_write_domains():
 def test_write_domains_with_domain_types():
 
     
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     n_domains = 2
 
@@ -183,7 +183,7 @@ def test_write_domains_with_domain_types():
 
     si_domains.write_domains(TS1, 'output_test/test_domains_types.tsv', domain_types=['test_domain'])
 
-    TS2 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS2 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     si_domains.add_domains_from_file(TS2, 'output_test/test_domains_types.tsv')
 
     assert len(TS2.domains) == n_test_domains
