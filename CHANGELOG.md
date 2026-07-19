@@ -9,7 +9,7 @@ SHEPHARD uses [semantic versioning](https://semver.org/) loosely: patch releases
 bug fixes, minor releases add functionality, and any change that breaks backwards
 compatibility is called out explicitly at the top of the relevant entry.
 
-#### Version 0.2.3 (May 2026)
+#### Version 0.2.3 (July 2026)
 * **BUG FIXES**:
   * Fixed a typo in `proteome.py` (`s.position. s.site_type`) that raised an `AttributeError` when copying any `Protein` containing sites into a new `Proteome` (e.g. `Proteome(list_of_Protein_objects)` or `add_proteins()` with `Protein` objects).
   * Fixed a broken type check in `track.py` (`elif(symbols, str):`, an always-true tuple) so symbols tracks are validated correctly and the invalid-input error path is reachable.
