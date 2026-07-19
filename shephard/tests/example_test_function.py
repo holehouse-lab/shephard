@@ -16,8 +16,8 @@ def test_first_test():
     test_data_dir = shephard.get_data('test_data')
 
     # define filenames - note we use the names we defined above
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    domain_file = f'{test_data_dir}/TS1_domains_idr.tsv'
 
     # create a new Proteome object and annotate with the domains
     # in the domain_file

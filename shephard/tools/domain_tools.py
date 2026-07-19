@@ -46,7 +46,7 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
 
     if check_origin:
         if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
-            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+            raise exceptions.DomainException(f'Examining overlap of {domain_1!s} and {domain_2!s} but these are from different proteins')
             
     return domain_overlap_by_position(domain_1.start, domain_1.end, domain_2.start, domain_2.end)
 
@@ -81,7 +81,7 @@ def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
 
     if check_origin:
         if domain_1.protein.unique_ID != domain_2.protein.unique_ID:
-            raise exceptions.DomainException('Examining overlap of %s and %s but these are from different proteins' % (str(domain_1), str(domain_2)))
+            raise exceptions.DomainException(f'Examining overlap of {domain_1!s} and {domain_2!s} but these are from different proteins')
 
 
     if len(domain_1) < len(domain_2):
@@ -407,7 +407,7 @@ def build_domains_from_track_values(proteome,
         # we hit a 500-protein milestone print status if verbose is true
         c = c + 1
         if verbose and c % 500 == 0:
-            print('On %i of %i' %(c, len(proteome)))
+            print(f'On {int(c)} of {len(proteome)}')
         
         # safe = false so will return None if no track of that name
         # found, and if so we continue to next protein
@@ -503,17 +503,25 @@ def build_domains_from_track_values(proteome,
         if extend_ends:
                 
             # note we don't check length of extend ends initially, so if they're too big for the sequence
-            # dynamicaly resize them so they're 1/2 of the sequence length
+            # dynamicaly resize them so they're 1/2 of the sequence length. Note integer division here
+            # because this value is used as an index
             if extend_ends + 1 >= len(B):
-                extend_ends_val = len(B)/2
+                extend_ends_val = len(B)//2
             else:
                 extend_ends_val = extend_ends
-                
-            if B[extend_ends_val + 1] == 1:
-                B[0:extend_ends_val] = [1]*len(B[0:extend_ends_val])
 
-            if B[:-(extend_ends_val + 1)] == 1:
-                B[-extend_ends_val:] = [1]*len(B[0:extend_ends_val])
+            # if the resizing above (or a passed value of 0) leaves us with nothing to extend
+            # there is nothing to do here
+            if extend_ends_val > 0:
+
+                # if the residue immediately inside the N-terminal window is assigned, extend the
+                # assignment out to the N-terminus
+                if B[extend_ends_val] == 1:
+                    B[0:extend_ends_val] = [1]*extend_ends_val
+
+                # ... and symmetrically at the C-terminus
+                if B[-(extend_ends_val + 1)] == 1:
+                    B[-extend_ends_val:] = [1]*extend_ends_val
             
         ## Part 4 - extract domain boundaires
         local_domains=[]

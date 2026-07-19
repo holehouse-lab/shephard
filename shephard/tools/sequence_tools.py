@@ -44,8 +44,11 @@ def build_mega_string(object_list, return_as_list=False):
     """
 
 
+    if return_as_list:
+        return [obj.sequence for obj in object_list]
+
     megastring = ''
-    for obj in object_list:  
+    for obj in object_list:
         megastring = megastring + obj.sequence
 
     return megastring
@@ -105,4 +108,4 @@ def find_string_positions(query, target, protein_indexing=True):
     else:
         offset = 0
 
-    return [s.start() + offset for s in re.finditer('(?=%s)' % (query), target)]
+    return [s.start() + offset for s in re.finditer(f'(?={query})', target)]

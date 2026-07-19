@@ -72,7 +72,7 @@ def test_domain_add(TS1_domains2_sites_tracks):
     assert local_domain.domain_type == domain_type
 
     # assumes our domain name construction doesn't change. 
-    assert local_domain.domain_name == "%s_%i_%i" % (domain_type, local_domain.start, local_domain.end)
+    assert local_domain.domain_name == f"{domain_type}_{int(local_domain.start)}_{int(local_domain.end)}"
 
 
     # note this should (A) work and (B) discard the N-terminal context
@@ -90,7 +90,7 @@ def test_domain_add(TS1_domains2_sites_tracks):
     assert local_domain.end == 521
 
     # assumes our domain name construction doesn't change. 
-    assert local_domain.domain_name == "%s_%i_%i" % (domain_type, local_domain.start, local_domain.end)
+    assert local_domain.domain_name == f"{domain_type}_{int(local_domain.start)}_{int(local_domain.end)}"
 
         
     # note this should (A) work and (B) discard the C-terminal context
@@ -162,8 +162,8 @@ def test_domain_overlap(TS1_domains2):
     """
 
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
-    domain_file = '%s/%s' % (test_data_dir, 'TS1_domains_idr.tsv')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
+    domain_file = f'{test_data_dir}/TS1_domains_idr.tsv'
 
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_domains.add_domains_from_file(P, domain_file)

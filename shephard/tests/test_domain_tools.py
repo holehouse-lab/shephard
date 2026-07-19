@@ -23,7 +23,7 @@ def test_domain_overlap():
 
     # read in a proteome
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
 
     # add a synthetic protein and extract it
@@ -80,7 +80,7 @@ def test_domain_overlap_fraction():
 
     
     test_data_dir = shephard.get_data('test_data')
-    fasta_file = '%s/%s' % (test_data_dir, 'testset_1.fasta')
+    fasta_file = f'{test_data_dir}/testset_1.fasta'
     P = uniprot.uniprot_fasta_to_proteome(fasta_file)
     
 

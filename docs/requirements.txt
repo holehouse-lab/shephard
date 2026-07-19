@@ -1,7 +1,11 @@
-# Defining the exact version will make sure things don't break
+# Documentation build requirements (Read the Docs).
+# Left unpinned intentionally so docs build against current, compatible
+# releases; pin a specific version here only if a build actually breaks.
 sphinx
 sphinx_rtd_theme
 readthedocs-sphinx-search
+
+# runtime deps needed for autodoc to import shephard
 numpy
 protfasta
 versioningit

@@ -3,11 +3,30 @@ SHEPHARD files
 
 SHEPHARD defines a set of well-defined files for reading in or writing out data into SHEPHARD objects.
 
+Design rationale
+----------------
+
+SHEPHARD deliberately uses a simple, consistent, tab-separated value (TSV) schema rather than an existing structured bioinformatics format (BED, GFF) or a serialization format (JSON). Compiled or highly-structured formats have real advantages from an information-theory, metadata, or extensibility standpoint, but they share a practical weakness: they are often uninterpretable to scientists without the requisite technical expertise, and overloading a format such as BED with protein-centric data it was not designed to hold introduces its own fragility.
+
+A core goal for SHEPHARD was that the files it reads and writes can be opened by "clicking on an icon" using software most users already have (e.g. Microsoft Excel or Google Sheets), and generated just as easily from existing bioinformatic scripts. This means that after a complex analysis pipeline, input and output data can be shared as plain supplementary information that almost anyone can open and understand, and that computational and non-computational collaborators can consistently work with the *same* data. Storing one annotation per line with fixed column definitions keeps the format both human-readable and trivially machine-parsable.
+
 The interfaces package is a sub-package within SHEPHARD that deals with reading in **SHEPHARD** formatted input files. These are files with a specific format that were developed for SHEPHARD. The interfaces mean that, as long as you can write your data in a format that complies with a track, site, domain, or protein_attribute file, you can be sure it will be correctly read into SHEPHARD and is then accessible within the larger framework. 
 
 Each line in an input file corresponds to a single piece of information that maps to a specific protein, but multiple lines can map to the same protein. 
 
-The interfaces modules (:code:`si_sites`, :code:`si_domains`, :code:`si_tracks`, :code:`si_protein_attributes` ) contain two user-facing functions; one that lets the user read in data from a file, and another than lets a user read in data from an input dictionary. This means that sites, domains, tracks and attributes can be loaded from disk or in real-time as other pipelines are run.
+The interfaces modules (:code:`si_sites`, :code:`si_domains`, :code:`si_tracks`, :code:`si_protein_attributes`, :code:`si_proteins`) contain user-facing functions that let you read data in from a file *or* from an input dictionary, and write data back out to a file. This means that sites, domains, tracks and attributes can be loaded from disk or in real-time as other pipelines are run.
+
+Parsing behavior
+----------------
+
+The file readers are intentionally robust:
+
+* Lines whose first non-whitespace character is ``#`` are treated as comments and skipped, so files can be self-documenting.
+* Blank / whitespace-only lines are ignored.
+* Any single-character (or multi-character) field delimiter can be supplied via the ``delimiter`` argument; the default is a tab. The colon (``:``) is reserved for splitting attribute ``key:value`` pairs and therefore cannot be used as the field delimiter.
+* By default (``skip_bad=True``) malformed lines are skipped with a warning rather than aborting the whole read; up to the first handful of errors are reported so that a wholly-incorrect file does not produce gigabytes of error text.
+* The ``safe`` flag controls what happens for *valid* lines that cannot be applied (for example a Site whose position falls outside the protein, or a Track whose length does not match the sequence): with ``safe=True`` an exception is raised, with ``safe=False`` the offending annotation is skipped (and reported when ``verbose=True``).
+* When reading into an existing Proteome, only lines whose ``unique_ID`` matches a protein already in the Proteome are parsed, which makes annotating a subset of a large Proteome efficient.
 
 
 Sites files

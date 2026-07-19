@@ -1,5 +1,8 @@
 include LICENSE
 include MANIFEST.in
+include CHANGELOG.md
+include CITATION.cff
 
 graft shephard
+
 global-exclude *.py[cod] __pycache__ *.so

@@ -18,9 +18,9 @@ test_data_dir = shephard.get_data('test_data')
 
 
 def test_get_site_by_position():
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
-    si_sites.add_sites_from_file(TS1, '%s/%s' % (test_data_dir, 'ts1_bonus_sites.tsv'))
+    si_sites.add_sites_from_file(TS1, f'{test_data_dir}/ts1_bonus_sites.tsv')
 
     pos = TS1.protein('O00470').get_sites_by_position(72)    
     assert len(pos[72]) == 1
@@ -60,9 +60,9 @@ def test_get_site_by_position():
 
 
 def test_get_site_by_range():
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
-    si_sites.add_sites_from_file(TS1, '%s/%s' % (test_data_dir, 'ts1_bonus_sites.tsv'))
+    si_sites.add_sites_from_file(TS1, f'{test_data_dir}/ts1_bonus_sites.tsv')
 
     pos = TS1.protein('O00470').get_sites_by_range(55,79)    
     assert len(pos[72]) == 1
@@ -100,9 +100,9 @@ def test_get_site_by_range():
 
 
 def test_get_site_by_type():
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
-    si_sites.add_sites_from_file(TS1, '%s/%s' % (test_data_dir, 'ts1_bonus_sites.tsv'))
+    si_sites.add_sites_from_file(TS1, f'{test_data_dir}/ts1_bonus_sites.tsv')
 
     
     pos = TS1.protein('O00470').get_sites_by_type('Phosphoserine')
@@ -133,9 +133,9 @@ def test_get_site_by_type():
 
 
 def test_get_site_by_type_and_range():
-    TS1 = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir,'testset_1.fasta'))
+    TS1 = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
-    si_sites.add_sites_from_file(TS1, '%s/%s' % (test_data_dir, 'ts1_bonus_sites.tsv'))
+    si_sites.add_sites_from_file(TS1, f'{test_data_dir}/ts1_bonus_sites.tsv')
 
     
     pos = TS1.protein('O00470').get_sites_by_type_and_range('Phosphoserine', 190, 200)

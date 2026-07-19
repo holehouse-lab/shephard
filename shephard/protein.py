@@ -89,7 +89,7 @@ class Protein:
         self._len = len(seq) # protein length 
         self._true_len = len(self._sequence) # length of string the protein is in
 
-        general_utilities.variable_is_dictionary(attributes, ProteinException, 'attributes argument passed to protein %s is not a dictionary' %(self._name), or_none=True)
+        general_utilities.variable_is_dictionary(attributes, ProteinException, f'attributes argument passed to protein {self._name} is not a dictionary', or_none=True)
 
         if attributes is None:
             self._attributes  = {}
@@ -292,7 +292,7 @@ class Protein:
         """
         
         # sanity check position input
-        self._check_position_is_valid(position, helper_string='Sequence position %i is outside of protein limits (1-%i)'%(position, len(self)))
+        self._check_position_is_valid(position, helper_string=f'Sequence position {int(position)} is outside of protein limits (1-{len(self)})')
         
         # compute start/end of context according to the offset
         (p1, p2) = sequence_utilities.get_bounding_sites(position, offset, self._len)
@@ -378,16 +378,14 @@ class Protein:
             then the function returns a string.
         """
 
-        if copy is True:
-            # create a copy, such that within the protein the underlying sequence is
-            # unaltered
-            s = self._sequence[:]            
-        else:
-            # create a view, which means the protein sequence is altered
-            s = self._sequence
+        # operate on the user-facing sequence; this explicitly excludes the
+        # leading '-' sentinel that is stored internally for 1-based indexing.
+        # (Including the sentinel previously made the length-change check
+        # always fire, and meant copy=False never wrote anything back.)
+        s = self.sequence
 
-        old_len=len(s)
-        
+        old_len = len(s)
+
         # systematically replace common  'non-canonical' one-letter codes
         # with acceptable codes. Code explanations from
         # https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp
@@ -405,6 +403,11 @@ class Protein:
         if copy is True:
             return s
         else:
+            # alter the underlying sequence, preserving the leading sentinel
+            # and keeping the cached length bookkeeping consistent
+            self._sequence = "-" + s
+            self._len = len(s)
+            self._true_len = len(self._sequence)
             return None
 
 
@@ -441,7 +444,7 @@ class Protein:
             if helper_string:                
                 raise ProteinException(helper_string)
             else:
-                raise ProteinException('Position %i falls outside of sequence'%(position))
+                raise ProteinException(f'Position {int(position)} falls outside of sequence')
 
 
     
@@ -511,7 +514,7 @@ class Protein:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise ProteinException('Requesting attribute [%s] from protein [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise ProteinException(f'Requesting attribute [{name}] from protein [{self!s}] but this attribute has not been assigned') 
 
             # if safe not passed just return None
             else:
@@ -551,7 +554,7 @@ class Protein:
 
         if safe:
             if name in self._attributes:
-                raise ProteinException("Trying to add attribute [%s=%s] to protein [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise ProteinException(f"Trying to add attribute [{name}={val}] to protein [{self!s}] but this attribute is already set.\nPossible options are: {self._attributes.keys()!s}")
                 
         self._attributes[name] = val
 
@@ -677,7 +680,7 @@ class Protein:
             return self._tracks[name]
 
         elif safe:
-            raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, self.unique_ID, str(self.track_names)))
+            raise exceptions.ProteinException(f'No track named [{name}] in protein {self.unique_ID}\n\nAvailable options are: {self.track_names!s}')
 
 
 
@@ -814,7 +817,7 @@ class Protein:
                 _end = int(end)
 
         except ValueError:
-            raise exceptions.ProteinException('When selecting sub-region for track values could not convert one of the start/end to an int: start=%s, end=%s'% (start,end))
+            raise exceptions.ProteinException(f'When selecting sub-region for track values could not convert one of the start/end to an int: start={start}, end={end}')
             
 
         return (_start, _end)
@@ -861,7 +864,7 @@ class Protein:
             # note - technically as the code is written now we don't need this, (the safety is dealt in get_track())
             # but I'm including it for best practice to avoid implicit dependencies in the code
             if safe:
-                raise exceptions.ProteinException('No track named [%s] in protein %s\n\nAvailable options are: %s' %(name, str(self), self.track_names))
+                raise exceptions.ProteinException(f'No track named [{name}] in protein {self!s}\n\nAvailable options are: {self.track_names}')
             else:
                 return None
 
@@ -878,7 +881,7 @@ class Protein:
 
         # we only get here if v is None and safe is True
         else:
-            raise exceptions.ProteinException('Requested track values for track [%s] in protein [%s] but no values available' %(t.name, self))
+            raise exceptions.ProteinException(f'Requested track values for track [{t.name}] in protein [{self}] but no values available')
         
 
 
@@ -927,7 +930,7 @@ class Protein:
 
         if name in self.track_names:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
+                raise exceptions.ProteinException(f'Trying to add Track [{name}] in protein [{self.name}] but Track already exists')
                 
         self._tracks[name] = Track(name, self, values, symbols)
 
@@ -1066,7 +1069,7 @@ class Protein:
         # if this will overwrite an existing track and safe is on...
         if name in self.track_names:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
+                raise exceptions.ProteinException(f'Trying to add Track [{name}] in protein [{self.name}] but Track already exists')
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
@@ -1209,7 +1212,7 @@ class Protein:
         # if this will overwrite an existing track and safe is on...
         if name in self.track_names:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
+                raise exceptions.ProteinException(f'Trying to add Track [{name}] in protein [{self.name}] but Track already exists')
 
         # build the new track with the trackfunction, correctly handling between 0 and n additional
         # arguments to be passed to the trackfunction
@@ -1264,7 +1267,7 @@ class Protein:
 
         if name in self.track_names:
             if safe is True:
-                raise exceptions.ProteinException('Trying to add Track [%s] in protein [%s] but Track already exists' % (name, self.name))
+                raise exceptions.ProteinException(f'Trying to add Track [{name}] in protein [{self.name}] but Track already exists')
 
         track_out = track_definition_function(input_data)
 
@@ -1316,7 +1319,7 @@ class Protein:
         # failsafe to ensure we can only delete tracks that truly come from the protein we're passing
         # into
         if track_object.protein.unique_ID != self.unique_ID:
-            raise ProteinException(f'Passed Track [{track_object}] not found in this protein [{self.protein}]')
+            raise ProteinException(f'Passed Track [{track_object}] not found in this protein [{self}]')
                     
         # if the passed track object name was found in this protein
         if track_object.name in self._tracks:
@@ -1417,7 +1420,7 @@ class Protein:
         if name in self._domains:
             return self._domains[name]
         elif safe:
-            raise exceptions.ProteinException('No domains named [%s] in protein %s\n\nAvailable domains are: %s' % (name, self.unique_ID, str(self.domain_names)))
+            raise exceptions.ProteinException(f'No domains named [{name}] in protein {self.unique_ID}\n\nAvailable domains are: {self.domain_names!s}')
       
       
     ## ------------------------------------------------------------------------
@@ -1539,10 +1542,12 @@ class Protein:
         domain_type = str(domain_type)
 
         # append start and end position to name. 
-        full_name = "%s_%i_%i"%(domain_type, start, end)    
+        full_name = f"{domain_type}_{int(start)}_{int(end)}"    
         
-        # if this domain name was already found...
-        if full_name in self.domain_names:
+        # if this domain name was already found... (note we test against the
+        # _domains dict, which is keyed by full_name, so this is an O(1)
+        # lookup rather than rebuilding/sorting the domain list every call)
+        if full_name in self._domains:
 
             # if we're in autoname mode create a new unique name. This acts to add an incrementer to the
             # end and cycles through until a unique domaintype_star_end_incrementer name is found, where 
@@ -1554,13 +1559,13 @@ class Protein:
                 while found is False:
 
                     increment = increment + 1
-                    newname = "%s_%i_%i_%i"%(domain_type, start, end, increment)    
+                    newname = f"{domain_type}_{int(start)}_{int(end)}_{int(increment)}"
 
-                    if newname not in self.domain_names:
-                        found = True                    
+                    if newname not in self._domains:
+                        found = True
                 full_name = newname
             elif safe:
-                raise exceptions.ProteinException('Domain [%s] already found in proteins %s' % (full_name, self.name))
+                raise exceptions.ProteinException(f'Domain [{full_name}] already found in proteins {self.name}')
             
         self._domains[full_name] = Domain(start, end, self, domain_type, full_name, attributes=attributes)
 
@@ -1805,8 +1810,8 @@ class Protein:
         general_utilities.valid_keyword('mode', mode, ['internal','overlap-strict','overlap'])
 
         # check the start and end values are valid
-        self._check_position_is_valid(start,  helper_string='Sequence region cannot start below 1 [%i]'%(start))
-        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+        self._check_position_is_valid(start,  helper_string=f'Sequence region cannot start below 1 [{int(start)}]')
+        self._check_position_is_valid(end, f'Sequence region cannot end after the sequence length ({int(self._len)}) [{int(end)}]')
 
         # check the wiggle passed is valid
         if wiggle < 0:
@@ -1986,7 +1991,7 @@ class Protein:
 
 
         if safe:
-            raise exceptions.ProteinException('No sites at position %i in protein %s\n\nAvailable sites are: %s' % (position, self.unique_ID, str(self.site_positions)))
+            raise exceptions.ProteinException(f'No sites at position {int(position)} in protein {self.unique_ID}\n\nAvailable sites are: {self.site_positions!s}')
         else:
             return []
             
@@ -2040,7 +2045,7 @@ class Protein:
         
         # recal inside_regions is inclusive
         if not sequence_utilities.inside_region(1, self._len, position):
-            raise ProteinException("Trying to add site to protein [%s] at positions [%i] - this falls outside the protein's dimensions [%i-%i]" %(str(self), position, 1, self._len))
+            raise ProteinException(f"Trying to add site to protein [{self!s}] at positions [{int(position)}] - this falls outside the protein's dimensions [{int(1)}-{int(self._len)}]")
 
         # cast the position to an int and if there are no sites at that position create an empty list there
         position = int(position)        
@@ -2192,8 +2197,8 @@ class Protein:
        
         return_dict = {}
 
-        self._check_position_is_valid(start,  helper_string='Sequence region cannot start below 1 [%i]'%(start))
-        self._check_position_is_valid(end, 'Sequence region cannot end after the sequence length (%i) [%i]'%(self._len, end))
+        self._check_position_is_valid(start,  helper_string=f'Sequence region cannot start below 1 [{int(start)}]')
+        self._check_position_is_valid(end, f'Sequence region cannot end after the sequence length ({int(self._len)}) [{int(end)}]')
 
         # check the wiggle passed is valid
         if wiggle < 0:
@@ -2393,7 +2398,7 @@ class Protein:
     ## ------------------------------------------------------------------------
     ##
     def __repr__(self):             
-        return "| Protein: %s - L=%i, #t=%i, #d=%i, #s=%i, #a=%i |" %(self.unique_ID, self._len, len(self.tracks), len(self.domains), len(self.sites), len(self.attributes))
+        return f"| Protein: {self.unique_ID} - L={int(self._len)}, #t={len(self.tracks)}, #d={len(self.domains)}, #s={len(self.sites)}, #a={len(self.attributes)} |"
         
 
 

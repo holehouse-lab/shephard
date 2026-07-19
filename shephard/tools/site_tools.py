@@ -9,6 +9,7 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from shephard import general_utilities
+from shephard.exceptions import ShephardException
 import numpy as np
 
 def build_site_density_vector(protein, site_types=None, window_size=30, append_leading_lagging=True):
@@ -78,15 +79,25 @@ def build_site_density_vector(protein, site_types=None, window_size=30, append_l
                 if s.site_type in site_types:
                     all_res[position - 1] = 1
                             
+    # a single window must fit inside the sequence, otherwise the density
+    # vector would be empty and downstream indexing would fail
+    if window_size > nres:
+        raise ShephardException(f'window_size ({int(window_size)}) cannot be larger than the protein length ({int(nres)})')
+
     # finally we're going to calculate the density of sites from this vector
     # note we're treating site presence as a binary phenomenon - ie a residue
     # has a site or does not
     density_vector = []
     for pos in range(0, (nres - window_size)+1):
 
-        local_density = np.sum(all_res[pos:pos+window_size])/window_size        
+        local_density = np.sum(all_res[pos:pos+window_size])/window_size
 
         density_vector.append(local_density)
+
+    # if leading/lagging padding was not requested, return the raw
+    # (shorter) density vector as documented
+    if append_leading_lagging is False:
+        return density_vector
 
     # having built a density vector that is nres-window_size+1 in length, we now need to extend the N and C
     # termini such that the len(denisty_vector) = len(protein)

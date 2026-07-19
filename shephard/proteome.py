@@ -242,7 +242,7 @@ class Proteome:
             return self._records[unique_ID_str]
         except KeyError:
             if safe:
-                raise ProteomeException("unique_ID '%s' not found in proteome" % (unique_ID))
+                raise ProteomeException(f"unique_ID '{unique_ID}' not found in proteome")
             else:
                 return None
 
@@ -299,7 +299,7 @@ class Proteome:
 
         if unique_ID_str in self._records:
             if force_overwrite is False:
-                raise ProteomeException('Non-unique unitque_ID passed [%s]' % (unique_ID_str))
+                raise ProteomeException(f'Non-unique unitque_ID passed [{unique_ID_str}]')
 
         self._records[unique_ID_str] = Protein(sequence, name, self, unique_ID_str, attributes)
 
@@ -362,8 +362,12 @@ class Proteome:
 
         """
 
+        # nothing to do if an empty list is passed
+        if len(input_list) == 0:
+            return
+
         # cycles over every element in the input list and builds a new
-        # list where each 
+        # list where each
         type_list = list(set([type(i) for i in input_list]))
 
         # checks if only one type of object is found here
@@ -436,11 +440,11 @@ class Proteome:
                 # try and provide the user with as much info as possible to diagnose the problem
             
                 diagnosis_string = self.__build_diagnosis_string_proteome_construction(entry)
-                raise ProteomeException('%s'%(diagnosis_string))
+                raise ProteomeException(f'{diagnosis_string}')
             
             if unique_ID in self._records:
                 if force_overwrite is False:
-                    raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+                    raise ProteomeException(f'Non-unique unique_ID passed [{unique_ID}]')
 
             # add in a new protein
             self._records[unique_ID] = Protein(sequence, name, self, unique_ID, attributes)
@@ -484,7 +488,7 @@ class Proteome:
             unique_ID = entry.unique_ID
             if unique_ID in self._records:
                 if force_overwrite is False:
-                    raise ProteomeException('Non-unique unique_ID passed [%s]' % (unique_ID))
+                    raise ProteomeException(f'Non-unique unique_ID passed [{unique_ID}]')
 
 
             ##
@@ -508,17 +512,20 @@ class Proteome:
 
             # update sites
             for s in entry.sites:
-                new_protein.add_site(s.position. s.site_type, s.symbol, s.value, copy.deepcopy(s._attributes))
+                new_protein.add_site(s.position, s.site_type, s.symbol, s.value, copy.deepcopy(s._attributes))
 
             # update tracks
             for t in entry.tracks:
-                vals = t.values
 
-                # if vals present then we're creating a values track. Note we can get away with
-                # a shallow copy because we know these tracks will only have ints or chars in their
+                # use the track_type rather than the truthiness of the
+                # values list so that an all-zero / empty values track is
+                # still correctly copied as a values track
+                #
+                # Note we can get away with a shallow copy because we know
+                # these tracks will only have ints or chars in their
                 # elements, which are appropriately copied by a shallow copy
-                if vals:                    
-                    new_protein.add_track(t.name, vals.copy(), None)
+                if t.track_type == 'values':
+                    new_protein.add_track(t.name, t.values.copy(), None)
                 else:
                     new_protein.add_track(t.name, None, t.symbols.copy())
 
@@ -561,7 +568,7 @@ class Proteome:
             del self._records[unique_ID_str]
         else:
             if safe:
-                raise ProteomeException('Passed unique_ID [%s] not found in this proteome' % (unique_ID_str))
+                raise ProteomeException(f'Passed unique_ID [{unique_ID_str}] not found in this proteome')
             
 
 
@@ -659,7 +666,7 @@ class Proteome:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise ProteomeException('Requesting attribute [%s] from Proteome [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise ProteomeException(f'Requesting attribute [{name}] from Proteome [{self!s}] but this attribute has not been assigned') 
 
             # if safe not passed just return None
             else:
@@ -699,7 +706,7 @@ class Proteome:
 
         if safe:
             if name in self._attributes:
-                raise ProteomeException("Trying to add attribute [%s=%s] to Proteome [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise ProteomeException(f"Trying to add attribute [{name}={val}] to Proteome [{self!s}] but this attribute is already set.\nPossible options are: {self._attributes.keys()!s}")
                 
         self._attributes[name] = val        
         
@@ -929,7 +936,62 @@ class Proteome:
     ###################################
 
     ## ------------------------------------------------------------------------
-    ##                
+    ##
+    @property
+    def tracks(self):
+        """
+        Function that returns a list of all Track objects associated with
+        the Proteome.
+
+        This function is useful if you wish to indiscriminately ask questions
+        of tracks without considering the proteins they come from. However,
+        each Track has a Protein object associated with it (via the .protein
+        operator), so one can always map a Track back to a Protein.
+
+        Returns
+        --------------
+        list of Tracks
+             A list of all the Tracks from every protein in the Proteome
+
+        """
+
+        all_tracks = []
+        for prot in self:
+            all_tracks.extend(prot.tracks)
+
+        return all_tracks
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def get_tracks_by_name(self, track_name):
+        """
+        Function that returns a list of tracks from all proteins that match
+        a specific track name.
+
+        Parameters
+        ------------
+        track_name : string
+            String associated with the track name that you want to search for.
+
+        Returns
+        -----------
+        list
+            Returns a list of Track objects that match the requested name,
+            taken from across every protein in the Proteome.
+
+        """
+        return_list = []
+        for p in self:
+            t = p.track(track_name, safe=False)
+            if t is not None:
+                return_list.append(t)
+
+        return return_list
+
+
+    ## ------------------------------------------------------------------------
+    ##
     @property
     def unique_track_names(self):
         """
@@ -1017,7 +1079,7 @@ class Proteome:
         # a string we get a nice/informative representation, rather than the
         # id of the object
 
-        return "[Proteome]: Sequence dataset with %i protein records" %(len(self))
+        return f"[Proteome]: Sequence dataset with {len(self)} protein records"
 
 
 
@@ -1069,6 +1131,10 @@ class Proteome:
             else:
                 return False
 
+        # any other type cannot be contained in a Proteome
+        else:
+            return False
+
     ## ------------------------------------------------------------------------
     ##                        
     def __getitem__(self, key):
@@ -1083,14 +1149,19 @@ class Proteome:
         """
 
 
+        # islice consumes the records iterator lazily, so an int index only
+        # walks up to `key` rather than materialising every Protein on each
+        # access (previously O(P) per index -> O(P^2) when iterated)
         if isinstance(key, int) and key >= 0:
-            return list(islice([self._records[i] for i in self._records], key, key+1))[0]
+            try:
+                return next(islice(self._records.values(), key, key + 1))
+            except StopIteration:
+                raise IndexError(f"Proteome index {key} out of range")
 
         elif isinstance(key, slice):
-            return list(islice([self._records[i] for i in self._records], key.start, key.stop, key.step))
+            return list(islice(self._records.values(), key.start, key.stop, key.step))
         else:
-            raise KeyError("Key must be non-negative integer or slice, not {}"
-                           .format(key))
+            raise KeyError(f"Key must be non-negative integer or slice, not {key}")
 
 
     ## ------------------------------------------------------------------------
@@ -1331,7 +1402,7 @@ class Proteome:
         except Exception:
             s = 'FAILED'
 
-        ds = ds + "sequence: %s\n" %(s)
+        ds = ds + f"sequence: {s}\n"
 
 
         # check the name
@@ -1340,7 +1411,7 @@ class Proteome:
         except Exception:
             s = 'FAILED'
 
-        ds = ds +"name: %s\n" %(s)
+        ds = ds +f"name: {s}\n"
 
 
         # check the unique_ID
@@ -1349,7 +1420,7 @@ class Proteome:
         except Exception:
             s = 'FAILED'
 
-        ds = ds +"unique_ID: %s\n" %(s)
+        ds = ds +f"unique_ID: {s}\n"
 
 
         # 
@@ -1358,7 +1429,7 @@ class Proteome:
         except Exception:
             s = 'FAILED'
 
-        ds = ds +"attributes: %s\n" %(s)
+        ds = ds +f"attributes: {s}\n"
 
         return ds
 

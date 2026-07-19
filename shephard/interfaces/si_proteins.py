@@ -46,7 +46,10 @@ class _ProteinsInterface:
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
-            printed (regardless of verbose flag). 
+            printed (regardless of verbose flag). Note also that no more
+            than MAX_BAD_COUNT (10) bad lines will be skipped - if more
+            than this many bad lines are found an InterfaceException is
+            raised even when skip_bad is True.
 
 
         """
@@ -79,7 +82,14 @@ class _ProteinsInterface:
                 
                 name = sline[1].strip()
                 sequence = sline[2].strip()
-                attributes = {}                
+
+                # if some key/value pairs were included then parse these out one at a
+                # time. Note this sits INSIDE the try/except so a malformed attribute
+                # is covered by skip_bad in the same way as any other parsing error
+                attributes = {}
+                if len(sline) > 3:
+                    attributes = interface_tools.parse_key_value_pairs(sline[3:], filename, linecount, line)
+
             except Exception as e:
                 msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
 
@@ -91,15 +101,8 @@ class _ProteinsInterface:
                 else:
                     raise InterfaceException(msg)
 
-            # if some key/value pairs were included then parse these out one at a time
-            if len(sline) > 3:
-                attributes = interface_tools.parse_key_value_pairs(sline[3:], filename, linecount, line)
-            else:
-                # skip over empty entries
-                pass
-  
             if unique_ID in ID2protein:
-                raise InterfaceException("Duplicate protein found in the file %s (offending UID=%s). This cannot be skipped" % (filename, unique_ID))            
+                raise InterfaceException(f"Duplicate protein found in the file {filename} (offending UID={unique_ID}). This cannot be skipped")            
             else:
                 ID2protein[unique_ID] = {'name':name, 'sequence':sequence, 'attributes':attributes}
 
@@ -166,7 +169,10 @@ def add_proteins_from_file(proteome, filename, delimiter='\t', return_dictionary
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
-        (regardless of verbose flag). skip_bad exclusively influences the 
+        (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.skip_bad exclusively influences the 
         file-reading part of the process.
     
     verbose : bool (default = True)
@@ -281,13 +287,13 @@ def add_proteins_from_dictionary(proteome, protein_dictionary, safe=True, verbos
         try:
             proteome.add_protein(s, n, UID, attributes=ats, force_overwrite=force_overwrite)
         except (ProteinException, ProteomeException) as e:
-            msg='- skipping protein %s (name = %s, len=%i' %(UID, n, len(s))
+            msg=f'- skipping protein {UID} (name = {n}, len={len(s)}'
             if safe:
                 shephard_exceptions.print_and_raise_error(msg, e)
             else:
                 if verbose:
                     shephard_exceptions.print_warning(msg)
-                    continue
+                continue
 
 
 
@@ -349,9 +355,12 @@ def write_proteins(proteome, filename, delimiter='\t'):
 
                 for k in protein.attributes:
 
-                    atrbt = interface_tools.full_clean_string(protein.attribute(k))
+                    # note we clean the key as well as the value - a key containing a
+                    # delimiter or a colon produces a file that cannot be read back in
+                    atrbt = interface_tools.full_clean_string(protein.attribute(k), delimiter)
+                    key   = interface_tools.full_clean_string(k, delimiter)
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{key}:{atrbt}"
 
                     
 

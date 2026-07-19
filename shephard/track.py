@@ -69,7 +69,7 @@ class Track:
                 
             # check the values provided is the same length as the number of residues - if not raise an exception
             if len(protein.sequence) != len(values):
-                raise TrackException(f'Track length of %i does not match protein length of %i (values track)\b Track = %s\nProtein=%s' %(len(values), len(protein.sequence), name, str(protein)))
+                raise TrackException(f'Track length of {len(values)} does not match protein length of {len(protein.sequence)} (values track)\b Track = {name}\nProtein={protein!s}')
 
             # convert values to list of floats
             try:                
@@ -94,7 +94,7 @@ class Track:
                 pass
 
             # if we passed a string convert to a list
-            elif(symbols, str):
+            elif isinstance(symbols, str):
                 symbols = list(symbols)
             
             else:
@@ -107,7 +107,7 @@ class Track:
 
         # if NEITHER symbols nor track were provided through an exception
         if symbols is None and values is None:
-            raise TrackException('Empty track provided [Track=%s, Protein=%s' %(name, str(protein)))
+            raise TrackException(f'Empty track provided [Track={name}, Protein={protein!s}')
 
             
         # set attribute dictionary IF a dictionary was passed
@@ -119,7 +119,7 @@ class Track:
             self._attributes = {}
 
         else:
-            raise exceptions.TrackException('[FATAL]: If provided, Track attribute must a dictionary')
+            raise TrackException('[FATAL]: If provided, Track attribute must a dictionary')
 
         self._values  = values
         self._symbols = symbols
@@ -323,7 +323,7 @@ class Track:
     ## ------------------------------------------------------------------------
     ##      
     def __repr__(self):             
-        return "Track [name: %s] associated with protein %s" % (self.name, self.protein)
+        return f"Track [name: {self.name}] associated with protein {self.protein}"
 
     ## ------------------------------------------------------------------------
     ##      
@@ -397,7 +397,7 @@ class Track:
 
             # else if safe was passed raise an exception if that attribute was missing
             if safe:
-                raise TrackException('Requesting attribute [%s] from protein [%s] but this attribute has not been assigned' % (name, str(self))) 
+                raise TrackException(f'Requesting attribute [{name}] from Track [{self!s}] but this attribute has not been assigned')
 
             # if safe not passed just return None
             else:
@@ -439,7 +439,7 @@ class Track:
 
         if safe:
             if name in self._attributes:
-                raise TrackException("Trying to add attribute [%s=%s] to Track [%s] but this attribute is already set.\nPossible options are: %s" %(name,val, str(self), str(self._attributes.keys())))
+                raise TrackException(f"Trying to add attribute [{name}={val}] to Track [{self!s}] but this attribute is already set.\nPossible options are: {self._attributes.keys()!s}")
                 
         self._attributes[name] = val
 

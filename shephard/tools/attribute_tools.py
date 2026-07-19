@@ -74,11 +74,11 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     # we are just overwriting the attribute in the obj after casting it
                     obj.add_attribute(a, cast_type(obj.attribute(a)), safe=False)
                     
-                except ValueError as e:
+                except (ValueError, TypeError) as e:
                     if skip_failed:
                         continue
                     else:
-                        print('Failed to cast attribute: {}'.format(a))
+                        print(f'Failed to cast attribute: {a}')
                         raise e
 
     # if we had attributes keys to explicitly exclude (note the default behavior
@@ -90,10 +90,10 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     # we are just overwriting the attribute in the obj after casting it
                     obj.add_attribute(a, cast_type(obj.attribute(a)), safe=False)
                     
-                except ValueError as e:
+                except (ValueError, TypeError) as e:
                     if skip_failed:
                         continue
                     else:
-                        print('Failed to cast attribute: {}'.format(a))
+                        print(f'Failed to cast attribute: {a}')
                         raise e
                     

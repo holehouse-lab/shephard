@@ -65,7 +65,7 @@ def test_disorder_annotation():
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disorder_track(P, version=2)
 
@@ -75,7 +75,7 @@ def test_disorder_annotation():
     ## Test if we can change the name
     # build a proteome        
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))        
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')        
     meta_api.annotate_proteome_with_disorder_track(P, name='test', version=2)
 
     for protein in P:
@@ -106,7 +106,7 @@ def test_idr_annotation():
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disordered_domains(P,version=2)
     
@@ -115,7 +115,7 @@ def test_idr_annotation():
 
     ## check we can change the name of IDRs and recall them
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disordered_domains(P, name='TEST',version=2)
     
@@ -125,7 +125,7 @@ def test_idr_annotation():
         
     ## check we can annotate folded domains as well 
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True, version=2)
     
@@ -143,7 +143,7 @@ def test_idr_annotation():
 
     ## check we can rename annotate folded domains 
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='YES', version=2)
     
@@ -165,7 +165,7 @@ def test_disorder_and_idr_annotation():
     ## ................................................
     # 
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, version=2)
 
@@ -184,7 +184,7 @@ def test_disorder_and_idr_annotation():
     # 
     ## check we can change the name of IDRs and recall them
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, track_name='track-TEST', domain_name='domain-TEST', version=2)    
     for d in P.domains:
@@ -195,7 +195,7 @@ def test_disorder_and_idr_annotation():
         
     ## check we can annotate folded domains as well and we can change their name
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     meta_api.annotate_proteome_with_disorder_tracks_and_disordered_domains(P, annotate_folded_domains=True, folded_domain_name='FD-test', version=2)
     

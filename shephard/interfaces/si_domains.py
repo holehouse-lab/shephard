@@ -65,7 +65,10 @@ class _DomainsInterface:
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
-            printed (regardless of verbose flag). 
+            printed (regardless of verbose flag). Note also that no more
+            than MAX_BAD_COUNT (10) bad lines will be skipped - if more
+            than this many bad lines are found an InterfaceException is
+            raised even when skip_bad is True.
 
         preauthorized_uids : list of str (default = None)
             List of unique_IDs that are allowed to be added to the domains
@@ -112,8 +115,14 @@ class _DomainsInterface:
                 start = int(sline[1].strip())
                 end = int(sline[2].strip())
                 domain_type = sline[3].strip()
+
+                # if some key/value pairs were included then parse these out one at a
+                # time. Note this sits INSIDE the try/except so a malformed attribute
+                # is covered by skip_bad in the same way as any other parsing error
                 attributes = {}
-                
+                if len(sline) > 4:
+                    attributes = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
+
             except Exception as e:
 
                 msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
@@ -125,11 +134,7 @@ class _DomainsInterface:
                     continue
                 else:
                     raise InterfaceException(msg)
-            
-            # if some key/value pairs were included then parse these out one at a time
-            if len(sline) > 4:
-                attributes = interface_tools.parse_key_value_pairs(sline[4:], filename, linecount, line)
-                                          
+
             if unique_ID in ID2domain:
                 ID2domain[unique_ID].append({'start':start, 'end':end, 'domain_type':domain_type, 'attributes':attributes})
             else:
@@ -328,31 +333,37 @@ def add_domains_from_dictionary(proteome, domain_dictionary, autoname=False, saf
     # check first argument is a proteome
     interface_tools.check_proteome(proteome, 'add_domains (si_domains)')
     
-    for protein in proteome:
-        if protein.unique_ID in domain_dictionary:
-            for domain in domain_dictionary[protein.unique_ID]:
+    # iterate the (typically smaller) dictionary rather than every protein
+    # in the proteome; protein() is an O(1) dict lookup
+    for unique_ID in domain_dictionary:
 
-                start       = domain['start']
-                end         = domain['end']
-                domain_type = domain['domain_type']
-                                    
-                try:
-                    ad          = domain['attributes']
-                except:
-                    ad = {}
-                
-                # try and add the domain...
-                try:
-                    protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
-                except (ProteinException, DomainException) as e:
+        protein = proteome.protein(unique_ID, safe=False)
+        if protein is None:
+            continue
 
-                    msg='- skipping domain at %i-%i on %s' %(start, end, protein)
-                    if safe:
-                        shephard_exceptions.print_and_raise_error(msg, e)
-                    else:
-                        if verbose:
-                            shephard_exceptions.print_warning(msg)
-                            continue
+        for domain in domain_dictionary[unique_ID]:
+
+            start       = domain['start']
+            end         = domain['end']
+            domain_type = domain['domain_type']
+
+            try:
+                ad          = domain['attributes']
+            except:
+                ad = {}
+
+            # try and add the domain...
+            try:
+                protein.add_domain(start, end, domain_type, attributes=ad, safe=safe, autoname=autoname)
+            except (ProteinException, DomainException) as e:
+
+                msg=f'- skipping domain at {start}-{end} on {protein}'
+                if safe:
+                    shephard_exceptions.print_and_raise_error(msg, e)
+                else:
+                    if verbose:
+                        shephard_exceptions.print_warning(msg)
+                    continue
                 
 
 ## ------------------------------------------------------------------------
@@ -416,7 +427,10 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide
         errors. Note that if lines are skipped a warning will be printed 
-        (regardless of verbose flag). 
+        (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.
     
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
@@ -433,7 +447,7 @@ def add_domain_attributes_from_file(proteome, filename, delimiter='\t', safe=Tru
     
     """        
     # check first argument is a proteome
-    interface_tools.check_proteome(proteome, 'add_attributes_from_file (si_protein_attributes)')
+    interface_tools.check_proteome(proteome, 'add_domain_attributes_from_file (si_domains)')
 
     # next read in the domain file
     domains_interface = _DomainsInterface(filename, delimiter, skip_bad=skip_bad)
@@ -526,11 +540,11 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
         if unique_ID in proteome:
 
             # build dict of local domains with domain IDs as keys
-            local_domain_dict = {"%s_%i_%i" % (d.domain_type, d.start, d.end): d for d in proteome.protein(unique_ID).domains}
+            local_domain_dict = {f"{d.domain_type}_{int(d.start)}_{int(d.end)}": d for d in proteome.protein(unique_ID).domains}
 
             # iterate new domains
             for new_domain in domain_dictionary[unique_ID]:
-                new_domain_ID = "%s_%i_%i" % (new_domain['domain_type'], new_domain['start'], new_domain['end'])
+                new_domain_ID = f"{new_domain['domain_type']}_{int(new_domain['start'])}_{int(new_domain['end'])}"
                 
                 # check if domain is in local domain by ID 
                 if new_domain_ID in local_domain_dict:
@@ -553,7 +567,7 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                             else:
                                 if verbose:
                                     shephard_exceptions.print_warning(msg)
-                                    continue
+                                continue
 
                     # move on to next new domain
                     continue
@@ -570,13 +584,13 @@ def add_domain_attributes_from_dictionary(proteome, domain_dictionary, add_new=T
                         proteome.protein(unique_ID).add_domain(new_domain['start'], new_domain['end'], new_domain['domain_type'], attributes=ad, safe=safe)
                     except (ProteinException, DomainException) as e:
 
-                        msg='- skipping domain at %i-%i on %s' %(new_domain['start'], new_domain['end'], proteome.protein(unique_ID))
+                        msg=f"- skipping domain at {new_domain['start']}-{new_domain['end']} on {proteome.protein(unique_ID)}"
                         if safe:
                             shephard_exceptions.print_and_raise_error(msg, e)
                         else:
                             if verbose:
                                 shephard_exceptions.print_warning(msg)
-                                continue
+                            continue
 
 
     
@@ -725,9 +739,11 @@ def __build_domain_line(d, delimiter):
     if d.attributes:
         for k in d.attributes:
 
-            # 
-            atrbt = interface_tools.full_clean_string(d.attribute(k))
-            line = line + delimiter + f"{k}:{atrbt}" 
+            # note we clean the key as well as the value - a key containing a
+            # delimiter or a colon produces a file that cannot be read back in
+            atrbt = interface_tools.full_clean_string(d.attribute(k), delimiter)
+            key   = interface_tools.full_clean_string(k, delimiter)
+            line = line + delimiter + f"{key}:{atrbt}" 
 
     line = line + "\n"
 

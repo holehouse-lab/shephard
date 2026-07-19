@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("sparrow")
+
 import shephard
 from shephard.apis import albatross_api
 from shephard.apis import uniprot
@@ -26,14 +30,14 @@ re_predictions['O00716'] = 177.6754
 re_predictions['O14786'] = 188.8538
 re_predictions['Q9UJX3'] = 178.6182
 
-def test_proteome_wide_protein_preductions():
+def test_proteome_wide_protein_predictions():
 
     # precomputed mean disorder we can compare against
 
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
 
     albatross_api.annotate_proteome_with_dimensions(P)
 
@@ -42,7 +46,7 @@ def test_proteome_wide_protein_preductions():
         assert np.isclose(protein.attribute('re'), re_predictions[protein.unique_ID])
 
 
-def test_proteome_wide_protein_preductions():
+def test_domain_wide_predictions():
 
     # precomputed mean disorder we can compare against
 
@@ -59,7 +63,7 @@ def test_proteome_wide_protein_preductions():
 
     # build a proteome
     test_data_dir = shephard.get_data('test_data')
-    P = uniprot.uniprot_fasta_to_proteome('%s/%s' % (test_data_dir, 'testset_1.fasta'))
+    P = uniprot.uniprot_fasta_to_proteome(f'{test_data_dir}/testset_1.fasta')
     interfaces.si_domains.add_domains_from_file(P, f"{test_data_dir}/TS1_domains_pscore.tsv")
 
     albatross_api.annotate_domains_with_dimensions(P, 'pscore_domain')

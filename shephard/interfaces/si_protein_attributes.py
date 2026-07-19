@@ -49,7 +49,10 @@ class _ProteinAttributesInterface:
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
-            printed (regardless of verbose flag). 
+            printed (regardless of verbose flag). Note also that no more
+            than MAX_BAD_COUNT (10) bad lines will be skipped - if more
+            than this many bad lines are found an InterfaceException is
+            raised even when skip_bad is True.
             Default = True
 
         preauthorized_ids : list of str (default = None)
@@ -93,7 +96,16 @@ class _ProteinAttributesInterface:
                 if preauthorized_uids is not None and unique_ID not in preauthorized_uids:
                     continue
                 
-                attributes = {}                
+                # if some key/value pairs were included then parse these out one at a
+                # time. Note this sits INSIDE the try/except so a malformed attribute
+                # is covered by skip_bad in the same way as any other parsing error
+                attributes = {}
+                if len(sline) > 1:
+                    attributes = interface_tools.parse_key_value_pairs(sline[1:], filename, linecount, line)
+                else:
+                    # skip over empty entries
+                    continue
+
             except Exception as e:
 
                 msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
@@ -107,13 +119,6 @@ class _ProteinAttributesInterface:
                 else:
                     raise InterfaceException(msg)
 
-            # if some key/value pairs were included then parse these out one at a time
-            if len(sline) > 1:
-                attributes = interface_tools.parse_key_value_pairs(sline[1:], filename, linecount, line)
-            else:
-                # skip over empty entries
-                continue
-  
             if unique_ID in ID2ADs:
                 ID2ADs[unique_ID].append(attributes)
             else:
@@ -193,7 +198,10 @@ def add_protein_attributes_from_file(proteome,
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
-        (regardless of verbose flag). skip_bad exclusively influences the 
+        (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.skip_bad exclusively influences the 
         file-reading part of the process.
         
     verbose : bool (default = True)
@@ -299,13 +307,13 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
                     try:
                         protein.add_attribute(k, v, safe=safe)
                     except ProteinException as e:
-                        msg='- skipping attribute entry on protein %s (key: %s) ' % (protein.unique_ID, k)
+                        msg=f'- skipping attribute entry on protein {protein.unique_ID} (key: {k}) '
                         if safe:
                             shephard_exceptions.print_and_raise_error(msg, e)
                         else:
                             if verbose:
                                 shephard_exceptions.print_warning(msg)
-                                continue
+                            continue
 
 
 
@@ -348,9 +356,10 @@ def write_protein_attributes(proteome, filename, delimiter='\t'):
 
                 for k in protein.attributes:
 
-                    atrbt = interface_tools.full_clean_string(protein.attribute(k))
+                    atrbt = interface_tools.full_clean_string(protein.attribute(k), delimiter)
+                    key   = interface_tools.full_clean_string(k, delimiter)
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{key}:{atrbt}"
 
                 line = line + "\n"
 
@@ -369,9 +378,13 @@ def write_protein_attributes_from_dictionary(protein_attribute_dictionary, filen
     Parameters
     -----------
     protein_attribute_dictionary :  dictionary
-        protein_attribute_dictionary for which the protein IDs are keys 
-        and the values are dictionaries with key:value pairs of attributes
-        which are to be writen
+        Dictionary in which the protein unique_IDs are keys. Values can be
+        either a single dictionary of attribute key:value pairs, or a list
+        of such dictionaries (which is the format returned by
+        add_protein_attributes_from_file() when return_dictionary=True). If
+        a list is passed the dictionaries are merged, with later entries
+        taking precedence.
+
     filename : str
         Filename that will be used to write the new domains file
     delimiter : str (default = '\\t')
@@ -391,16 +404,27 @@ def write_protein_attributes_from_dictionary(protein_attribute_dictionary, filen
         for protein in protein_attribute_dictionary:
 
             local_attributes = protein_attribute_dictionary[protein]
-            
-            if len(local_attributes) > 0:
+
+            # the file parser returns a LIST of attribute dictionaries per unique_ID,
+            # while hand-built dictionaries typically map to a single dictionary, so
+            # we accept both here
+            if isinstance(local_attributes, dict):
+                merged_attributes = local_attributes
+            else:
+                merged_attributes = {}
+                for entry in local_attributes:
+                    merged_attributes.update(entry)
+
+            if len(merged_attributes) > 0:
 
                 line = protein
 
-                for k,v in local_attributes.items():
+                for k,v in merged_attributes.items():
 
-                    atrbt = interface_tools.full_clean_string(v)
+                    atrbt = interface_tools.full_clean_string(v, delimiter)
+                    key   = interface_tools.full_clean_string(k, delimiter)
 
-                    line = line + delimiter +  "%s:%s" %(k, atrbt)
+                    line = line + delimiter +  f"{key}:{atrbt}"
 
                 line = line + "\n"
 
