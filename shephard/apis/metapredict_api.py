@@ -6,25 +6,45 @@
 ##
 
 
-## Check metapredict is installed
+import inspect
+
+from shephard.exceptions import APIException
+
+## Check metapredict is installed. Note we deliberately do NOT run a prediction
+## here - importing this module should be free, so the version check happens
+## lazily the first time one of the API functions is actually called.
 try:
     import metapredict as meta
 
-    try:
-        meta.predict_disorder('AAPAPA',version=3)
-    except TypeError:
-        print('shephard requires metapredict V3 or higher. Please upgrade:')
-        print('pip install --upgrade metapredict')
-    
 except ModuleNotFoundError:
-    print('Unable to import metapredict')
-    print('To use the metapredict API, make sure metapredict is installed')
-    print('This can be done as follows:')
-    print('pip install metapredict')
+    meta = None
 
-## then check batch mode is available
 
-    
+## ------------------------------------------------------------------------
+##
+def _check_metapredict():
+    """
+    Internal function that ensures metapredict is installed and is a version
+    we can work with. Called at the top of every public function in this
+    module.
+
+    Returns
+    -----------------
+    None
+        No return type, but raises an APIException if metapredict is missing
+        or too old.
+
+    """
+
+    if meta is None:
+        raise APIException('Unable to import metapredict.\nTo use the metapredict API, make sure metapredict is installed. This can be done as follows:\n\npip install metapredict')
+
+    # metapredict V3 introduced the version keyword, so its absence tells us we
+    # are working with an older release
+    if 'version' not in inspect.signature(meta.predict_disorder).parameters:
+        raise APIException('SHEPHARD requires metapredict V3 or higher. Please upgrade:\n\npip install --upgrade metapredict')
+
+
 ## ------------------------------------------------------------------------
 ##
 def annotate_proteome_with_disorder_track(proteome,                                       
@@ -93,15 +113,14 @@ def annotate_proteome_with_disorder_track(proteome,
         will be annotated with per-residue disorder Tracks.
 
     """
+    _check_metapredict()
+
     uid2seq = {}
     for p in proteome:
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    try:
-        D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version)
-    except:
-        D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version)
+    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version)
 
     for k in uid2seq:
         proteome.protein(k).add_track(name, values=D[k][1], safe=safe)
@@ -112,7 +131,7 @@ def annotate_proteome_with_disorder_track(proteome,
 ##
 def annotate_proteome_with_disordered_domains(proteome,
                                               name='IDR',
-                                              disorder_threshold=0.5,
+                                              disorder_threshold=None,
                                               annotate_folded_domains=False,
                                               folded_domain_name = 'FD',
                                               device=None,
@@ -145,8 +164,9 @@ def annotate_proteome_with_disordered_domains(proteome,
 
     disorder_threshold : float
         Threshold to be used to define IDRs by the metapredict
-        domain decomposition algorithm. The default is 0.5, 
-        and we strongly recommend sticking with this value.
+        domain decomposition algorithm. If set to None (default)
+        metapredict uses the threshold appropriate for the version
+        being used, which is what we strongly recommend.
 
     annotate_folded_domains : bool
         Flag which, if included, means we ALSO annotate 
@@ -200,12 +220,14 @@ def annotate_proteome_with_disordered_domains(proteome,
         
     """
     
+    _check_metapredict()
+
     uid2seq = {}
     for p in proteome:
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder
-    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True)
+    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True, disorder_threshold=disorder_threshold)
 
     for k in uid2seq:
 
@@ -225,7 +247,7 @@ def annotate_proteome_with_disordered_domains(proteome,
 def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
                                                                   track_name='disorder',
                                                                   domain_name='IDR',
-                                                                  disorder_threshold=0.5,
+                                                                  disorder_threshold=None,
                                                                   annotate_folded_domains=False,
                                                                   folded_domain_name = 'FD',
                                                                   device=None,
@@ -266,8 +288,9 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
 
     disorder_threshold : float
         Threshold to be used to define IDRs by the metapredict
-        domain decomposition algorithm. Default is 0.5 and strongly
-        recommend sticking with this value.
+        domain decomposition algorithm. If set to None (default)
+        metapredict uses the threshold appropriate for the version
+        being used, which is what we strongly recommend.
 
     annotate_folded_domains : bool
         Flag which, if included, means we ALSO annotate 
@@ -322,12 +345,14 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
 
     """
     
+    _check_metapredict()
+
     uid2seq = {}
     for p in proteome:
         uid2seq[p.unique_ID] = p.sequence
 
     # batch predict disorder annotations/scores
-    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True)
+    D = meta.predict_disorder(uid2seq, device=device, show_progress_bar=show_progress_bar, version=version, return_domains=True, disorder_threshold=disorder_threshold)
 
     # for each unique ID
     for k in uid2seq:

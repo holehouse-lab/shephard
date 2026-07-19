@@ -159,7 +159,7 @@ def fasta_to_proteome(filename,
     # IF we're adding to a new proteome this bit of code sets the record_index to the largest new integer
     # such that we can add multiple proteomes in succession and we'll get a proteome where there are numerically
     # contigous unique_IDs.  Note we only do this if we'll be using the record_index
-    if proteome is not None and (build_unique_ID is None or use_header_as_unique_ID is None):
+    if proteome is not None and build_unique_ID is None and use_header_as_unique_ID is False:
         numeric_record_ids = []
         for uid in proteome.proteins:
             try:
@@ -194,7 +194,7 @@ def fasta_to_proteome(filename,
         elif use_header_as_unique_ID is True:
             unique_ID = k
         else:
-            unique_ID = record_index
+            unique_ID = str(record_index)
         
         # build an attributes dictionary using the user-provided custom function
         if build_attributes:
@@ -316,7 +316,11 @@ def shephard_fasta_to_proteome(filename,
             # then take everything after the unique_ID
             tmp = "|".join(fasta_split[2:])
             attributes_string = tmp.split(SHEPHARD_ATTRIBUTE_SPLITTER)
-            name = attributes_string[0]
+
+            # note the rstrip() - the writer separates the name from the attribute
+            # block with a space, and without stripping it the name picks up a
+            # trailing space every time it round-trips through a FASTA file
+            name = attributes_string[0].rstrip()
         except IndexError:
             raise APIException(f'Trying to parse a FASTA file that is expected to be SHEPHARD generated but formatting does not comply [on entry {k} in file {filename}]')
 
@@ -381,7 +385,7 @@ def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
     proteome : Proteome
         The proteome object that will be written to disk
         
-    include_attributes_in_header : bool (default = falseFalse)
+    include_attributes_in_header : bool (default = False)
         Flag which if set to true means each Protein's attributes will be 
         included in the FASTA header. We generally do not recommend this 
         other than times when sharing annotated FASTA files outside of a 
@@ -413,9 +417,9 @@ def proteome_to_fasta(filename, proteome, include_attributes_in_header=False):
                 # IF we want to read the fasta header info back in to attributes
                 # we can be confident that hidden tabs in the variables won't
                 # mess things up!
-                k_fixed = k.replace('\t', ' ' )
+                k_fixed = str(k).replace('\t', ' ' )
                 i = protein.attribute(k)
-                i_fixed = i.replace('\t', ' ')
+                i_fixed = str(i).replace('\t', ' ')
                 
                 fasta_header = fasta_header + '\t' + f"{k_fixed}={i_fixed}"
             

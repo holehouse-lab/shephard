@@ -474,15 +474,19 @@ class Domain:
         Returns
         --------
 
-        list
+        dict
             Returns a dictionary, where each key-value pair is:
 
                 key - site position (integer)
                 value - list of one or more site object
-        
+
+        list
+            If return_list is set to True, then a list of Site objects is
+            returned instead.
+
         """
 
-        return self._protein.get_sites_by_type_and_range(site_type, self.start, self.end)
+        return self._protein.get_sites_by_type_and_range(site_type, self.start, self.end, return_list=return_list)
         
 
     #######################################

@@ -74,7 +74,7 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     # we are just overwriting the attribute in the obj after casting it
                     obj.add_attribute(a, cast_type(obj.attribute(a)), safe=False)
                     
-                except ValueError as e:
+                except (ValueError, TypeError) as e:
                     if skip_failed:
                         continue
                     else:
@@ -90,7 +90,7 @@ def cast_attributes(obj, include=[], exclude=[], cast_type=float, skip_failed=Fa
                     # we are just overwriting the attribute in the obj after casting it
                     obj.add_attribute(a, cast_type(obj.attribute(a)), safe=False)
                     
-                except ValueError as e:
+                except (ValueError, TypeError) as e:
                     if skip_failed:
                         continue
                     else:

@@ -3,7 +3,7 @@
 # SHEPHARD is a pure-Python package (no compiled extensions), so the build
 # only needs setuptools + versioningit. numpy is a *runtime* dependency and
 # is declared under [project.dependencies], not here.
-requires = ["setuptools>=61", "versioningit~=2.0"]
+requires = ["setuptools>=77", "versioningit~=2.0"]
 build-backend = "setuptools.build_meta"
 
 
@@ -16,23 +16,26 @@ authors = [
     {name = "Alex Holehouse", email = "alex.holehouse@wustl.edu"},
     {name = "Garrett M. Ginell"},
 ]
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.8"
-keywords = ["bioinformatics", "proteome", "protein", "disorder", "annotation"]
+requires-python = ">=3.10"
+keywords = ["bioinformatics", "proteome", "protein", "disorder", "annotation", "uniprot", "proteomics", "idr"]
 
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Typing :: Typed",
 ]
 
 # runtime dependencies
@@ -52,6 +55,8 @@ Homepage = "https://github.com/holehouse-lab/shephard"
 Documentation = "https://shephard.readthedocs.io/"
 Source = "https://github.com/holehouse-lab/shephard"
 Issues = "https://github.com/holehouse-lab/shephard/issues"
+Changelog = "https://github.com/holehouse-lab/shephard/blob/master/CHANGELOG.md"
+"Research paper" = "https://doi.org/10.1093/bioinformatics/btad488"
 
 [tool.setuptools]
 zip-safe = false
@@ -73,6 +78,14 @@ shephard = [
 
 [tool.pytest.ini_options]
 testpaths = ["shephard/tests"]
+
+[tool.coverage.run]
+omit = [
+    # the tests themselves
+    "*/tests/*",
+    # the versioningit-generated file
+    "shephard/_version.py",
+]
 
 [tool.versioningit]
 default-version = "1+unknown"

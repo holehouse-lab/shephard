@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use SHEPHARD in your work, please cite the paper below."
+title: SHEPHARD
+abstract: >-
+  SHEPHARD (Sequence-based Hierarchical and Extendable Platform for
+  High-throughput Analysis of Regions of Disorder) is a Python framework for
+  reading, annotating, and analyzing large protein datasets, enabling
+  reproducible integrative analysis of complex sequence annotations at
+  proteome-wide scales.
+type: software
+license: MIT
+repository-code: "https://github.com/holehouse-lab/shephard"
+url: "https://shephard.readthedocs.io/"
+keywords:
+  - bioinformatics
+  - proteome
+  - protein
+  - intrinsically disordered regions
+  - sequence annotation
+authors:
+  - family-names: Ginell
+    given-names: Garrett M.
+  - family-names: Holehouse
+    given-names: Alex S.
+    orcid: "https://orcid.org/0000-0002-4155-5729"
+preferred-citation:
+  type: article
+  title: >-
+    SHEPHARD: a modular and extensible software architecture for analyzing and
+    annotating large protein datasets
+  authors:
+    - family-names: Ginell
+      given-names: Garrett M.
+    - family-names: Flynn
+      given-names: Aidan J.
+    - family-names: Holehouse
+      given-names: Alex S.
+      orcid: "https://orcid.org/0000-0002-4155-5729"
+  journal: Bioinformatics
+  volume: 39
+  issue: 8
+  start: btad488
+  year: 2023
+  month: 8
+  doi: 10.1093/bioinformatics/btad488
+  issn: 1367-4811
+  publisher:
+    name: Oxford University Press

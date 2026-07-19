@@ -6,15 +6,34 @@
 ##
 
 
-## Check metapredict is installed
+from shephard.exceptions import APIException
+
+## Check sparrow (the package in which ALBATROSS is implemented) is installed.
+## Note that a missing sparrow is only reported when one of the functions here
+## is actually called, so importing this module is always safe.
 try:
     from sparrow.predictors.batch_predict import batch_predict
-    
+
 except ModuleNotFoundError:
-    print('Unable to import sparrow (the package where ALBATROSS is implemeted)')
-    print('To use the ALBATROSS, make sure sparrow is installed')
-    print('This can be done as follows:')
-    print('pip install git+https://git@github.com/idptools/sparrow.git')
+    batch_predict = None
+
+
+## ------------------------------------------------------------------------
+##
+def _check_sparrow():
+    """
+    Internal function that ensures sparrow is installed. Called at the top of
+    every public function in this module.
+
+    Returns
+    -----------------
+    None
+        No return type, but raises an APIException if sparrow is missing.
+
+    """
+
+    if batch_predict is None:
+        raise APIException('Unable to import sparrow (the package where ALBATROSS is implemented).\nTo use ALBATROSS, make sure sparrow is installed. This can be done as follows:\n\npip install git+https://git@github.com/idptools/sparrow.git')
 
     
 ## ------------------------------------------------------------------------
@@ -63,6 +82,10 @@ def annotate_proteome_with_dimensions(proteome,
         predictions are made, while if False no progress bar is printed.
         Default  =  True
 
+    batch_mode : None
+        Deprecated and ignored - sparrow always uses batch mode here. Retained
+        so existing code that passes this keyword continues to work.
+
     safe : bool
         Flag which, if set to False, means the function overwrites 
         existing tracks and domains if present. If True, overwriting
@@ -76,7 +99,9 @@ def annotate_proteome_with_dimensions(proteome,
         will be annotated with per-residue disorder Tracks.
 
     """
-    
+
+    _check_sparrow()
+
     uid2seq = {}
     for p in proteome:
         uid2seq[p.unique_ID] = p.sequence
@@ -145,6 +170,10 @@ def annotate_domains_with_dimensions(proteome,
         predictions are made, while if False no progress bar is printed.
         Default  =  True
 
+    batch_mode : None
+        Deprecated and ignored - sparrow always uses batch mode here. Retained
+        so existing code that passes this keyword continues to work.
+
     safe : bool
         Flag which, if set to False, means the function overwrites 
         existing tracks and domains if present. If True, overwriting
@@ -159,25 +188,24 @@ def annotate_domains_with_dimensions(proteome,
 
     """
 
-    # build the dictionary of unique IDs to sequences
-    uid2seq = {}
-    for d in proteome.domains:
-        if d.domain_type == domain_type:
-            unique_name = d.protein.unique_ID + '_' + d.domain_name
-            uid2seq[unique_name] = d.sequence
+    _check_sparrow()
 
-    # batch predict dimensions for all proteins
+    # build the dictionary of keys to sequences. Note we key on the position of the
+    # domain in the list rather than on unique_ID + domain_name; domain names are
+    # unique within a protein, but concatenating the two is ambiguous if a unique_ID
+    # itself contains an underscore
+    target_domains = [d for d in proteome.domains if d.domain_type == domain_type]
+
+    uid2seq = {}
+    for idx, d in enumerate(target_domains):
+        uid2seq[str(idx)] = d.sequence
+
+    # batch predict dimensions for all domains
     rg = batch_predict(uid2seq, network='scaled_rg', gpuid=gpuid, show_progress_bar=show_progress_bar)
     re = batch_predict(uid2seq, network='scaled_re', gpuid=gpuid, show_progress_bar=show_progress_bar)
 
-    for d in proteome.domains:
-        if d.domain_type == domain_type:
-            
-            unique_name = d.protein.unique_ID + '_' + d.domain_name
-            rg_val = rg[unique_name][1]
-            re_val = re[unique_name][1]
-
-            d.add_attribute(rg_name, rg_val, safe=safe)
-            d.add_attribute(re_name, re_val, safe=safe)
+    for idx, d in enumerate(target_domains):
+        d.add_attribute(rg_name, rg[str(idx)][1], safe=safe)
+        d.add_attribute(re_name, re[str(idx)][1], safe=safe)
     
         

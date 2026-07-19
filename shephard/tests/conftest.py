@@ -73,7 +73,7 @@ def TS1_domains2(request):
     
     return TS1_proteome
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def TS1_domains2_sites(request):    
     TS1_proteome = build_proteome(TS1_FILE[0])
     si_domains.add_domains_from_file(TS1_proteome, f'{test_data_dir}/{TS1_FILE[1]}')

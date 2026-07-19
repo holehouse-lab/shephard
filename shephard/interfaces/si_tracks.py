@@ -29,7 +29,7 @@ class _TracksInterface:
         Tracks files must adhere to the following specification
 
             unique_ID, track_name, val_1, val_2, ...., val_n 
-si
+
         where n = length of protein.
 
         This class allows a tracksfile to be read in and defined as either 
@@ -58,7 +58,10 @@ si
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will 
-            be printed (regardless of verbose flag). 
+            be printed (regardless of verbose flag). Note also that no more
+            than MAX_BAD_COUNT (10) bad lines will be skipped - if more
+            than this many bad lines are found an InterfaceException is
+            raised even when skip_bad is True.
 
         preauthorized_ids : list of str (default = None)
             List of unique_IDs that are allowed to be added to the track
@@ -67,6 +70,12 @@ si
 
 
         """
+
+        # note we validate the mode BEFORE we start parsing. Previously this check sat
+        # inside the per-line try/except, so skip_bad swallowed it and an invalid mode
+        # gave you an empty dictionary and ten confusing warnings rather than an error
+        if mode not in ['symbols', 'values']:
+            raise InterfaceException(f"Error: mode='{mode}' passed, yet this does not match 'symbols' or 'values'")
 
         bad_count = 0
         
@@ -112,11 +121,9 @@ si
                     # for each element in sline strip whitespace and convert to a float
                     track_data = [float(i.strip()) for i in sline[2:]]
 
-                elif mode == 'symbols':
+                else:
                     # for each element in sline strip whitespace 
                     track_data = [i.strip() for i in sline[2:]]
-                else:
-                    raise InterfaceException(f"Error: mode='{mode}' passed, yet this does not match 'symbols' or 'values'")
 
                         
                 if unique_ID in ID2track:
@@ -188,22 +195,21 @@ def __write_all_tracks_single_file(proteome,
 
     """
     
-    # open the file handle
-    fh = open(outfile,'w')
-
     # build a list of track names that are values-tracks
     tn2tt = proteome.track_names_to_track_type
-    
+
     valid_names = []
     for name in tn2tt:
         if tn2tt[name] == track_type:
             valid_names.append(name)
-        
-    # cyle through each track name we designated as valid
-    for t_name in valid_names:        
-        write_tracks(proteome, None, t_name, value_fmt, delimiter, file_handle=fh)
 
-    fh.close()
+    # note we use a context manager here so the handle is closed even if writing
+    # one of the tracks raises
+    with open(outfile,'w') as fh:
+
+        # cyle through each track name we designated as valid
+        for t_name in valid_names:
+            write_tracks(proteome, None, t_name, value_fmt, delimiter, file_handle=fh)
 
 
 ##############################################
@@ -275,7 +281,10 @@ def add_tracks_from_file(proteome, filename, mode, delimiter='\t', return_dictio
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
-        (regardless of verbose flag). 
+        (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.
 
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors on 
@@ -612,14 +621,52 @@ def write_tracks(proteome, filename, track_name, value_fmt = "%.3f", delimiter='
     except TypeError:
         raise InterfaceException(f'Invalid value_fmt passed [{value_fmt!s}]')
 
+    if file_handle is None and filename is None:
+        raise InterfaceException('write_tracks() requires either a filename or a file_handle to be passed')
+
+    # if we were handed a file handle we write into it and leave closing it to the
+    # caller. If not, we own the handle, so use a context manager to ensure it is
+    # closed even if writing raises
     if file_handle is not None:
-        fh  = file_handle
+        __write_tracks_to_handle(proteome, file_handle, track_name, delimiter, value_fmt)
     else:
-        fh = open(filename, 'w')
+        with open(filename, 'w') as fh:
+            __write_tracks_to_handle(proteome, fh, track_name, delimiter, value_fmt)
+
+
+## ------------------------------------------------------------------------
+##
+def __write_tracks_to_handle(proteome, fh, track_name, delimiter, value_fmt):
+    """
+    Internal function that writes every Track matching track_name in the passed
+    Proteome into an already-open file handle.
+
+    Parameters
+    ----------------------
+    proteome : shephard.proteome.Proteome
+        Proteome from which the Tracks are taken
+
+    fh : file handle
+        Open, writable file handle
+
+    track_name : str
+        Name of the Track to be written
+
+    delimiter : str
+        Character (or characters) used to separate between fields
+
+    value_fmt : str
+        Format string that will be used for values
+
+    Returns
+    --------------
+    None
+        No return type, but writes to the passed file handle.
+
+    """
 
     for protein in proteome:
 
-            
         # try and extract out the track in question
         t = protein.track(track_name, safe=False)
         if t is not None:
@@ -628,9 +675,7 @@ def write_tracks(proteome, filename, track_name, value_fmt = "%.3f", delimiter='
             outstring = __build_track_line(t, delimiter, value_fmt)
             fh.write(outstring)
 
-    if file_handle is None:
-        fh.close()
-                    
+
 ## ------------------------------------------------------------------------
 ##
 def __build_track_line(t, delimiter, value_fmt):
@@ -658,16 +703,16 @@ def __build_track_line(t, delimiter, value_fmt):
 
     unique_ID = t.protein.unique_ID
 
-    # build the initial string
-    out_string = f"{unique_ID}{delimiter}{t.name}{delimiter}"
-
+    # build the line, taking care NOT to leave a trailing delimiter - if we do, a
+    # non-whitespace delimiter leaves an empty final field when the file is read
+    # back in (float('') in values mode, or a spurious extra symbol). Note that
+    # domains and sites already avoid this
     if t.values is not None:
-        for v in t.values:
-            out_string = out_string + f"{value_fmt % v}{delimiter}"
+        track_elements = [f"{value_fmt % v}" for v in t.values]
     else:
-        for v in t.symbols:
-            out_string = out_string + f"{v}{delimiter}"
+        track_elements = [f"{v}" for v in t.symbols]
 
+    out_string = delimiter.join([unique_ID, t.name] + track_elements)
 
     return out_string + "\n"
                     
@@ -723,6 +768,13 @@ def write_tracks_from_list(track_list, filename, value_fmt = "%.3f", delimiter='
     ## The code below checks all tracks in the list are consistent, i.e.
     ## that they are ALL symbol or ALL value tracks
     ##
+
+    # nothing to do if we were passed an empty list, but we still create the (empty)
+    # file so behaviour matches write_domains_from_list() and write_sites_from_list()
+    if len(track_list) == 0:
+        with open(filename, 'w'):
+            pass
+        return
 
     # if none then this must be a symbol track
     if track_list[0].values is None:

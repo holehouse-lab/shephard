@@ -503,17 +503,25 @@ def build_domains_from_track_values(proteome,
         if extend_ends:
                 
             # note we don't check length of extend ends initially, so if they're too big for the sequence
-            # dynamicaly resize them so they're 1/2 of the sequence length
+            # dynamicaly resize them so they're 1/2 of the sequence length. Note integer division here
+            # because this value is used as an index
             if extend_ends + 1 >= len(B):
-                extend_ends_val = len(B)/2
+                extend_ends_val = len(B)//2
             else:
                 extend_ends_val = extend_ends
-                
-            if B[extend_ends_val + 1] == 1:
-                B[0:extend_ends_val] = [1]*len(B[0:extend_ends_val])
 
-            if B[:-(extend_ends_val + 1)] == 1:
-                B[-extend_ends_val:] = [1]*len(B[0:extend_ends_val])
+            # if the resizing above (or a passed value of 0) leaves us with nothing to extend
+            # there is nothing to do here
+            if extend_ends_val > 0:
+
+                # if the residue immediately inside the N-terminal window is assigned, extend the
+                # assignment out to the N-terminus
+                if B[extend_ends_val] == 1:
+                    B[0:extend_ends_val] = [1]*extend_ends_val
+
+                # ... and symmetrically at the C-terminus
+                if B[-(extend_ends_val + 1)] == 1:
+                    B[-extend_ends_val:] = [1]*extend_ends_val
             
         ## Part 4 - extract domain boundaires
         local_domains=[]

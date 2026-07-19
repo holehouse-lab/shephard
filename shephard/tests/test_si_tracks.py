@@ -131,7 +131,7 @@ def test_write_track_part1():
     interfaces.si_tracks.write_tracks(P, fn, 'pscore')
 
     b = os.path.getsize(fn)
-    assert b == 32531 # file size in bytes if correctly written
+    assert b == 32522 # file size in bytes if correctly written (note: no trailing delimiter)
 
     P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P2, 'output_test/out_tracks.tsv', mode='values')
@@ -166,7 +166,7 @@ def test_write_track_part2():
     interfaces.si_tracks.write_tracks(P, outname,track_name)
 
     b = os.path.getsize(outname)
-    assert b == 3050 # file size in bytes if correctly written
+    assert b == 3049 # file size in bytes if correctly written (note: no trailing delimiter)
 
     P2 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P2, pscore_track_file, mode='values')
@@ -220,7 +220,7 @@ def test_write_track_part3():
     interfaces.si_tracks.write_tracks(P, outname, track_name)
 
     b = os.path.getsize(outname)
-    assert b == 1032 # file size in bytes if correctly written
+    assert b == 1031 # file size in bytes if correctly written (note: no trailing delimiter)
 
     P3 = uniprot.uniprot_fasta_to_proteome(fasta_file)
     interfaces.si_tracks.add_tracks_from_file(P3, outname, mode='symbols')
@@ -231,32 +231,6 @@ def test_write_track_part3():
             assert len(protein.tracks) == 2               
         else:
             assert len(protein.tracks) == 0      
-
-
-def test_write_tracks_separate_files():
-
-    ##
-    ## This code block just creates a proteome where we have 2 different
-    ## typs of tracks
-    test_data_dir = shephard.get_data('test_data')
-    fasta_file = f'{test_data_dir}/testset_1.fasta'
-    pscore_track_file = f'{test_data_dir}/TS1_tracks_pscore.tsv'
-
-    P = uniprot.uniprot_fasta_to_proteome(fasta_file)
-    interfaces.si_tracks.add_tracks_from_file(P, pscore_track_file, mode='values')
-
-    newstring = ''
-    for i in P.protein('O00401').sequence:
-
-        if i in ['S','T','Y']:
-            newstring = newstring + "P"
-        else:
-            newstring = newstring + "-"
-    track_dict = {'O00401': [{'track_name':'phosres', 'track_data':newstring}]}
-    interfaces.si_tracks.add_tracks_from_dictionary(P, track_dict, mode='symbols')
-
-    interfaces.si_tracks.write_all_tracks_separate_files(P, 'output_test')
-
 
 
 def test_write_tracks_separate_files():
@@ -482,7 +456,7 @@ def test_write_symbols_tracks_from_list():
 
 
 
-def test_write_symbols_tracks_from_list():
+def test_write_mixed_tracks_from_list_raises():
 
     test_data_dir = shephard.get_data('test_data')
     fasta_file = f'{test_data_dir}/testset_1.fasta'

@@ -47,7 +47,10 @@ class _SitesInterface:
             are encountered the code will just skip them. By default this is 
             true, which adds a certain robustness to file parsing, but could 
             also hide errors. Note that if lines are skipped a warning will be 
-            printed (regardless of verbose flag). 
+            printed (regardless of verbose flag). Note also that no more
+            than MAX_BAD_COUNT (10) bad lines will be skipped - if more
+            than this many bad lines are found an InterfaceException is
+            raised even when skip_bad is True.
 
         preauthorized_ids : list of str (default = None)
             List of unique_IDs that are allowed to be added to the sites
@@ -103,8 +106,13 @@ class _SitesInterface:
                 else:
                     value = float(tmp)
 
+                # if there's more, parse the attribute dictionary entries. Note this
+                # sits INSIDE the try/except so a malformed attribute is covered by
+                # skip_bad in the same way as any other parsing error
                 attributes = {}
-                
+                if len(sline) > 5:
+                    attributes = interface_tools.parse_key_value_pairs(sline[5:], filename, linecount, line)
+
             except Exception as e:
                 msg = f'Failed parsing file [{filename}] on line [{linecount}].\n\nException raised: {str(e)}\n\nline printed below:\n{line}'
 
@@ -115,10 +123,6 @@ class _SitesInterface:
                     continue
                 else:
                     raise InterfaceException(msg)
-
-            # if there's more parse attribute dictionary entries
-            if len(sline) > 5:
-                attributes = interface_tools.parse_key_value_pairs(sline[5:], filename, linecount, line)
 
             if unique_ID in ID2site:
                 ID2site[unique_ID].append({'position':position, 'site_type':site_type, 'symbol':symbol, 'value':value, 'attributes':attributes})
@@ -189,7 +193,10 @@ def add_sites_from_file(proteome, filename, delimiter='\t', return_dictionary=Fa
         encountered the code will just skip them. By default this is true, 
         which adds a certain robustness to file parsing, but could also hide 
         errors. Note that if lines are skipped a warning will be printed 
-        (regardless of verbose flag). 
+        (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.
 
     verbose : bool (default = True)
         Flag that defines how 'loud' output is. Will warn about errors 
@@ -287,6 +294,8 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
     
     """
     
+    interface_tools.check_proteome(proteome, 'add_sites_from_dictionary (si_sites)')
+
     # iterate the (typically smaller) dictionary rather than every protein
     # in the proteome; protein() is an O(1) dict lookup
     for unique_ID in sites_dictionary:
@@ -314,8 +323,8 @@ def add_sites_from_dictionary(proteome, sites_dictionary, safe=True, verbose=Fal
                 protein.add_site(position, site_type, symbol, value, attributes = ad)
 
 
-            except ProteinException as e:
-                msg=f'- skipping site {site_type} at {int(position)} on {protein}'
+            except (ProteinException, SiteException) as e:
+                msg=f'- skipping site {site_type} at {position} on {protein}'
                 if safe:
                     shephard_exceptions.print_and_raise_error(msg, e)
                 else:
@@ -474,8 +483,12 @@ def __build_site_line(s, delimiter):
     
     if s.attributes:
         for k in s.attributes:
-            atrbt = interface_tools.full_clean_string(s.attribute(k))
-            line = line + delimiter + f"{k}:{atrbt}"
+
+            # note we clean the key as well as the value - a key containing a
+            # delimiter or a colon produces a file that cannot be read back in
+            atrbt = interface_tools.full_clean_string(s.attribute(k), delimiter)
+            key   = interface_tools.full_clean_string(k, delimiter)
+            line = line + delimiter + f"{key}:{atrbt}"
 
     line = line + "\n"
 

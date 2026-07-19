@@ -62,12 +62,12 @@ def test_unique_site_types(TS1, TS1_domains, TS1_domains2, TS1_domains2_sites, T
 
 
 
-def test_domain_retriev(TS1_domains):
+def test_domain_retrieval(TS1_domains):
     # check we corretly can get all domains
     assert len(TS1_domains.domains) == 21
 
 
-def test_domain_retriev(TS1_domains2_sites):
+def test_site_retrieval(TS1_domains2_sites):
     # check we corretly can get all sites
     assert len(TS1_domains2_sites.sites) == 209
 

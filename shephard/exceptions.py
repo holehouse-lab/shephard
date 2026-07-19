@@ -11,7 +11,7 @@ Holehouse Lab - Washington University in St. Louis
 
 def print_warning(msg):
     """
-    Function that prints a warning message (with an exception if provided).
+    Function that prints a warning message.
     """
     
     print(f'WARNING: {msg}')
@@ -25,14 +25,19 @@ def print_and_raise_error(msg, e):
 
 class ShephardException(Exception):
     """
-    General exception
+    Base exception for all SHEPHARD exceptions. Every other exception
+    defined here inherits from this, so
+
+        except ShephardException:
+
+    will catch any error raised by SHEPHARD.
     """
     pass
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class SiteException(Exception):
+class SiteException(ShephardException):
     """
     Exception for the Site class
     """
@@ -40,7 +45,16 @@ class SiteException(Exception):
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class TrackException(Exception):
+class TrackException(ShephardException):
+    """
+    Exception for the Track class
+    """
+    pass
+
+
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+#
+class DomainException(ShephardException):
     """
     Exception for the Domain class
     """
@@ -49,16 +63,7 @@ class TrackException(Exception):
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class DomainException(Exception):
-    """
-    Exception for the Domain class
-    """
-    pass
-
-
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-#
-class ProteinException(Exception):
+class ProteinException(ShephardException):
     """
     Exception for the Proteins class
     """
@@ -67,7 +72,7 @@ class ProteinException(Exception):
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class ProteomeException(Exception):
+class ProteomeException(ShephardException):
     """
     Exception for the Proteome class
     """
@@ -76,26 +81,26 @@ class ProteomeException(Exception):
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class UtilitiesException(Exception):
+class UtilitiesException(ShephardException):
     """
-    Exception for general utility exceptions
-    """
-    pass
-
-
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-#
-class InterfaceException(Exception):
-    """
-    Exception for general utility exceptions
+    Exception for the general_utilities and sequence_utilities modules
     """
     pass
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 #
-class APIException(Exception):
+class InterfaceException(ShephardException):
     """
-    Exception for general utility exceptions
+    Exception for the interfaces (si_*) modules
+    """
+    pass
+
+
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+#
+class APIException(ShephardException):
+    """
+    Exception for the apis modules
     """
     pass

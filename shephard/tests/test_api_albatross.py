@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("sparrow")
+
 import shephard
 from shephard.apis import albatross_api
 from shephard.apis import uniprot
@@ -26,7 +30,7 @@ re_predictions['O00716'] = 177.6754
 re_predictions['O14786'] = 188.8538
 re_predictions['Q9UJX3'] = 178.6182
 
-def test_proteome_wide_protein_preductions():
+def test_proteome_wide_protein_predictions():
 
     # precomputed mean disorder we can compare against
 
@@ -42,7 +46,7 @@ def test_proteome_wide_protein_preductions():
         assert np.isclose(protein.attribute('re'), re_predictions[protein.unique_ID])
 
 
-def test_proteome_wide_protein_preductions():
+def test_domain_wide_predictions():
 
     # precomputed mean disorder we can compare against
 

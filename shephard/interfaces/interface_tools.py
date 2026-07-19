@@ -178,30 +178,36 @@ def check_site(s, function_name):
 
 ## ------------------------------------------------------------------------
 ##
-def full_clean_string(instring):
+def full_clean_string(instring, delimiter='\t'):
     r"""
     Wrapper function that takes in a string (or a variable that can be
-    cast to a string) and ensure it contains neither tab nor colon characters,
-    both of which would render a attribute or free-form text string in a 
-    SHEPHARD file invalid.
+    cast to a string) and ensure it contains neither the delimiter nor colon
+    characters, both of which would render a attribute or free-form text
+    string in a SHEPHARD file invalid.
 
     This function actually calls `clean_string()` twice with parameters to
-    replace, ':' and '\\t' characters.
+    replace ':' and the delimiter characters.
 
     Parameters
     -----------
     instring : {str, str-castable}
         String (or string castable) variable to be checked
 
+    delimiter : str (default = '\\t')
+        Character (or characters) that will be used to separate fields in the
+        file being written. Note that if a writer is using a non-default
+        delimiter this MUST be passed, else the resulting file cannot be read
+        back in.
+
     Returns
     ---------
     str
-        Returns a string which will be essentially identical to the input 
-        string but cleaned up to remove tab and colon characteracs .
+        Returns a string which will be essentially identical to the input
+        string but cleaned up to remove delimiter and colon characters.
 
     """
 
-    s = clean_string(instring)
+    s = clean_string(instring, delimiter)
     s = clean_string(s, ':', '-')
     return s
 

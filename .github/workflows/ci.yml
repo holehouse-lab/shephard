@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         include:
           - os: macos-latest
-            python-version: "3.11"
+            python-version: "3.12"
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
         run: pytest -v --cov=shephard --cov-report=xml shephard/tests/
 
       - name: Upload coverage to Codecov
-        if: ${{ matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest' }}
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
