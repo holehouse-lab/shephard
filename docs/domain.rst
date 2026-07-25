@@ -14,12 +14,12 @@ Domains can be removed from proteins using the ``Protein.remove_domain()`` funct
 
 Domain Properties
 ...................
-.. autofunction:: shephard.domain.Domain.start
-.. autofunction:: shephard.domain.Domain.end
-.. autofunction:: shephard.domain.Domain.protein
-.. autofunction:: shephard.domain.Domain.sequence
-.. autofunction:: shephard.domain.Domain.domain_type
-.. autofunction:: shephard.domain.Domain.domain_name
+.. autoproperty:: shephard.domain.Domain.start
+.. autoproperty:: shephard.domain.Domain.end
+.. autoproperty:: shephard.domain.Domain.protein
+.. autoproperty:: shephard.domain.Domain.sequence
+.. autoproperty:: shephard.domain.Domain.domain_type
+.. autoproperty:: shephard.domain.Domain.domain_name
 
 
 Domain Functions
@@ -31,7 +31,7 @@ Domain Functions
 
 Domain Attribute Functions
 ...........................
-.. autofunction:: shephard.domain.Domain.attributes
+.. autoproperty:: shephard.domain.Domain.attributes
 .. autofunction:: shephard.domain.Domain.attribute
 .. autofunction:: shephard.domain.Domain.add_attribute
 .. autofunction:: shephard.domain.Domain.remove_attribute
@@ -39,9 +39,9 @@ Domain Attribute Functions
 
 Domain Site Functions
 ...........................
-.. autofunction:: shephard.domain.Domain.sites
+.. autoproperty:: shephard.domain.Domain.sites
 .. autofunction:: shephard.domain.Domain.site
-.. autofunction:: shephard.domain.Domain.site_positions
+.. autoproperty:: shephard.domain.Domain.site_positions
 .. autofunction:: shephard.domain.Domain.get_sites_by_type
 
 

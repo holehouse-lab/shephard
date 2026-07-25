@@ -65,8 +65,8 @@ class Proteome:
     * The unique_ID is checked for uniqueness against all others in the Proteomes 
       and will throw and exception if it is, in fact, not unique.
 
-    * Additional proteins can be added using the `.add_protein()` or 
-      `.add_proteins() function.
+    * Additional proteins can be added using the ``.add_protein()`` or
+      ``.add_proteins()`` functions.
 
     """
 
@@ -521,13 +521,15 @@ class Proteome:
                 # values list so that an all-zero / empty values track is
                 # still correctly copied as a values track
                 #
-                # Note we can get away with a shallow copy because we know
-                # these tracks will only have ints or chars in their
-                # elements, which are appropriately copied by a shallow copy
+                # Note we can get away with a shallow copy of the track data
+                # because we know these tracks will only have ints or chars in
+                # their elements, which are appropriately copied by a shallow
+                # copy. The attributes, in contrast, can be arbitrary objects,
+                # so those are deep copied (as they are for Domains and Sites)
                 if t.track_type == 'values':
-                    new_protein.add_track(t.name, t.values.copy(), None)
+                    new_protein.add_track(t.name, t.values.copy(), None, attributes=copy.deepcopy(t._attributes))
                 else:
-                    new_protein.add_track(t.name, None, t.symbols.copy())
+                    new_protein.add_track(t.name, None, t.symbols.copy(), attributes=copy.deepcopy(t._attributes))
 
             self._records[unique_ID] = new_protein
            
@@ -644,7 +646,7 @@ class Proteome:
         ----------------
         name : str
              The attribute name. A list of valid names can be found by 
-             calling the ``<Proteome>.attributes()`` (which returns a list 
+             calling the ``<Proteome>.attributes`` (which returns a list 
              of the valid names).
              
         safe : bool (default = True)
@@ -1139,29 +1141,52 @@ class Proteome:
     ##                        
     def __getitem__(self, key):
         """
-        Allows slicing index into Proteome to retrieve subsets of protein
+        Allows slicing index into Proteome to retrieve subsets of protein.
+        Indexing follows the standard Python conventions, so negative
+        indices count back from the last protein in the Proteome.
 
         .. code-block:: python
 
            first_protein = ProteomeObject[0]
            print(f'The first protein is {first_protein}')
 
-        """
+           last_protein = ProteomeObject[-1]
+           print(f'The last protein is {last_protein}')
 
+        """
 
         # islice consumes the records iterator lazily, so an int index only
         # walks up to `key` rather than materialising every Protein on each
         # access (previously O(P) per index -> O(P^2) when iterated)
-        if isinstance(key, int) and key >= 0:
+        if isinstance(key, int):
+
+            # negative indices are counted back from the end, as they are for
+            # any other Python sequence
+            if key < 0:
+                index = len(self) + key
+            else:
+                index = key
+
+            if index < 0:
+                raise IndexError(f"Proteome index {key} out of range")
+
             try:
-                return next(islice(self._records.values(), key, key + 1))
+                return next(islice(self._records.values(), index, index + 1))
             except StopIteration:
                 raise IndexError(f"Proteome index {key} out of range")
 
         elif isinstance(key, slice):
-            return list(islice(self._records.values(), key.start, key.stop, key.step))
+
+            # islice cannot take negative values, so we only use the lazy path
+            # when every element of the slice is non-negative (by far the most
+            # common case) and otherwise fall back to standard list slicing
+            if all(i is None or i >= 0 for i in (key.start, key.stop, key.step)):
+                return list(islice(self._records.values(), key.start, key.stop, key.step))
+
+            return list(self._records.values())[key]
+
         else:
-            raise KeyError(f"Key must be non-negative integer or slice, not {key}")
+            raise KeyError(f"Key must be an integer or slice, not {key}")
 
 
     ## ------------------------------------------------------------------------
@@ -1222,7 +1247,7 @@ class Proteome:
 
         # if we can't find the domain name in the unique domain types... this is bad!
         if domain_type not in self._unique_domain_types:
-            raise ProteomeException("Tried to remove a Domain type [{domain_type}] from the Proteome.unique_domain_types dictionary but the Domain type could not be found. This is a bug. Please report as a GitHub Issue.")
+            raise ProteomeException(f"Tried to remove a Domain type [{domain_type}] from the Proteome.unique_domain_types dictionary but the Domain type could not be found. This is a bug. Please report as a GitHub Issue.")
             
         # we are removing a unique domain_type name! Big event!
         elif self._unique_domain_types[domain_type] == 1:
@@ -1297,7 +1322,7 @@ class Proteome:
 
         # if we can't find the track name in the unique track names... this is bad!
         if track_name not in self._unique_track_names:
-            raise ProteomeException("Tried to remove a Track name [{track_name}] from the Proteome.unique_track_names dictionary but the track could not be found. This is a bug. Please report as a GitHub Issue.")
+            raise ProteomeException(f"Tried to remove a Track name [{track_name}] from the Proteome.unique_track_names dictionary but the track could not be found. This is a bug. Please report as a GitHub Issue.")
             
         # we are removing a unique track name! Big event!
         elif self._unique_track_names[track_name] == 1:
@@ -1370,7 +1395,7 @@ class Proteome:
 
         # if we can't find the track name in the unique track names... this is bad!
         if site_type not in self._unique_site_types:
-            raise ProteomeException("Tried to remove a Site type [{site_type}] from the Proteome.unique_site_types dictionary but the Site type could not be found. This is a bug. Please report as a GitHub Issue.")
+            raise ProteomeException(f"Tried to remove a Site type [{site_type}] from the Proteome.unique_site_types dictionary but the Site type could not be found. This is a bug. Please report as a GitHub Issue.")
             
         # we are removing a unique site_type name! Big event!
         elif self._unique_site_types[site_type] == 1:

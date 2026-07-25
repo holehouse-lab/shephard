@@ -9,6 +9,31 @@ SHEPHARD uses [semantic versioning](https://semver.org/) loosely: patch releases
 bug fixes, minor releases add functionality, and any change that breaks backwards
 compatibility is called out explicitly at the top of the relevant entry.
 
+#### Version 0.2.4 (July 2024)
+* **BUG FIXES**:
+  * `Proteome[i]` could not be indexed from the end: a negative index raised a `KeyError` and a slice with any negative bound (e.g. `P[-2:]`) raised a `ValueError` from `islice`. Indexing now follows the standard Python conventions, so negative indices count back from the last protein, and an out-of-range integer index raises an `IndexError` rather than a `KeyError`.
+  * Over-writing an existing Track (`add_track(..., safe=False)`, `build_track_values_from_sequence()`, `build_track_symbols_from_sequence()`, `build_track()`) left the replaced Track counted in the Proteome's book-keeping, so a track name could linger in `Proteome.unique_track_names` (and `track_names_to_track_type`) after every Track with that name had been removed. The same was true of `Protein.add_domain()` and `Proteome.unique_domain_types`. Note that the replacement annotation is now built *before* the old one is discarded, so a failed overwrite leaves the pre-existing annotation intact.
+  * `Protein.build_domain()` accepted and documented `safe` and `autoname` but forwarded neither, so `autoname=True` still raised on a duplicate domain and `safe=False` could not be used to over-write one.
+  * Track attributes were silently dropped when Proteins were copied into a new Proteome (`Proteome(list_of_Protein_objects)` or `add_proteins()`), because `Protein.add_track()` had no way to set them. `add_track()` now takes an `attributes` dictionary (matching `add_domain()` and `add_site()`), and Track attributes are deep-copied alongside Domain and Site attributes.
+  * `Protein.sites` is documented as returning Sites sorted N- to C-terminal but returned them in the order they happened to be added, so `protein.sites` (and therefore `Proteome.sites`, and the order in which Sites were written to file) was unordered whenever Sites were added out of sequence.
+  * Three internal book-keeping exceptions in `proteome.py` were missing their `f` prefix, so a genuine book-keeping failure reported a literal `{track_name}`/`{domain_type}`/`{site_type}` placeholder rather than the offending name.
+  * `Site.get_track_values()` on a symbols track (and `Site.get_track_symbols()` on a values track) raised a raw `TypeError` (`None` is not subscriptable) rather than an informative `SiteException`. The same was true of `Track.values_region()` and `Track.symbols_region()`, which now raise a `TrackException`. The equivalent `Domain` functions already reported this properly and continue to raise a `DomainException`.
+  * A Site with no symbol was written out as the literal string `None` (as an unset value always has been) but read back in as the *string* `'None'` rather than `None`, so Sites did not round-trip cleanly through a Sites file. Symbols are now handled exactly as values are.
+* **PERFORMANCE UPGRADES**:
+  * `si_protein_attributes.add_protein_attributes_from_dictionary()` now iterates the (typically small) attributes dictionary and uses O(1) protein look-ups rather than scanning every protein in the Proteome, matching the equivalent change made to the domains, sites and tracks interfaces in 0.2.3.
+* **PACKAGING / INSTALL & CI**:
+  * Added a [tox](https://tox.wiki/) configuration so the full test suite can be run against every supported Python (3.10 - 3.14) with a single `tox` command, mirroring the CI matrix. Individual versions can be run with `tox -e py312`, pytest arguments can be passed through after a `--`, and `tox -e coverage` reproduces the coverage run CI does. The configuration lives in `pyproject.toml` (tox's native TOML format, so it requires tox 4.21 or later) rather than in a separate `tox.ini`, keeping project configuration in one place.
+* **DOCUMENTATION**:
+  * Corrected the stated Python requirement in the installation docs (3.8 -> 3.10, matching `pyproject.toml`), the release date in the README (May -> July 2026), and the copyright range in the Sphinx config.
+  * Documented Proteome indexing/slicing semantics, Track attributes (including the fact that they are in-memory only and are not written to Tracks files), and the `None` symbol/value round-trip convention in Sites files.
+  * `si_protein_attributes.write_protein_attributes_from_dictionary()` is a public function but was missing from the interfaces documentation; also fixed the `si_proteins` section, which named the wrong module.
+  * Fixed the parameter name in the `metapredict_api.annotate_proteome_with_disorder_track()` docstring (`track_name` -> `name`) and removed a stale claim from `Site.update_site_symbol()` that it updated the Proteome's site book-keeping.
+* **TESTS**:
+  * Added `test_bugfix_regressions_0_2_4.py`, an explicit regression test for each of the bugs listed above.
+  * Documented how to run the suite across Python versions with tox in the code convention documentation.
+* **REFACTOR**:
+  * Removed unused imports (`numpy` in `protein.py`, `re` in `sequence_utilities.py`, `ProteinException` in `site.py`, and `random`/`site_tools` in `domain_tools.py`).
+
 #### Version 0.2.3 (July 2026)
 * **BUG FIXES**:
   * Fixed a typo in `proteome.py` (`s.position. s.site_type`) that raised an `AttributeError` when copying any `Protein` containing sites into a new `Proteome` (e.g. `Proteome(list_of_Protein_objects)` or `add_proteins()` with `Protein` objects).

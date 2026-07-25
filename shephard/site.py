@@ -10,7 +10,7 @@ Holehouse Lab - Washington University in St. Louis
 
 from . import general_utilities
 from . import sequence_utilities
-from .exceptions import ProteinException, SiteException
+from .exceptions import SiteException
 
 
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -177,10 +177,9 @@ class Site:
     ##
     def update_site_symbol(self, new_symbol):
         """
-        Function that updates the site_symbol. The site tyoe must be
-        a string. Note this function also updates the proteome list of
-        non-redudant sites
-        
+        Function that updates the site symbol. The symbol must be
+        a string (or None, which clears the symbol).
+
         Parameters
         -----------
         new_symbol : str (or None)
@@ -243,7 +242,7 @@ class Site:
         ----------------
         name : str
              The attribute name. A list of valid names can be found by 
-             calling the ``<Site>.attributes()`` (which returns a list 
+             calling the ``<Site>.attributes`` (which returns a list 
              of the valid names)
              
         safe : bool (default = True)
@@ -458,24 +457,30 @@ class Site:
         Returns
         ----------
         list
-            Returns a list of floats that corresponds to the set of 
+            Returns a list of floats that corresponds to the set of
             residues associated with the domain of interest
-            
+
 
         """
-        
+
         (p1, p2) = sequence_utilities.get_bounding_sites(self._position, offset, self._protein._len)
-        
+
 
         # because calling values_region only makes sense IF the track exists, we have to split
         # this into two operations. Note this throws an exception if safe=True and the track
         # does not exist
         t = self._protein.track(name, safe)
 
-        if t is not None:
-            return t.values_region(p1, p2)
-        else:
+        if t is None:
             return None
+
+        # a symbols track has no values to slice into, so give a clear error
+        # rather than letting a TypeError escape (this mirrors how Domains
+        # handle the same mistake)
+        if t.values is None:
+            raise SiteException(f'Requesting values from Track [{name}], but this is a symbols track - try get_track_symbols()')
+
+        return t.values_region(p1, p2)
 
 
     ## ------------------------------------------------------------------------
@@ -553,10 +558,14 @@ class Site:
         # track does not exist
         t = self._protein.track(name, safe)
 
-        if t is not None:
-            return t.symbols_region(p1,p2)
-        else:
+        if t is None:
             return None
+
+        # ... and symmetrically, a values track has no symbols to slice into
+        if t.symbols is None:
+            raise SiteException(f'Requesting symbols from Track [{name}], but this is a values track - try get_track_values()')
+
+        return t.symbols_region(p1, p2)
 
 
     ## ------------------------------------------------------------------------

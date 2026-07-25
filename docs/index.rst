@@ -23,7 +23,7 @@ SHEPHARD is deliberately **not** an analysis library: it does not provide built-
 Installation
 --------------
 
-SHEPHARD is pure Python (no compiled extensions) and supports Python 3.8 and above. It is distributed via the Python Package Index (PyPI), so the current public release can be installed using::
+SHEPHARD is pure Python (no compiled extensions) and requires Python 3.10 or above. It is distributed via the Python Package Index (PyPI), so the current public release can be installed using::
 
 	pip install shephard
 

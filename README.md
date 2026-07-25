@@ -2,7 +2,7 @@ SHEPHARD
 ==============================
 #### Sequence-based Hierarchical and Extendable Platform for High-throughput Analysis of Region of Disorder
 
-### Current major version: 0.2.3 (May 2026)
+### Current major version: 0.2.3 (July 2026)
 
 [//]: # (Badges)
 [![CI](https://github.com/holehouse-lab/shephard/actions/workflows/ci.yml/badge.svg)](https://github.com/holehouse-lab/shephard/actions/workflows/ci.yml)

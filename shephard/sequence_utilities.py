@@ -7,7 +7,6 @@ Contact: (g.ginell@wustl.edu)
 
 Holehouse Lab - Washington University in St. Louis
 """
-import re
 
 def inside_region(boundary_start, boundary_end, position):
     """

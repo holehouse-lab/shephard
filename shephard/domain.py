@@ -11,7 +11,7 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 from . import sequence_utilities
-from .exceptions import DomainException
+from .exceptions import DomainException, TrackException
 from . import general_utilities
 from .tools import domain_tools
 
@@ -123,7 +123,7 @@ class Domain:
         ----------------
         name : str
              The attribute name. A list of valid names can be found by 
-             calling the ``<domain>.attributes()`` (which returns a list 
+             calling the ``<Domain>.attributes`` (which returns a list 
              of the valid names)
 
         safe : bool (default = True)
@@ -531,7 +531,7 @@ class Domain:
         if t is not None:
             try:
                 return t.values_region(self._start, self._end)
-            except TypeError:
+            except (TypeError, TrackException):
                 if t.values is None:
                     raise DomainException('Passed associated track has no values - try get_track_symbols')
                 else:
@@ -574,7 +574,7 @@ class Domain:
         if t is not None:
             try:
                 return t.symbols_region(self._start, self._end)
-            except TypeError:
+            except (TypeError, TrackException):
                 if t.symbols is None:
                     raise DomainException('Passed associated track has no symbols - try get_track_values')
                 else:

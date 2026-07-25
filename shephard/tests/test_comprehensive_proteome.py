@@ -330,12 +330,28 @@ class TestProteomeDunders:
         sub = P[1:3]
         assert [p.unique_ID for p in sub] == ['U1', 'U2']
 
+    def test_getitem_negative_index(self):
+        # negative indices count back from the end, as for any Python sequence
+        P = _basic_proteome(3)
+        assert P[-1].unique_ID == 'U2'
+        assert P[-3].unique_ID == 'U0'
+
+    def test_getitem_negative_slice(self):
+        P = _basic_proteome(4)
+        assert [p.unique_ID for p in P[-2:]] == ['U2', 'U3']
+        assert [p.unique_ID for p in P[:-2]] == ['U0', 'U1']
+
+    def test_getitem_out_of_range_raises(self):
+        P = _basic_proteome(2)
+        with pytest.raises(IndexError):
+            P[2]
+        with pytest.raises(IndexError):
+            P[-3]
+
     def test_getitem_bad_key_raises(self):
         P = _basic_proteome(1)
         with pytest.raises(KeyError):
             P['not-an-int']
-        with pytest.raises(KeyError):
-            P[-1]
 
     def test_repr(self):
         assert 'Proteome' in repr(_basic_proteome(2))

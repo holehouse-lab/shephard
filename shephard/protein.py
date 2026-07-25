@@ -8,7 +8,6 @@ Contact: (alex.holehouse@wustl.edu, g.ginell@wustl.edu)
 Holehouse Lab - Washington University in St. Louis
 """
 
-import numpy as np
 from . import exceptions
 from . import sequence_utilities
 from .domain import Domain 
@@ -491,7 +490,7 @@ class Protein:
         ----------------
         name : str
              The attribute name. A list of valid names can be found by 
-             calling the ``<Protein>.attributes()`` (which returns a 
+             calling the ``<Protein>.attributes`` (which returns a 
              list of the valid names).
              
 
@@ -663,8 +662,8 @@ class Protein:
         Parameters
         ----------------
         name : str
-            The track name. A list of valid names can be found by calling 
-            the ``<Protein>.tracks()`` (which returns a list of the valid 
+            The track name. A list of valid names can be found using
+            ``<Protein>.track_names`` (which returns a list of the valid
             track names).
 
         Returns
@@ -700,9 +699,9 @@ class Protein:
         Parameters
         ----------------
         name : string
-            The track name. A list of valid names can be found by calling 
-            the <Protein>.tracks (which returns a list of the valid track 
-            names).
+            The track name. A list of valid names can be found using
+            ``<Protein>.track_names`` (which returns a list of the valid
+            track names).
 
         start : int (default None)
             If provided defines the start position along the track. If not
@@ -748,9 +747,9 @@ class Protein:
         Parameters
         ----------------
         name : string
-            The track name. A list of valid names can be found by calling 
-            the <Protein>.tracks (which returns a list of the valid track 
-            names).
+            The track name. A list of valid names can be found using
+            ``<Protein>.track_names`` (which returns a list of the valid
+            track names).
 
         start : int (default = None)
             If provided defines the start position along the track. If not
@@ -887,7 +886,7 @@ class Protein:
 
     ## ------------------------------------------------------------------------
     ##
-    def add_track(self, name, values=None, symbols=None, safe=True):
+    def add_track(self, name, values=None, symbols=None, safe=True, attributes=None):
         """
         Function that adds a track to this protein. For more information 
         on Tracks see the relevant documentation. However, some general 
@@ -917,9 +916,14 @@ class Protein:
             to a specific residue in the sequence. 
                    
         safe : bool (default = True)
-            If set to True over-writing tracks will raise an exception, 
+            If set to True over-writing tracks will raise an exception,
             otherwise overwriting a track will simply over-write it.
-            
+
+        attributes : dict (default = None)
+            Optional dictionary which allows an arbitrary set of attributes to
+            be associated with the Track, in much the same way that they can be
+            associated with a Protein. Note that Track attributes cannot
+            currently be written to (or read from) SHEPHARD Tracks files.
 
         Returns
         ----------
@@ -931,8 +935,8 @@ class Protein:
         if name in self.track_names:
             if safe is True:
                 raise exceptions.ProteinException(f'Trying to add Track [{name}] in protein [{self.name}] but Track already exists')
-                
-        self._tracks[name] = Track(name, self, values, symbols)
+
+        self.__assign_track(name, Track(name, self, values, symbols, attributes))
 
 
     ## ------------------------------------------------------------------------
@@ -1079,7 +1083,7 @@ class Protein:
             built_track = trackfunction(self.sequence, input_dictionary)
             
         # finally add the track
-        self._tracks[name] = Track(name, self, values=built_track, symbols=None)
+        self.__assign_track(name, Track(name, self, values=built_track, symbols=None))
 
 
 
@@ -1222,7 +1226,7 @@ class Protein:
             built_track = trackfunction(self.sequence, input_dictionary)
             
         # finally add the track
-        self._tracks[name] = Track(name, self, values=None, symbols=built_track)
+        self.__assign_track(name, Track(name, self, values=None, symbols=built_track))
 
 
 
@@ -1274,7 +1278,48 @@ class Protein:
         values = track_out['values']
         symbols = track_out['symbols']
 
-        self._tracks[name] = Track(name, self, values=values, symbols=symbols)
+        self.__assign_track(name, Track(name, self, values=values, symbols=symbols))
+
+
+
+    ## ------------------------------------------------------------------------
+    ##
+    def __assign_track(self, name, new_track):
+        """
+        INTERNAL FUNCTION (not for public API use)
+
+        Function that assigns an already-constructed Track to this Protein,
+        taking care of the case where an existing Track of the same name is
+        being over-written.
+
+        This matters because the Proteome keeps a count of how many Tracks
+        carry each name (which is what unique_track_names reports). Simply
+        writing over the entry in self._tracks leaves the replaced Track
+        counted forever, so a Track name could linger in the Proteome after
+        every Track with that name had been removed.
+
+        Note the new Track is built by the caller BEFORE we get here, so if
+        construction fails the pre-existing Track is left untouched.
+
+        Parameters
+        ---------------
+        name : str
+            Name the Track will be stored under.
+
+        new_track : shephard.track.Track
+            The newly-constructed Track object.
+
+        Returns
+        ---------------
+        None
+            No return type, but assigns the Track to the Protein.
+
+        """
+
+        if name in self._tracks:
+            self.remove_track(self._tracks[name])
+
+        self._tracks[name] = new_track
 
 
 
@@ -1314,7 +1359,7 @@ class Protein:
             if safe is False:
                 return 
             else:
-                raise ProteinException(f'track_object was not a Track, but Safe=True')
+                raise ProteinException('track_object was not a Track, but safe=True')
                 
         # failsafe to ensure we can only delete tracks that truly come from the protein we're passing
         # into
@@ -1401,9 +1446,9 @@ class Protein:
         Parameters
         ----------------
         name : string
-            The Domain name. A list of valid names can be found by calling 
-            the <Protein>.domains (which returns a list of the valid track 
-            names).
+            The Domain name. A list of valid names can be found using
+            ``<Protein>.domain_names`` (which returns a list of the valid
+            domain names).
              
         safe : bool (default = True)
             Flag which if true with throw an exception if no domain exists 
@@ -1566,8 +1611,19 @@ class Protein:
                 full_name = newname
             elif safe:
                 raise exceptions.ProteinException(f'Domain [{full_name}] already found in proteins {self.name}')
-            
-        self._domains[full_name] = Domain(start, end, self, domain_type, full_name, attributes=attributes)
+
+        new_domain = Domain(start, end, self, domain_type, full_name, attributes=attributes)
+
+        # if we are over-writing an existing Domain, remove the old one properly
+        # rather than just writing over it - remove_domain() also decrements the
+        # Proteome's domain-type book-keeping, which would otherwise keep
+        # counting the Domain we just discarded. Note we only do this once the
+        # new Domain has been built, so a failed construction leaves the
+        # pre-existing Domain untouched
+        if full_name in self._domains:
+            self.remove_domain(self._domains[full_name])
+
+        self._domains[full_name] = new_domain
 
 
 
@@ -1587,26 +1643,22 @@ class Protein:
             Any input that makes sense when passed to the 
             domain_definition_function().
 
-        domain_definition_function : function that takes a single argument 
-            (input_data) and returns a list of 0 or more dictionaries. Each 
-            dictionary within the list has a key-value pair that 
-            
-            defines the following info:
-                    
-                start : domain start position
-                end   : domain end position
-                domain_type : type of the domain
-                attributes : a dictionary of attributes to associated with 
-                             the domain (optional)
-            
-            Note that in principle only start and end are required, although
-            we highly recommend one/both of domain name and domain type.
-            
-            Some important requirements to consider:
+        domain_definition_function : function
+            A function that takes a single argument (input_data) and returns
+            a list of zero or more domain dictionaries. Each dictionary within
+            the list defines the following info ::
 
-            (1) domain_definition_function must return a list of zero or more 
-                dictionaries.
-            
+                start       : domain start position
+                end         : domain end position
+                domain_type : type of the domain
+                attributes  : a dictionary of attributes to associate with
+                              the domain (optional)
+
+            Note that in principle only start and end are required, although
+            we highly recommend one/both of domain name and domain type. Note
+            also that the domain_definition_function MUST return a list of
+            zero or more dictionaries.
+
         safe : bool (default = True)
             Flag which if true with throw an exception of a domain with the 
             same name already exists.
@@ -1625,7 +1677,9 @@ class Protein:
         # domain_definitions is a list
         domain_definitions = domain_definition_function(input_data)
 
-        self.add_domains(domain_definitions)
+        # note we pass safe and autoname through - previously these were
+        # accepted, documented, and then silently dropped
+        self.add_domains(domain_definitions, safe=safe, autoname=autoname)
 
     ## ------------------------------------------------------------------------
     ##        
@@ -1914,13 +1968,16 @@ class Protein:
     @property
     def sites(self):
         """
-        Provides a list of the sites associated with 
+        Provides a list of the sites associated with
         every site on the protein. Sorted N to C terminal.
         """
 
-        # this means we will always
+        # note we walk the positions in sorted order rather than in the order
+        # sites happened to be added, so the returned list really is sorted
+        # N to C terminal, as documented. Sites that share a position are
+        # returned in the order they were added
         all_sites = []
-        for k in self._sites:
+        for k in self.site_positions:
             for s in self._sites[k]:
                 all_sites.append(s)
 
@@ -2090,7 +2147,7 @@ class Protein:
             if safe is False:
                 return 
             else:
-                raise ProteinException(f'site_object was not a Site, but safe=True.')
+                raise ProteinException('site_object was not a Site, but safe=True.')
 
 
         # excise the site positions

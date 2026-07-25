@@ -9,6 +9,8 @@ Tracks are appropriate when an analysis produces a *continuous* output that can 
 
 Tracks for a given protein can be requested using the ``protein.track(<track name>)`` function (returns the ``Track`` object), or the underlying data accessed directly with ``protein.get_track_values()`` / ``protein.get_track_symbols()``. Sub-regions can be extracted with ``values_region()`` / ``symbols_region()``, and individual positions with ``value()`` / ``symbol()``. All tracks of a given name across an entire proteome can be requested with ``Proteome.get_tracks_by_name()``.
 
+Like every other SHEPHARD annotation, a Track can carry arbitrary key-value attributes, either passed at creation (``Protein.add_track(..., attributes={...})``) or added later with ``Track.add_attribute()``. Note that Track attributes live in memory only — they are not written to or read from SHEPHARD Tracks files (see :doc:`shephard_file_types`), although they *are* preserved when Proteins are copied into a new Proteome.
+
 Tracks can be removed from proteins using the ``Protein.remove_track()`` function.
 
 .. autoclass:: shephard.track.Track
@@ -16,11 +18,11 @@ Tracks can be removed from proteins using the ``Protein.remove_track()`` functio
 
 Track Properties
 ................
-.. autofunction:: shephard.track.Track.name
-.. autofunction:: shephard.track.Track.values
-.. autofunction:: shephard.track.Track.symbols
-.. autofunction:: shephard.track.Track.protein
-.. autofunction:: shephard.track.Track.track_type
+.. autoproperty:: shephard.track.Track.name
+.. autoproperty:: shephard.track.Track.values
+.. autoproperty:: shephard.track.Track.symbols
+.. autoproperty:: shephard.track.Track.protein
+.. autoproperty:: shephard.track.Track.track_type
 
 Track Functions
 ...............
@@ -32,7 +34,7 @@ Track Functions
 
 Track Attribute Functions
 ...........................
-.. autofunction:: shephard.track.Track.attributes
+.. autoproperty:: shephard.track.Track.attributes
 .. autofunction:: shephard.track.Track.attribute
 .. autofunction:: shephard.track.Track.add_attribute
 .. autofunction:: shephard.track.Track.remove_attribute

@@ -87,6 +87,32 @@ omit = [
     "shephard/_version.py",
 ]
 
+# tox configuration - lets the full test suite be run against every supported
+# Python with a single command, mirroring what CI does. This uses tox's native
+# TOML configuration so all project config stays in pyproject.toml, which
+# requires tox 4.21 or later.
+#
+#   tox                        # test against every supported Python
+#   tox -e py312               # test against a single Python
+#   tox -e py312 -- -k uniprot # anything after -- goes to pytest
+#   tox -e coverage            # run with coverage, as CI does
+#
+# Note that tox skips (and reports) any interpreter that is not installed
+# locally rather than failing the run, so a missing 3.14 is not an error.
+[tool.tox]
+requires = ["tox>=4.21"]
+env_list = ["py310", "py311", "py312", "py313", "py314"]
+
+[tool.tox.env_run_base]
+description = "run the test suite under {base_python}"
+extras = ["test"]
+commands = [["pytest", {replace = "posargs", extend = true, default = []}]]
+
+[tool.tox.env.coverage]
+description = "run the test suite with coverage, as CI does"
+extras = ["test"]
+commands = [["pytest", "--cov=shephard", "--cov-report=term-missing", "--cov-report=xml", {replace = "posargs", extend = true, default = []}]]
+
 [tool.versioningit]
 default-version = "1+unknown"
 

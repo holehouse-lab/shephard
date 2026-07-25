@@ -59,19 +59,19 @@ def annotate_proteome_with_disorder_track(proteome,
     for every protein. 
 
     By default, disorder Tracks are named 'disorder', although
-    this can be changed by setting the `track_name` parameter.
+    this can be changed by setting the `name` parameter.
 
-    Disorder prediction uses the batch mode in metapredict, which 
+    Disorder prediction uses the batch mode in metapredict, which
     leverages parallel predictions automatically on GPUs or CPUs.
     However, if a specific device is requested, this can be passed
 
     Parameters
     -----------------
-    proteome : shephard.proteome.Proteome 
+    proteome : shephard.proteome.Proteome
         Proteome object to be annotated.
 
-    track_name : str
-        Name of the Track added to each Protein. 
+    name : str
+        Name of the Track added to each Protein.
         Default = 'disorder'
 
     device : int or str 
@@ -81,15 +81,13 @@ def annotate_proteome_with_disorder_track(proteome,
         cuda.is_available() returns False, instead of falling back to CPU, 
         metapredict will raise an Exception so you know that you are not
         using CUDA as you were expecting. 
-        Default: None
-            When set to None, we will check if there is a cuda-enabled
-            GPU. If there is, we will try to use that GPU. 
-            If you set the value to be an int, we will use cuda:int as the device
-            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
-            corresponds to the first GPU, and so on. Only specify this if you
-            know which GPU you want to use. 
-            * Note: MPS is only supported in Pytorch 2.1 or later. 
-            MPS is still fairly new, so use it at your own risk.  
+        The default is None, which means we check if there is a
+        cuda-enabled GPU and, if there is, try to use it. If an int is
+        passed we use cuda:<int> as the device, where the GPU numbering is
+        0-indexed (so 0 corresponds to the first GPU). Only set this if you
+        know which GPU you want to use. Note that MPS is only supported in
+        PyTorch 2.1 or later, and is still fairly new, so use it at your own
+        risk.
                                           
     version : int
         Defines the metapredict version to use (must be one of 1, 2 
@@ -187,15 +185,13 @@ def annotate_proteome_with_disordered_domains(proteome,
         cuda.is_available() returns False, instead of falling back to CPU, 
         metapredict will raise an Exception so you know that you are not
         using CUDA as you were expecting. 
-        Default: None
-            When set to None, we will check if there is a cuda-enabled
-            GPU. If there is, we will try to use that GPU. 
-            If you set the value to be an int, we will use cuda:int as the device
-            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
-            corresponds to the first GPU and so on. Only specify this if you
-            know which GPU you want to use. 
-            * Note: MPS is only supported in Pytorch 2.1 or later. 
-            MPS is still fairly new, so use it at your own risk.  
+        The default is None, which means we check if there is a
+        cuda-enabled GPU and, if there is, try to use it. If an int is
+        passed we use cuda:<int> as the device, where the GPU numbering is
+        0-indexed (so 0 corresponds to the first GPU). Only set this if you
+        know which GPU you want to use. Note that MPS is only supported in
+        PyTorch 2.1 or later, and is still fairly new, so use it at your own
+        risk.
 
     version : int
         Defines the metapredict version to use (must be one of 1, 2 
@@ -311,15 +307,13 @@ def annotate_proteome_with_disorder_tracks_and_disordered_domains(proteome,
         cuda.is_available() returns False, instead of falling back to CPU, 
         metapredict will raise an Exception so you know that you are not
         using CUDA as you were expecting. 
-        Default: None
-            When set to None, we will check if there is a cuda-enabled
-            GPU. If there is, we will try to use that GPU. 
-            If you set the value to be an int, we will use cuda:int as the device
-            where int is the int you specify. The GPU numbering is 0 indexed, so 0 
-            corresponds to the first GPU and so on. Only specify this if you
-            know which GPU you want to use. 
-            * Note: MPS is only supported in Pytorch 2.1 or later. 
-            MPS is still fairly new, so use it at your own risk.             
+        The default is None, which means we check if there is a
+        cuda-enabled GPU and, if there is, try to use it. If an int is
+        passed we use cuda:<int> as the device, where the GPU numbering is
+        0-indexed (so 0 corresponds to the first GPU). Only set this if you
+        know which GPU you want to use. Note that MPS is only supported in
+        PyTorch 2.1 or later, and is still fairly new, so use it at your own
+        risk.           
 
     version : int
         Defines the metapredict version to use (must be one of 1, 2 

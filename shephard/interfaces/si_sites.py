@@ -95,7 +95,18 @@ class _SitesInterface:
                 
                 position = int(sline[1].strip())
                 site_type = sline[2].strip()
-                symbol = sline[3].strip()
+
+                # this enables the symbol to be None if there is no symbolic
+                # information associated with a site. Note the writer emits
+                # 'None' for an unset symbol, so without this a Site written
+                # out and read back in gained the literal string 'None' as its
+                # symbol (the value field, below, has always been handled this
+                # way - the two are now consistent)
+                tmp = sline[3].strip()
+                if tmp == 'None':
+                    symbol = None
+                else:
+                    symbol = tmp
 
                 # this enables the value to be None if you
                 # write a symbol where there's no value associated

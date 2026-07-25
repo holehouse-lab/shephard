@@ -49,6 +49,7 @@ Here:
 * :code:`site type` is a free-form string that describes the type of the site. This can be anything, and is used for site selection in SHEPHARD
 * :code:`symbol` is some kind of symbolic information that is ascribed to the site. Because this is a required field, if no symbolic information makes sense simply include a dash here.
 * :code:`value` is some kind of numerical information that is ascribed to the site. Because this is a required field, if no numerical information makes sense simply set this to 1
+* Note that a Site whose symbol or value is unset (``None``) is written out as the literal string ``None`` in that column, and is read back in as ``None`` again, so Sites round-trip through a Sites file unchanged.
 * :code:`key:value` the remainder of the file is made up of key:value pairs which allow arbitrary metadata to be associated with each site. The colon ':' character splits two strings, where the first is a key and second a value. These become accessible via the site's :code:`attributes` properties.
 
 
@@ -91,7 +92,9 @@ Here:
 
 The remainder of the file (:code:`v1`, :code:`v2`, :code:`vn`) are values or symbols that should map to each residue, such that each residue has a value or symbol in the track file. When reading in a track file, an error will occur if the number of symbols/values does not match the protein length.
 
-Tracks must be EITHER all numerical or all symbolic, and when read in the user has to specify which they are. This reflects the fact that Track objects are either symbolic- or value-based. 
+Tracks must be EITHER all numerical or all symbolic, and when read in the user has to specify which they are. This reflects the fact that Track objects are either symbolic- or value-based.
+
+Note that, unlike Sites, Domains, and Proteins, Track files do not carry attributes. Track objects *can* hold attributes in memory (see ``Track.add_attribute()``), but these are not written to (or read from) a Tracks file — if you need per-Track metadata to persist, store it as a Protein attribute instead.
 
 
 

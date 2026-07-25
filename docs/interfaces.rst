@@ -68,11 +68,12 @@ Functions associated with the ``si_protein_attributes`` module enable the readin
 .. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_dictionary
 .. autofunction:: shephard.interfaces.si_protein_attributes.add_protein_attributes_from_file
 .. autofunction:: shephard.interfaces.si_protein_attributes.write_protein_attributes
+.. autofunction:: shephard.interfaces.si_protein_attributes.write_protein_attributes_from_dictionary
 
 
 si_proteins
 ----------------------
-Functions associated with the ``si_protein_attributes`` module enable the reading and writing of SHEPHARD Protein files. While we include this for completeness, our general recommendation is to use FASTA files for protein information, and then write protein attributes out as separate protein attributes files. The reason for this is that this ensures easy readability of both protein sequence information and protein annotation information.
+Functions associated with the ``si_proteins`` module enable the reading and writing of SHEPHARD Protein files. While we include this for completeness, our general recommendation is to use FASTA files for protein information, and then write protein attributes out as separate protein attributes files. The reason for this is that this ensures easy readability of both protein sequence information and protein annotation information.
 
 .. autofunction:: shephard.interfaces.si_proteins.add_proteins_from_dictionary
 .. autofunction:: shephard.interfaces.si_proteins.add_proteins_from_file

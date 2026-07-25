@@ -200,8 +200,8 @@ class Track:
             Starting position of interest
 
         end : int
-            Ending position of interest. If not provided
-            then only the 
+            Ending position of interest. If not provided then only the
+            value at the start position is returned.
 
         Returns
         --------
@@ -210,6 +210,11 @@ class Track:
             defined by start and end)
 
         """
+
+        # a symbols track has no values to slice into, so say so rather than
+        # letting a TypeError ('NoneType' is not subscriptable) escape
+        if self._values is None:
+            raise TrackException(f'Requesting values from a symbols track [{self!s}] - try symbols_region()')
 
         # this list comprehension checks start and end are valid options
         if end is not None:
@@ -235,16 +240,20 @@ class Track:
             Starting position of interest.
 
         end : int
-            Ending position of interest.
+            Ending position of interest. If not provided then only the
+            symbol at the start position is returned.
 
         Returns
         --------
         list
-            Returns a list of values that maps to the residues in the 
+            Returns a list of values that maps to the residues in the
             intervening region defined by start and end).
 
         """
 
+        # ... and symmetrically, a values track has no symbols to slice into
+        if self._symbols is None:
+            raise TrackException(f'Requesting symbols from a values track [{self!s}] - try values_region()')
 
         # this list comprehension checks start and end are valid options
         if end is not None:
@@ -292,7 +301,8 @@ class Track:
     ##
     def symbol(self, position, safe=True):
         """
-        Returns a single symbol from the passed position
+        Returns a single symbol from the passed position.
+
         Parameters
         ----------
         position : int
@@ -375,7 +385,7 @@ class Track:
         ----------------
         name : str
             The attribute name. A list of valid names can be found by 
-            calling the  ``<Track>.attributes()`` (which returns a list 
+            calling the  ``<Track>.attributes`` (which returns a list 
             of the valid names).
             
 

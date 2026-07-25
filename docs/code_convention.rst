@@ -158,7 +158,7 @@ Firstly, we'll define our new function to make this complete transparent
 	return len(domain)
 
 
-Having defined this function, we move into the directory ``shephard/data/test_data`. We could EITHER create new files for our tests, or take avantage of some of the existing test data. To make things simple and reproducible we'll use two files that already exist:
+Having defined this function, we move into the directory ``shephard/data/test_data``. We could EITHER create new files for our tests, or take avantage of some of the existing test data. To make things simple and reproducible we'll use two files that already exist:
 
 * ``testset_1.fasta`` - which contains a set of FASTA files in UniProt format, and 
 
@@ -259,5 +259,30 @@ This is the basics for getting tests up and running, but, of course, right now t
 
   
 In the psuedocode above, we import the ProteinException class (an exception defined by SHEPHARD) and then using the ``with`` syntax run a statement which says, *"if the function raises ProteinException then this passes, else this is considered a failure"*. This type of exception-checking can be EXTREMELY useful for ensuring your code is robust to unexpected input.
+
+
+Testing across Python versions
+................................
+
+Running ``pytest`` tests SHEPHARD against whichever Python you happen to be using. Because SHEPHARD supports Python 3.10 through 3.14, we also provide a `tox <https://tox.wiki/>`_ configuration (in ``pyproject.toml``) that builds the package and runs the full test suite against each of those versions in an isolated environment. This is the same matrix CI runs, so it is a good way to catch a version-specific problem before pushing.
+
+.. code-block:: bash
+
+    # install tox (once)
+    pip install tox
+
+    # build SHEPHARD and run the test suite against every supported Python
+    tox
+
+    # ... or against a single version
+    tox -e py312
+
+Anything after a ``--`` is passed straight through to pytest, so the usual pytest arguments still work:
+
+.. code-block:: bash
+
+    tox -e py312 -- -v -k uniprot
+
+Note that tox will skip (and report) any interpreter that is not installed on your machine rather than failing the run, so you do not need all five Pythons locally. Finally, ``tox -e coverage`` runs the suite with coverage reporting, exactly as CI does.
 
 

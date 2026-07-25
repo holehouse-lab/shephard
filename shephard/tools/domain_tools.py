@@ -9,8 +9,6 @@ Holehouse Lab - Washington University in St. Louis
 """
 
 import numpy as np
-import random
-from . import site_tools
 from shephard import general_utilities
 from shephard import exceptions
 from shephard.interfaces.interface_tools import check_protein
@@ -56,8 +54,9 @@ def domain_overlap(domain_1, domain_2, check_origin=True):
 ##
 def domain_overlap_fraction(domain_1, domain_2, check_origin=True):
     """
-    Given two domains asks what fraction the shorter domain 
+    Given two domains asks what fraction the shorter domain
     overlaps the longer one with.
+
     Parameters
     -----------
     domain_1 : shephard.domain.Domain

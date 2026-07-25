@@ -23,7 +23,7 @@ import shephard
 # -- Project information -----------------------------------------------------
 
 project = 'shephard'
-copyright = ("2019-2022, Garrett Ginell and Alex Holehouse. Developed by the Holehouse lab")
+copyright = ("2019-2026, Garrett Ginell and Alex Holehouse. Developed by the Holehouse lab")
 author = 'Garrett Ginell and Alex Holehouse'
 
 # The short X.Y version

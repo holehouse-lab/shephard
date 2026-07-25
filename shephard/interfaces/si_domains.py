@@ -217,11 +217,14 @@ def add_domains_from_file(proteome, filename, delimiter='\t', autoname=False, re
         verbose=True.       
 
     skip_bad : bool (default = True)
-        Flag that means if bad lines (lines that trigger an exception) are 
-        encountered the code will just skip them. By default this is true, 
-        which adds a certain robustness to file parsing, but could also 
-        hide errors. Note that if lines are skipped a warning will be 
-        printed (regardless of verbose flag). 
+        Flag that means if bad lines (lines that trigger an exception) are
+        encountered the code will just skip them. By default this is true,
+        which adds a certain robustness to file parsing, but could also
+        hide errors. Note that if lines are skipped a warning will be
+        printed (regardless of verbose flag). Note also that no more than
+        MAX_BAD_COUNT (10) bad lines will be skipped - if more than this
+        many bad lines are found an InterfaceException is raised even
+        when skip_bad is True.
 
     verbose : bool (default  = True)
         Flag that defines how 'loud' output is. Will warn about errors on 

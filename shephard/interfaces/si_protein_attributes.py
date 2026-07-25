@@ -292,28 +292,33 @@ def add_protein_attributes_from_dictionary(proteome, protein_attribute_dictionar
     # check first argument is a Proteome
     interface_tools.check_proteome(proteome, 'add_protein_attributes (si_protein_attributes)')
     
-    for protein in proteome:
-        if protein.unique_ID in protein_attribute_dictionary:
+    # iterate the (typically smaller) dictionary rather than every protein
+    # in the proteome; protein() is an O(1) dict lookup
+    for unique_ID in protein_attribute_dictionary:
 
-            # note here each AD is its own dictionary
-            for AD in protein_attribute_dictionary[protein.unique_ID]:
+        protein = proteome.protein(unique_ID, safe=False)
+        if protein is None:
+            continue
 
-                # for each attribute-key
-                for k in AD:            
+        # note here each AD is its own dictionary
+        for AD in protein_attribute_dictionary[unique_ID]:
 
-                    # get the value
-                    v = AD[k]
+            # for each attribute-key
+            for k in AD:
 
-                    try:
-                        protein.add_attribute(k, v, safe=safe)
-                    except ProteinException as e:
-                        msg=f'- skipping attribute entry on protein {protein.unique_ID} (key: {k}) '
-                        if safe:
-                            shephard_exceptions.print_and_raise_error(msg, e)
-                        else:
-                            if verbose:
-                                shephard_exceptions.print_warning(msg)
-                            continue
+                # get the value
+                v = AD[k]
+
+                try:
+                    protein.add_attribute(k, v, safe=safe)
+                except ProteinException as e:
+                    msg=f'- skipping attribute entry on protein {protein.unique_ID} (key: {k}) '
+                    if safe:
+                        shephard_exceptions.print_and_raise_error(msg, e)
+                    else:
+                        if verbose:
+                            shephard_exceptions.print_warning(msg)
+                        continue
 
 
 

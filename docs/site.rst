@@ -14,12 +14,12 @@ A Site's ``value`` and ``symbol`` can be updated in place using ``update_site_va
 
 Site properties
 ................
-.. autofunction:: shephard.site.Site.residue
-.. autofunction:: shephard.site.Site.position
-.. autofunction:: shephard.site.Site.protein
-.. autofunction:: shephard.site.Site.site_type
-.. autofunction:: shephard.site.Site.symbol
-.. autofunction:: shephard.site.Site.value
+.. autoproperty:: shephard.site.Site.residue
+.. autoproperty:: shephard.site.Site.position
+.. autoproperty:: shephard.site.Site.protein
+.. autoproperty:: shephard.site.Site.site_type
+.. autoproperty:: shephard.site.Site.symbol
+.. autoproperty:: shephard.site.Site.value
 
 
 Site update functions
@@ -35,7 +35,7 @@ Site sequence functions
 
 Site Attribute Functions
 ...........................
-.. autofunction:: shephard.site.Site.attributes
+.. autoproperty:: shephard.site.Site.attributes
 .. autofunction:: shephard.site.Site.attribute
 .. autofunction:: shephard.site.Site.add_attribute
 .. autofunction:: shephard.site.Site.remove_attribute

@@ -60,10 +60,10 @@ As an example:
 Protein properties
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.name
-.. autofunction:: shephard.protein.Protein.proteome
-.. autofunction:: shephard.protein.Protein.sequence
-.. autofunction:: shephard.protein.Protein.unique_ID
+.. autoproperty:: shephard.protein.Protein.name
+.. autoproperty:: shephard.protein.Protein.proteome
+.. autoproperty:: shephard.protein.Protein.sequence
+.. autoproperty:: shephard.protein.Protein.unique_ID
 
 
 Sequence functions
@@ -79,7 +79,7 @@ Sequence functions
 Attribute functions
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.attributes
+.. autoproperty:: shephard.protein.Protein.attributes
 .. autofunction:: shephard.protein.Protein.attribute
 .. autofunction:: shephard.protein.Protein.add_attribute
 .. autofunction:: shephard.protein.Protein.remove_attribute
@@ -87,10 +87,10 @@ Attribute functions
 Domain functions
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.domains
-.. autofunction:: shephard.protein.Protein.domain_names
+.. autoproperty:: shephard.protein.Protein.domains
+.. autoproperty:: shephard.protein.Protein.domain_names
 .. autofunction:: shephard.protein.Protein.domain
-.. autofunction:: shephard.protein.Protein.domain_types
+.. autoproperty:: shephard.protein.Protein.domain_types
 .. autofunction:: shephard.protein.Protein.add_domain
 .. autofunction:: shephard.protein.Protein.add_domains
 .. autofunction:: shephard.protein.Protein.build_domain
@@ -104,9 +104,9 @@ Domain functions
 Track functions
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.tracks
+.. autoproperty:: shephard.protein.Protein.tracks
 .. autofunction:: shephard.protein.Protein.track
-.. autofunction:: shephard.protein.Protein.track_names
+.. autoproperty:: shephard.protein.Protein.track_names
 .. autofunction:: shephard.protein.Protein.get_track_values
 .. autofunction:: shephard.protein.Protein.get_track_symbols
 .. autofunction:: shephard.protein.Protein.add_track
@@ -120,10 +120,10 @@ Track functions
 Site functions
 ---------------------
 
-.. autofunction:: shephard.protein.Protein.sites
+.. autoproperty:: shephard.protein.Protein.sites
 .. autofunction:: shephard.protein.Protein.site
-.. autofunction:: shephard.protein.Protein.site_types
-.. autofunction:: shephard.protein.Protein.site_positions
+.. autoproperty:: shephard.protein.Protein.site_types
+.. autoproperty:: shephard.protein.Protein.site_positions
 .. autofunction:: shephard.protein.Protein.add_site
 .. autofunction:: shephard.protein.Protein.remove_site
 .. autofunction:: shephard.protein.Protein.get_sites_by_position
